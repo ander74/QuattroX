@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  ===========================================================================================  -->
+<!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
+<!--  ===========================================================================================  -->
+<ContentPage
+    x:Class="QuattroX.View.CalendarioPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:templates="clr-namespace:QuattroX.View.Templates"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:QuattroX.ViewModel"
+    x:DataType="{x:Type vm:CalendarioViewModel}"
+    Shell.BackgroundColor="{StaticResource Primary}"
+    Shell.ForegroundColor="{StaticResource Secondary}">
+
+    <Shell.TitleView>
+        <HorizontalStackLayout>
+            <Label
+                Margin="10,0,20,0"
+                FontFamily="Material"
+                FontSize="Title"
+                IsVisible="{Binding IsSelectionMode}"
+                Text="&#xe999;"
+                TextColor="{StaticResource Secondary}"
+                VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding DesactivarSeleccionCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+            <Label
+                Margin="0"
+                Text="{Binding Title}"
+                TextColor="{StaticResource Secondary}"
+                VerticalOptions="Center">
+                <Label.Triggers>
+                    <DataTrigger
+                        Binding="{Binding IsSelectionMode}"
+                        TargetType="Label"
+                        Value="True">
+                        <Setter Property="FontSize" Value="Medium" />
+                    </DataTrigger>
+                    <DataTrigger
+                        Binding="{Binding IsSelectionMode}"
+                        TargetType="Label"
+                        Value="False">
+                        <Setter Property="FontSize" Value="Title" />
+                    </DataTrigger>
+                </Label.Triggers>
+            </Label>
+        </HorizontalStackLayout>
+    </Shell.TitleView>
+
+    <ContentPage.Triggers>
+        <DataTrigger
+            Binding="{Binding IsSelectionMode}"
+            TargetType="ContentPage"
+            Value="True">
+            <Setter Property="Shell.FlyoutBehavior" Value="Disabled" />
+        </DataTrigger>
+        <DataTrigger
+            Binding="{Binding IsSelectionMode}"
+            TargetType="ContentPage"
+            Value="False">
+            <Setter Property="Shell.FlyoutBehavior" Value="Flyout" />
+        </DataTrigger>
+    </ContentPage.Triggers>
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            Command="{Binding LoadCommand}"
+            EventName="Loaded" />
+    </ContentPage.Behaviors>
+
+    <Grid>
+
+        <CollectionView
+            Margin="0,3,0,0"
+            ItemsSource="{Binding Dias}"
+            SelectedItems="{Binding DiasSeleccionados, Mode=TwoWay}"
+            VerticalOptions="Fill">
+
+            <CollectionView.Triggers>
+                <DataTrigger
+                    Binding="{Binding IsSelectionMode}"
+                    TargetType="CollectionView"
+                    Value="True">
+                    <Setter Property="SelectionMode" Value="Multiple" />
+                </DataTrigger>
+                <DataTrigger
+                    Binding="{Binding IsSelectionMode}"
+                    TargetType="CollectionView"
+                    Value="False">
+                    <Setter Property="SelectionMode" Value="None" />
+                </DataTrigger>
+            </CollectionView.Triggers>
+
+
+            <CollectionView.ItemTemplate>
+                <templates:CalendarioCell />
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.Footer>
+                <Label HeightRequest="80" />
+            </CollectionView.Footer>
+
+        </CollectionView>
+
+        <!--  Navegación de meses  -->
+        <Border
+            Margin="10,15,10,15"
+            BackgroundColor="Lavender"
+            HorizontalOptions="Fill"
+            IsVisible="{Binding IsNotSelectionMode}"
+            StrokeShape="RoundRectangle, 5,5,5,5"
+            VerticalOptions="End">
+
+
+
+            <Border.Shadow>
+                <Shadow
+                    Brush="DimGray"
+                    Opacity="0.5"
+                    Radius="12"
+                    Offset="5,5" />
+            </Border.Shadow>
+
+            <Grid
+                ColumnDefinitions="Auto, *, *, Auto"
+                RowDefinitions="Auto,*">
+
+                <!--  Mes Anterior  -->
+                <Label
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Grid.Column="0"
+                    Margin="10"
+                    FontFamily="Material"
+                    FontSize="Title"
+                    HorizontalOptions="Center"
+                    Text="&#xEA5A;"
+                    TextColor="{StaticResource Primary}"
+                    VerticalOptions="Center" />
+
+                <!--  Mes Siguiente  -->
+                <Label
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Grid.Column="3"
+                    Margin="10"
+                    FontFamily="Material"
+                    FontSize="Title"
+                    HorizontalOptions="Center"
+                    Text="&#xEDB8;"
+                    TextColor="{StaticResource Primary}"
+                    VerticalOptions="Center" />
+
+                <!--  Mes actual  -->
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
+                    Margin="4"
+                    FontSize="Medium"
+                    HorizontalOptions="Center"
+                    Text="{Binding TextoMesActual}"
+                    TextColor="Black"
+                    VerticalOptions="Center" />
+
+                <!--  Horas acumuladas  -->
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="4"
+                    FontSize="Micro"
+                    HorizontalOptions="Center"
+                    Text="Acum: 12,35"
+                    TextColor="DarkGreen"
+                    VerticalOptions="Center" />
+
+                <!--  Horas nocturnas  -->
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Margin="4"
+                    FontSize="Micro"
+                    HorizontalOptions="Center"
+                    Text="Noct: 2,33"
+                    TextColor="Blue"
+                    VerticalOptions="Center" />
+
+            </Grid>
+
+        </Border>
+
+        <!--  Navegación de meses  -->
+        <Border
+            Margin="10,15,10,15"
+            BackgroundColor="Lavender"
+            HorizontalOptions="Fill"
+            IsVisible="{Binding IsSelectionMode}"
+            StrokeShape="RoundRectangle, 5,5,5,5"
+            VerticalOptions="End">
+
+            <Border.Shadow>
+                <Shadow
+                    Brush="DimGray"
+                    Opacity="0.5"
+                    Radius="12"
+                    Offset="5,5" />
+            </Border.Shadow>
+
+            <HorizontalStackLayout
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+
+                <!--  Copiar  -->
+                <VerticalStackLayout
+                    Margin="10"
+                    IsEnabled="{Binding OnlyOneItemSelected}">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CopiarDiaCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label
+                        Margin="0"
+                        FontFamily="Material"
+                        FontSize="Small"
+                        HorizontalOptions="Center"
+                        Text="&#xE99A;"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Margin="0"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="Copiar"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                </VerticalStackLayout>
+
+                <!--  Pegar  -->
+                <VerticalStackLayout Margin="10">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding PegarDiaCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label
+                        Margin="0"
+                        FontFamily="Material"
+                        FontSize="Small"
+                        HorizontalOptions="Center"
+                        Text="&#xE99C;"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Margin="0"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="Pegar"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                </VerticalStackLayout>
+
+                <!--  Alternar franqueo/festivo  -->
+                <VerticalStackLayout Margin="10">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding AlternarFranqueoFestivoCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label
+                        Margin="0"
+                        FontFamily="Material"
+                        FontSize="Small"
+                        HorizontalOptions="Center"
+                        Text="&#xEAE3;"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Margin="0"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="Fra/Fes"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                </VerticalStackLayout>
+
+                <!--  Regulación  -->
+                <VerticalStackLayout
+                    Margin="10"
+                    IsEnabled="{Binding OnlyOneItemSelected}">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CrearRegulacionCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label
+                        Margin="0"
+                        FontFamily="Material"
+                        FontSize="Small"
+                        HorizontalOptions="Center"
+                        Text="&#xE9C7;"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Margin="0"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="Regul."
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                </VerticalStackLayout>
+
+                <!--  Vaciar  -->
+                <VerticalStackLayout Margin="10">
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding VaciarDiaCommand}" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label
+                        Margin="0"
+                        FontFamily="Material"
+                        FontSize="Small"
+                        HorizontalOptions="Center"
+                        Text="&#xEBE1;"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Margin="0"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="Vaciar"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                </VerticalStackLayout>
+
+            </HorizontalStackLayout>
+
+        </Border>
+
+    </Grid>
+
+</ContentPage>
