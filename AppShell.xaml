@@ -19,10 +19,5 @@
         ContentTemplate="{DataTemplate view:CalendarioPage}"
         Route="CalendarioPage" />
 
-    <ShellContent
-        Title="Trabajador@s"
-        ContentTemplate="{DataTemplate view:WorkersPage}"
-        Route="WorkersPage" />
-
 
 </Shell>

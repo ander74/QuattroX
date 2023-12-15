@@ -73,6 +73,7 @@
 
     <Grid>
 
+        <!--  Calendario  -->
         <CollectionView
             Margin="0,3,0,0"
             ItemsSource="{Binding Dias}"
@@ -114,7 +115,9 @@
             StrokeShape="RoundRectangle, 5,5,5,5"
             VerticalOptions="End">
 
-
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding DummyCommand}" />
+            </Border.GestureRecognizers>
 
             <Border.Shadow>
                 <Shadow
@@ -192,7 +195,7 @@
 
         </Border>
 
-        <!--  Navegación de meses  -->
+        <!--  Botones flotantes  -->
         <Border
             Margin="10,15,10,15"
             BackgroundColor="Lavender"
@@ -200,6 +203,10 @@
             IsVisible="{Binding IsSelectionMode}"
             StrokeShape="RoundRectangle, 5,5,5,5"
             VerticalOptions="End">
+
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding DummyCommand}" />
+            </Border.GestureRecognizers>
 
             <Border.Shadow>
                 <Shadow
@@ -330,6 +337,13 @@
             </HorizontalStackLayout>
 
         </Border>
+
+        <!--  Progress indicator  -->
+        <ActivityIndicator
+            Margin="20"
+            HorizontalOptions="Center"
+            IsRunning="{Binding IsBusy}"
+            VerticalOptions="Start" />
 
     </Grid>
 

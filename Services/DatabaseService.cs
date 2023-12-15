@@ -59,6 +59,7 @@ public class DatabaseService {
             await Db.CreateTableAsync<TrabajadorEntity>();
             await Db.CreateTableAsync<ServicioSecundarioEntity>();
             await Db.CreateTableAsync<ServicioDiaEntity>();
+            await Db.CreateTableAsync<ServicioSecundarioDiaEntity>();
             await Db.CreateTableAsync<ServicioLineaEntity>();
             await Db.CreateTableAsync<LineaEntity>();
             await Db.CreateTableAsync<DiaEntity>();

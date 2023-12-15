@@ -9,22 +9,7 @@
 namespace QuattroX.Data.Model;
 
 
-public partial class ModelBase : ObservableObject {
-
-
-    // ====================================================================================================
-    #region Campos privados y constructor
-    // ====================================================================================================
-
-    public ModelBase() {
-        PropertyChanged += (s, e) => {
-            if (e.PropertyName != nameof(Modified)) Modified = true;
-        };
-    }
-
-
-    #endregion
-    // ====================================================================================================
+public partial class ServicioSecundarioDiaModel : ServicioBaseModel {
 
 
     // ====================================================================================================
@@ -33,11 +18,7 @@ public partial class ModelBase : ObservableObject {
 
 
     [ObservableProperty]
-    int id;
-
-
-    [ObservableProperty]
-    bool modified;
+    int diaId;
 
 
     #endregion

@@ -27,16 +27,22 @@ public static class MauiProgram {
         // Servicios
         builder.Services.AddSingleton<DatabaseService>();
         builder.Services.AddSingleton<DbRepository>();
+        builder.Services.AddSingleton<ConfigService>();
+        builder.Services.AddSingleton<CalculosService>();
 
 
         // Páginas
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<CalendarioPage>();
+        builder.Services.AddTransient<DetalleDiaPage>();
+        //builder.Services.AddTransient<DiaTabPage>();
 
 
         // ViewModels
         builder.Services.AddSingleton<MainViewModel>();
         builder.Services.AddSingleton<CalendarioViewModel>();
+        builder.Services.AddTransient<DetalleDiaViewModel>();
+        //builder.Services.AddTransient<DiaTabViewModel>();
 
 
 #if DEBUG

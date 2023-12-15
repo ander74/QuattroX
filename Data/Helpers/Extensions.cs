@@ -5,10 +5,8 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-using Nelya.Core.Helpers;
 using QuattroX.Data.Entities;
 using QuattroX.Data.Model;
-using System.Data;
 
 namespace QuattroX.Data.Helpers;
 
@@ -23,7 +21,7 @@ public static class Extensions {
 
     public static TrabajadorModel ToModel(this TrabajadorEntity entity) {
         if (entity is null) return null;
-        return new TrabajadorModel {
+        var model = new TrabajadorModel {
             Id = entity.Id,
             Nombre = entity.Nombre,
             Apellidos = entity.Apellidos,
@@ -33,6 +31,8 @@ public static class Extensions {
             DeudaInicial = entity.DeudaInicial,
             Notas = entity.Notas,
         };
+        model.Modified = false;
+        return model;
     }
 
 
@@ -61,7 +61,7 @@ public static class Extensions {
 
     public static RelevoModel ToModel(this RelevoEntity entity) {
         if (entity is null) return null;
-        return new RelevoModel {
+        var model = new RelevoModel {
             Id = entity.Id,
             DiaId = entity.DiaId,
             Nombre = entity.Nombre,
@@ -72,6 +72,8 @@ public static class Extensions {
             DeudaInicial = entity.DeudaInicial,
             Notas = entity.Notas,
         };
+        model.Modified = false;
+        return model;
     }
 
 
@@ -101,7 +103,7 @@ public static class Extensions {
 
     public static SustiModel ToModel(this SustiEntity entity) {
         if (entity is null) return null;
-        return new SustiModel {
+        var model = new SustiModel {
             Id = entity.Id,
             DiaId = entity.DiaId,
             Nombre = entity.Nombre,
@@ -112,6 +114,8 @@ public static class Extensions {
             DeudaInicial = entity.DeudaInicial,
             Notas = entity.Notas,
         };
+        model.Modified = false;
+        return model;
     }
 
 
@@ -141,12 +145,14 @@ public static class Extensions {
 
     public static LineaModel ToModel(this LineaEntity entity) {
         if (entity is null) return null;
-        return new LineaModel {
+        var model = new LineaModel {
             Id = entity.Id,
             Linea = entity.Linea,
             Texto = entity.Texto,
             Servicios = entity.Servicios.Select(s => s.ToModel()).ToObservableCollection(),
         };
+        model.Modified = false;
+        return model;
     }
 
 
@@ -172,7 +178,7 @@ public static class Extensions {
 
     public static ServicioBaseModel ToModel(this ServicioBaseEntity entity) {
         if (entity is null) return null;
-        return new ServicioBaseModel {
+        var model = new ServicioBaseModel {
             Id = entity.Id,
             Linea = entity.Linea,
             Servicio = entity.Servicio,
@@ -182,6 +188,8 @@ public static class Extensions {
             LugarInicio = entity.LugarInicio,
             LugarFinal = entity.LugarFinal,
         };
+        model.Modified = false;
+        return model;
     }
 
 
@@ -211,7 +219,7 @@ public static class Extensions {
 
     public static ServicioLineaModel ToModel(this ServicioLineaEntity entity) {
         if (entity is null) return null;
-        return new ServicioLineaModel {
+        var model = new ServicioLineaModel {
             Id = entity.Id,
             LineaId = entity.LineaId,
             Linea = entity.Linea,
@@ -223,6 +231,8 @@ public static class Extensions {
             LugarFinal = entity.LugarFinal,
             Servicios = entity.Servicios.Select(s => s.ToModel()).ToObservableCollection(),
         };
+        model.Modified = false;
+        return model;
     }
 
 
@@ -254,7 +264,7 @@ public static class Extensions {
 
     public static ServicioDiaModel ToModel(this ServicioDiaEntity entity) {
         if (entity is null) return null;
-        return new ServicioDiaModel {
+        var model = new ServicioDiaModel {
             Id = entity.Id,
             DiaId = entity.DiaId,
             Linea = entity.Linea,
@@ -264,8 +274,9 @@ public static class Extensions {
             Final = entity.Final,
             LugarInicio = entity.LugarInicio,
             LugarFinal = entity.LugarFinal,
-            EsPrincipal = entity.EsPrincipal,
         };
+        model.Modified = false;
+        return model;
     }
 
 
@@ -281,7 +292,49 @@ public static class Extensions {
             Final = model.Final,
             LugarInicio = model.LugarInicio,
             LugarFinal = model.LugarFinal,
-            EsPrincipal = model.EsPrincipal,
+        };
+    }
+
+
+    #endregion
+    // ====================================================================================================
+
+
+    // ====================================================================================================
+    #region ServicioSecundarioDia
+    // ====================================================================================================
+
+
+    public static ServicioSecundarioDiaModel ToModel(this ServicioSecundarioDiaEntity entity) {
+        if (entity is null) return null;
+        var model = new ServicioSecundarioDiaModel {
+            Id = entity.Id,
+            DiaId = entity.DiaId,
+            Linea = entity.Linea,
+            Servicio = entity.Servicio,
+            Turno = entity.Turno,
+            Inicio = entity.Inicio,
+            Final = entity.Final,
+            LugarInicio = entity.LugarInicio,
+            LugarFinal = entity.LugarFinal,
+        };
+        model.Modified = false;
+        return model;
+    }
+
+
+    public static ServicioSecundarioDiaEntity ToEntity(this ServicioSecundarioDiaModel model) {
+        if (model is null) return null;
+        return new ServicioSecundarioDiaEntity {
+            Id = model.Id,
+            DiaId = model.DiaId,
+            Linea = model.Linea,
+            Servicio = model.Servicio,
+            Turno = model.Turno,
+            Inicio = model.Inicio,
+            Final = model.Final,
+            LugarInicio = model.LugarInicio,
+            LugarFinal = model.LugarFinal,
         };
     }
 
@@ -297,7 +350,7 @@ public static class Extensions {
 
     public static ServicioSecundarioModel ToModel(this ServicioSecundarioEntity entity) {
         if (entity is null) return null;
-        return new ServicioSecundarioModel {
+        var model = new ServicioSecundarioModel {
             Id = entity.Id,
             ServicioId = entity.ServicioId,
             Linea = entity.Linea,
@@ -308,6 +361,8 @@ public static class Extensions {
             LugarInicio = entity.LugarInicio,
             LugarFinal = entity.LugarFinal,
         };
+        model.Modified = false;
+        return model;
     }
 
 
@@ -338,12 +393,14 @@ public static class Extensions {
 
     public static IncidenciaModel ToModel(this IncidenciaEntity entity) {
         if (entity is null) return null;
-        return new IncidenciaModel {
+        var model = new IncidenciaModel {
             Id = entity.Id,
             Tipo = entity.Tipo,
             Codigo = entity.Codigo,
             Descripcion = entity.Descripcion,
         };
+        model.Modified = false;
+        return model;
     }
 
 
@@ -369,13 +426,15 @@ public static class Extensions {
 
     public static IncidenciaDiaModel ToModel(this IncidenciaDiaEntity entity) {
         if (entity is null) return null;
-        return new IncidenciaDiaModel {
+        var model = new IncidenciaDiaModel {
             Id = entity.Id,
             DiaId = entity.DiaId,
             Tipo = entity.Tipo,
             Codigo = entity.Codigo,
             Descripcion = entity.Descripcion,
         };
+        model.Modified = false;
+        return model;
     }
 
 
@@ -402,13 +461,15 @@ public static class Extensions {
 
     public static RegulacionModel ToModel(this RegulacionEntity entity) {
         if (entity is null) return null;
-        return new RegulacionModel {
+        var model = new RegulacionModel {
             Id = entity.Id,
             DiaId = entity.DiaId,
             Tipo = entity.Tipo,
             Horas = entity.Horas,
             Motivo = entity.Motivo,
         };
+        model.Modified = false;
+        return model;
     }
 
 
@@ -435,7 +496,7 @@ public static class Extensions {
 
     public static DiaModel ToModel(this DiaEntity entity) {
         if (entity is null) return null;
-        return new DiaModel {
+        var model = new DiaModel {
             Id = entity.Id,
             Fecha = entity.Fecha,
             EsFranqueo = entity.EsFranqueo,
@@ -463,6 +524,8 @@ public static class Extensions {
             Bus = entity.Bus,
             Notas = entity.Notas,
         };
+        model.Modified = false;
+        return model;
     }
 
 
@@ -570,7 +633,7 @@ public static class Extensions {
 
     public static ResumenModel ToModel(this ResumenEntity entity) {
         if (entity is null) return null;
-        return new ResumenModel {
+        var model = new ResumenModel {
             Id = entity.Id,
             Fecha = entity.Fecha,
             Trabajadas = entity.Trabajadas,
@@ -581,6 +644,8 @@ public static class Extensions {
             Euros = entity.Euros,
             Regulaciones = entity.Regulaciones,
         };
+        model.Modified = false;
+        return model;
     }
 
 
@@ -611,7 +676,7 @@ public static class Extensions {
 
     public static OpcionesModel ToModel(this OpcionesEntity entity) {
         if (entity is null) return null;
-        return new OpcionesModel {
+        var model = new OpcionesModel {
             PrimerMesMostrado = entity.PrimerMesMostrado,
             AcumuladasAnteriores = entity.AcumuladasAnteriores,
             RelevoFijo = entity.RelevoFijo,
@@ -632,6 +697,8 @@ public static class Extensions {
             FechaReferenciaTurnos = entity.FechaReferenciaTurnos,
             AcumularTomaDeje = entity.AcumularTomaDeje,
         };
+        model.Modified = false;
+        return model;
     }
 
 

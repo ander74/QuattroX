@@ -5,27 +5,27 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-using QuattroX.Services;
-using QuattroX.View.Helpers;
+using QuattroX.Data.Helpers;
+using QuattroX.Data.Model;
+using QuattroX.Data.Repositories;
 
-namespace QuattroX.ViewModel;
+namespace QuattroX.Services;
 
 
-public partial class MainViewModel : BaseViewModel {
+public class ConfigService {
 
 
     // ====================================================================================================
     #region Campos privados y constructor
     // ====================================================================================================
 
-    private readonly DatabaseService dbService;
-    private readonly ConfigService configService;
+    private readonly DbRepository dbRepository;
 
-    public MainViewModel(DatabaseService dbService, ConfigService configService) {
-        this.dbService = dbService;
-        this.configService = configService;
-        Title = "Cargando";
+    public ConfigService(DbRepository dbRepository) {
+        this.dbRepository = dbRepository;
+
     }
+
 
     #endregion
     // ====================================================================================================
@@ -35,6 +35,31 @@ public partial class MainViewModel : BaseViewModel {
     #region Propiedades
     // ====================================================================================================
 
+
+    public OpcionesModel Opciones { get; private set; }
+
+
+    #endregion
+    // ====================================================================================================
+
+
+    // ====================================================================================================
+    #region Métodos públicos
+    // ====================================================================================================
+
+
+    public async Task InitAsync() {
+        var options = await dbRepository.GetOpcionesAsync();
+        options ??= new();
+        Opciones = options.ToModel();
+    }
+
+
+    public async Task SaveAsync() {
+        if (Opciones is null) return;
+        var options = Opciones.ToEntity();
+        await dbRepository.SaveOpcionesAsync(options);
+    }
 
 
     #endregion
@@ -46,7 +71,6 @@ public partial class MainViewModel : BaseViewModel {
     // ====================================================================================================
 
 
-
     #endregion
     // ====================================================================================================
 
@@ -56,23 +80,9 @@ public partial class MainViewModel : BaseViewModel {
     // ====================================================================================================
 
 
-    [RelayCommand]
-    async Task LoadAsync() {
-
-        // Personalizamos los controles visuales.
-        CustomizePlatformViews.CustomizeViews();
-
-        // Poner aquí todo lo que tiene que pasar al iniciar la aplicación.
-        await dbService.InitAsync();
-        await configService.InitAsync();
-
-        // Vamos a la página del calendario
-        await Shell.Current.GoToAsync("///CalendarioPage");
-    }
-
-
     #endregion
     // ====================================================================================================
+
 
 
 }

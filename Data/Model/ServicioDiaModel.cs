@@ -21,9 +21,6 @@ public partial class ServicioDiaModel : ServicioBaseModel {
     int diaId;
 
 
-    [ObservableProperty]
-    bool esPrincipal;
-
     #endregion
     // ====================================================================================================
 

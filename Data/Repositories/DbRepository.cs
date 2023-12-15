@@ -213,14 +213,17 @@ public class DbRepository {
     }
 
 
-    public async Task<int> AddTrabajadorAsync(TrabajadorEntity trabajador) {
-        await dbService.Db.InsertAsync(trabajador);
-        return await dbService.GetLastIdAsync();
-    }
-
-
-    public async Task UpdateTrabajadorAsync(TrabajadorEntity trabajador) {
-        await dbService.Db.UpdateAsync(trabajador);
+    public async Task SaveTrabajadorAsync(TrabajadorEntity trabajador) {
+        if (trabajador is null) return;
+        var trabajadorOld = await GetTrabajadorByMatriculaAsync(trabajador.Matricula);
+        if (trabajadorOld is not null) trabajador.Id = trabajadorOld.Id;
+        if (trabajador.Id == 0) {
+            await dbService.Db.InsertAsync(trabajador);
+            var id = await dbService.GetLastIdAsync();
+            trabajador.Id = id;
+        } else {
+            await dbService.Db.UpdateAsync(trabajador);
+        }
     }
 
 
@@ -339,22 +342,87 @@ public class DbRepository {
 
     public async Task<List<DiaEntity>> GetDiasByMesAsync(DateTime fecha) {
         var fechaPosterior = fecha.AddMonths(1);
-        return await dbService.Db.Table<DiaEntity>().Where(d => d.Fecha >= fecha && d.Fecha < fechaPosterior).ToListAsync();
+        var dias = await dbService.Db.Table<DiaEntity>().Where(d => d.Fecha >= fecha && d.Fecha < fechaPosterior).ToListAsync();
+        if (dias is null) return new List<DiaEntity>();
+        foreach (var dia in dias) {
+            if (dia.IncidenciaId > 0) dia.Incidencia = await dbService.Db.Table<IncidenciaEntity>().Where(i => i.Id == dia.IncidenciaId).FirstOrDefaultAsync();
+            if (dia.ServicioPrincipalId > 0) dia.ServicioPrincipal = await dbService.Db.Table<ServicioDiaEntity>().Where(s => s.Id == dia.ServicioPrincipalId).FirstOrDefaultAsync();
+            if (dia.RelevoId > 0) dia.Relevo = await dbService.Db.Table<RelevoEntity>().Where(r => r.Id == dia.RelevoId).FirstOrDefaultAsync();
+            if (dia.SustiId > 0) dia.Susti = await dbService.Db.Table<SustiEntity>().Where(s => s.Id == dia.SustiId).FirstOrDefaultAsync();
+            dia.Servicios = await dbService.Db.Table<ServicioSecundarioDiaEntity>().Where(s => s.DiaId == dia.Id).ToListAsync();
+        }
+        return dias;
     }
 
 
     public async Task<DiaEntity> GetDiaByIdAsync(int id) {
-        return await dbService.Db.Table<DiaEntity>().Where(d => d.Id == id).FirstOrDefaultAsync();
+        var dia = await dbService.Db.Table<DiaEntity>().Where(d => d.Id == id).FirstOrDefaultAsync();
+        if (dia.IncidenciaId > 0) dia.Incidencia = await dbService.Db.Table<IncidenciaEntity>().Where(i => i.Id == dia.IncidenciaId).FirstOrDefaultAsync();
+        if (dia.ServicioPrincipalId > 0) dia.ServicioPrincipal = await dbService.Db.Table<ServicioDiaEntity>().Where(s => s.Id == dia.ServicioPrincipalId).FirstOrDefaultAsync();
+        if (dia.RelevoId > 0) dia.Relevo = await dbService.Db.Table<RelevoEntity>().Where(r => r.Id == dia.RelevoId).FirstOrDefaultAsync();
+        if (dia.SustiId > 0) dia.Susti = await dbService.Db.Table<SustiEntity>().Where(s => s.Id == dia.SustiId).FirstOrDefaultAsync();
+        dia.Servicios = await dbService.Db.Table<ServicioSecundarioDiaEntity>().Where(s => s.DiaId == dia.Id).ToListAsync();
+        return dia;
+    }
+
+
+    public async Task SaveServicioDiaAsync(ServicioDiaEntity servicio) {
+        if (servicio is null) return;
+        if (servicio.Id == 0) {
+            await dbService.Db.InsertAsync(servicio);
+            var id = await dbService.GetLastIdAsync();
+            servicio.Id = id;
+        } else {
+            await dbService.Db.UpdateAsync(servicio);
+        }
+    }
+
+
+    public async Task SaveServicioSecundarioDiaAsync(ServicioSecundarioDiaEntity servicio) {
+        if (servicio is null) return;
+        if (servicio.Id == 0) {
+            await dbService.Db.InsertAsync(servicio);
+            var id = await dbService.GetLastIdAsync();
+            servicio.Id = id;
+        } else {
+            await dbService.Db.UpdateAsync(servicio);
+        }
     }
 
 
     public async Task SaveDiaAsync(DiaEntity dia) {
         if (dia is null) return;
+        if (dia.RelevoId == 0 && dia.Relevo?.Matricula > 0) {
+            await SaveTrabajadorAsync(dia.Relevo);
+            dia.RelevoId = dia.Relevo.Id;
+        }
+        if (dia.SustiId == 0 && dia.Susti?.Matricula > 0) {
+            await SaveTrabajadorAsync(dia.Susti);
+            dia.SustiId = dia.Susti.Id;
+        }
         if (dia.Id == 0) {
             await dbService.Db.InsertAsync(dia);
             var id = await dbService.GetLastIdAsync();
             dia.Id = id;
+            dia.ServicioPrincipal.DiaId = dia.Id;
+            await SaveServicioDiaAsync(dia.ServicioPrincipal);
+            if (dia.Servicios?.Any() == true) {
+                foreach (var servicio in dia.Servicios) {
+                    if (servicio.DiaId == 0) servicio.DiaId = dia.Id;
+                    await SaveServicioSecundarioDiaAsync(servicio);
+                }
+            }
+            await dbService.Db.UpdateAsync(dia);
         } else {
+            if (dia.ServicioPrincipalId == 0) dia.ServicioPrincipal.DiaId = dia.Id;
+            await SaveServicioDiaAsync(dia.ServicioPrincipal);
+            dia.ServicioPrincipalId = dia.ServicioPrincipal.Id;
+            if (dia.Servicios?.Any() == true) {
+                foreach (var servicio in dia.Servicios) {
+                    if (servicio.DiaId == 0) servicio.DiaId = dia.Id;
+                    await SaveServicioSecundarioDiaAsync(servicio);
+                }
+            }
             await dbService.Db.UpdateAsync(dia);
         }
     }
@@ -430,6 +498,33 @@ public class DbRepository {
             await DeleteResumenAsync(resumen.Id);
         }
     }
+
+
+    #endregion
+    // ====================================================================================================
+
+
+    // ====================================================================================================
+    #region Opciones
+    // ====================================================================================================
+
+    public async Task<OpcionesEntity> GetOpcionesAsync() {
+        return await dbService.Db.Table<OpcionesEntity>().FirstOrDefaultAsync();
+    }
+
+
+    public async Task SaveOpcionesAsync(OpcionesEntity opciones) {
+        if (opciones is null) return;
+        if (opciones.Id == 0) {
+            await dbService.Db.InsertAsync(opciones);
+            var id = await dbService.GetLastIdAsync();
+            opciones.Id = id;
+        } else {
+            await dbService.Db.UpdateAsync(opciones);
+        }
+    }
+
+    // NOTA: Quattro X no contempla eliminar opciones, por lo que no ponemos los métodos correspondientes.
 
 
     #endregion

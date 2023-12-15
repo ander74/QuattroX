@@ -31,22 +31,22 @@ public class DiaEntity : EntityBase {
 
 
     [Ignore]
-    public IncidenciaEntity Incidencia { get; set; }
+    public IncidenciaEntity Incidencia { get; set; } = new();
 
 
     public int ServicioPrincipalId { get; set; }
 
 
     [Ignore]
-    public ServicioDiaEntity ServicioPrincipal { get; set; }
+    public ServicioDiaEntity ServicioPrincipal { get; set; } = new();
 
 
     [Ignore]
-    public List<ServicioDiaEntity> Servicios { get; set; }
+    public List<ServicioSecundarioDiaEntity> Servicios { get; set; } = new();
 
 
     [Ignore]
-    public List<RegulacionEntity> Regulaciones { get; set; }
+    public List<RegulacionEntity> Regulaciones { get; set; } = new();
 
 
     public decimal Trabajadas { get; set; }
@@ -83,14 +83,14 @@ public class DiaEntity : EntityBase {
 
 
     [Ignore]
-    public TrabajadorEntity Relevo { get; set; }
+    public TrabajadorEntity Relevo { get; set; } = new();
 
 
     public int SustiId { get; set; }
 
 
     [Ignore]
-    public TrabajadorEntity Susti { get; set; }
+    public TrabajadorEntity Susti { get; set; } = new();
 
 
     public string Bus { get; set; }

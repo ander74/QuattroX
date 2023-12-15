@@ -11,11 +11,10 @@ namespace QuattroX.Data.Entities;
 
 
 /// <summary>
-/// Representa el servicio principal de un día.
+/// Representa cada uno de los servicios secundarios de un día.
 /// </summary>
-[Table(name: "ServiciosDia")]
-public class ServicioDiaEntity : ServicioBaseEntity {
-
+[Table(name: "ServiciosSecundariosDia")]
+public class ServicioSecundarioDiaEntity : ServicioBaseEntity {
 
     public int DiaId { get; set; }
 

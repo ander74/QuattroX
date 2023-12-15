@@ -8,10 +8,8 @@
 
 namespace QuattroX.View.Templates;
 
-public partial class CalendarioCell : DataTemplate {
-    public CalendarioCell() {
+public partial class ServiciosTabPage : ContentView {
+    public ServiciosTabPage() {
         InitializeComponent();
     }
-
-
 }

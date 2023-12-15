@@ -5,8 +5,6 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-using System.Collections.ObjectModel;
-
 namespace QuattroX.Data.Model;
 
 
@@ -32,27 +30,27 @@ public partial class DiaModel : ModelBase {
 
 
     [ObservableProperty]
-    int incidenciaId; //Puede no ser necesario
+    int incidenciaId;
 
 
     [ObservableProperty]
-    IncidenciaModel incidencia;
+    IncidenciaModel incidencia = new();
 
 
     [ObservableProperty]
-    int servicioPrincipalId; //Puede no ser necesario
+    int servicioPrincipalId;
 
 
     [ObservableProperty]
-    ServicioDiaModel servicioPrincipal;
+    ServicioDiaModel servicioPrincipal = new();
 
 
     [ObservableProperty]
-    ObservableCollection<ServicioDiaModel> servicios;
+    ObservableCollection<ServicioSecundarioDiaModel> servicios = new();
 
 
     [ObservableProperty]
-    ObservableCollection<RegulacionModel> regulaciones;
+    ObservableCollection<RegulacionModel> regulaciones = new();
 
 
     [ObservableProperty]
@@ -96,19 +94,19 @@ public partial class DiaModel : ModelBase {
 
 
     [ObservableProperty]
-    int relevoId; //Puede no ser necesario
+    int relevoId;
 
 
     [ObservableProperty]
-    TrabajadorModel relevo;
+    TrabajadorModel relevo = new();
 
 
     [ObservableProperty]
-    int sustiId; //Puede no ser necesario
+    int sustiId;
 
 
     [ObservableProperty]
-    TrabajadorModel susti;
+    TrabajadorModel susti = new();
 
 
     [ObservableProperty]

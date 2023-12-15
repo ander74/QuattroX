@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  ===========================================================================================  -->
+<!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
+<!--  ===========================================================================================  -->
+<ContentPage
+    x:Class="QuattroX.View.DetalleDiaPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:templates="clr-namespace:QuattroX.View.Templates"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:QuattroX.ViewModel"
+    Title="{Binding Title}"
+    x:DataType="{x:Type vm:DetalleDiaViewModel}"
+    Shell.BackgroundColor="{StaticResource Primary}"
+    Shell.ForegroundColor="{StaticResource Secondary}"
+    Shell.TitleColor="{StaticResource Secondary}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            Command="{Binding LoadCommand}"
+            EventName="Loaded" />
+        <toolkit:EventToCommandBehavior
+            Command="{Binding CloseCommand}"
+            EventName="Disappearing" />
+    </ContentPage.Behaviors>
+
+    <Grid
+        ColumnDefinitions="*,*"
+        RowDefinitions="Auto,*">
+
+        <Label
+            x:Name="LabelDia"
+            Grid.Row="0"
+            Grid.Column="0"
+            Padding="5"
+            BackgroundColor="{StaticResource PrimaryDark}"
+            FontSize="Small"
+            HorizontalOptions="FillAndExpand"
+            HorizontalTextAlignment="Center"
+            Text="Día"
+            TextColor="{StaticResource PrimaryDarkText}"
+            VerticalOptions="Center">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped="LabelDia_Tapped" />
+            </Label.GestureRecognizers>
+        </Label>
+
+        <Label
+            x:Name="LabelServicios"
+            Grid.Row="0"
+            Grid.Column="1"
+            Padding="5"
+            BackgroundColor="{StaticResource Primary}"
+            FontSize="Small"
+            HorizontalOptions="Fill"
+            HorizontalTextAlignment="Center"
+            Text="Servicios"
+            TextColor="{StaticResource Secondary}"
+            VerticalOptions="Center">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped="LabelServicios_Tapped" />
+            </Label.GestureRecognizers>
+        </Label>
+
+
+
+        <ScrollView
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2">
+            <ContentView
+                x:Name="Contenedor"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand">
+                <ContentView.GestureRecognizers>
+                    <SwipeGestureRecognizer
+                        Direction="Left"
+                        Swiped="Contenedor_LeftSwiped" />
+                    <SwipeGestureRecognizer
+                        Direction="Right"
+                        Swiped="Contenedor_RightSwiped" />
+                </ContentView.GestureRecognizers>
+            </ContentView>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

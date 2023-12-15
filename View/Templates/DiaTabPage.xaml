@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  ===========================================================================================  -->
+<!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
+<!--  ===========================================================================================  -->
+<ContentView
+    x:Class="QuattroX.View.Templates.DiaTabPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:QuattroX.ViewModel"
+    x:DataType="vm:DetalleDiaViewModel">
+
+    <ContentView.Resources>
+        <Style TargetType="Entry">
+            <Setter Property="HorizontalOptions" Value="Fill" />
+            <Setter Property="Margin" Value="5,15,5,5" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="HorizontalOptions" Value="Start" />
+            <Setter Property="Margin" Value="5,0,0,0" />
+            <Setter Property="HorizontalTextAlignment" Value="Start" />
+            <Setter Property="VerticalOptions" Value="Start" />
+            <Setter Property="FontSize" Value="Micro" />
+            <Setter Property="TextColor" Value="{StaticResource Primary}" />
+        </Style>
+        <Style TargetType="TimePicker">
+            <Setter Property="HorizontalOptions" Value="Fill" />
+            <Setter Property="Margin" Value="5,15,5,5" />
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="Format" Value="HH:mm" />
+        </Style>
+    </ContentView.Resources>
+
+    <Grid
+        ColumnDefinitions="*,*,*"
+        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
+
+        <!--  Incidencia  -->
+        <Picker
+            Title="Seleccione una incidencia"
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Margin="5"
+            HorizontalOptions="Fill"
+            ItemDisplayBinding="{Binding Descripcion}"
+            ItemsSource="{Binding Incidencias}"
+            SelectedItem="{Binding IncidenciaSeleccionada}"
+            VerticalOptions="Center" />
+
+        <!--  Parámetros de huelga  -->
+        <Label
+            Grid.Row="1"
+            Grid.Column="0"
+            IsVisible="{Binding EsHuelga}"
+            Text="Huelga" />
+        <HorizontalStackLayout
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="5"
+            HorizontalOptions="Fill"
+            IsVisible="{Binding EsHuelga}">
+            <Label
+                Margin="5,15,5,5"
+                Padding="0"
+                FontSize="Small"
+                Text="Parcial"
+                TextColor="#333333"
+                VerticalOptions="Center" />
+            <Switch
+                Margin="5,15,5,5"
+                IsToggled="{Binding Dia.HuelgaParcial}"
+                VerticalOptions="Center" />
+        </HorizontalStackLayout>
+        <Label
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="5,15,5,5"
+            Padding="0"
+            FontSize="Small"
+            HorizontalOptions="End"
+            IsVisible="{Binding EsHuelgaParcial}"
+            Text="Horas: "
+            TextColor="#333333"
+            VerticalOptions="Center" />
+        <Entry
+            Grid.Row="1"
+            Grid.Column="2"
+            HorizontalOptions="FillAndExpand"
+            IsVisible="{Binding EsHuelgaParcial}"
+            Text="{Binding Dia.HorasHuelga}" />
+
+        <!--  Línea  -->
+        <Label
+            Grid.Row="2"
+            Grid.Column="0"
+            Text="Línea" />
+        <Entry
+            Grid.Row="2"
+            Grid.Column="0"
+            Text="{Binding Dia.ServicioPrincipal.Linea}" />
+
+        <!--  Servicio  -->
+        <Label
+            Grid.Row="2"
+            Grid.Column="1"
+            Text="Servicio" />
+        <Entry
+            Grid.Row="2"
+            Grid.Column="1"
+            Text="{Binding Dia.ServicioPrincipal.Servicio}" />
+
+        <!--  Turno  -->
+        <Label
+            Grid.Row="2"
+            Grid.Column="2"
+            Text="Turno" />
+        <Entry
+            Grid.Row="2"
+            Grid.Column="2"
+            Text="{Binding Dia.ServicioPrincipal.Turno}" />
+
+        <!--  Texto Línea  -->
+        <Entry
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Margin="5,0,5,5"
+            HorizontalTextAlignment="Start"
+            Text="{Binding Dia.ServicioPrincipal.Linea}" />
+
+        <!--  Inicio  -->
+        <Label
+            Grid.Row="4"
+            Grid.Column="0"
+            HorizontalOptions="FillAndExpand"
+            Text="Inicio" />
+        <TimePicker
+            Grid.Row="4"
+            Grid.Column="0"
+            Time="{Binding Dia.ServicioPrincipal.Inicio}" />
+
+        <!--  Lugar inicio  -->
+        <Label
+            Grid.Row="4"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            Text="Lugar inicio" />
+        <Entry
+            Grid.Row="4"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            HorizontalTextAlignment="Start"
+            Text="{Binding Dia.ServicioPrincipal.LugarInicio}" />
+
+        <!--  Final  -->
+        <Label
+            Grid.Row="5"
+            Grid.Column="0"
+            Text="Final" />
+        <TimePicker
+            Grid.Row="5"
+            Grid.Column="0"
+            Time="{Binding Dia.ServicioPrincipal.Final}" />
+
+        <!--  Lugar final  -->
+        <Label
+            Grid.Row="5"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            Text="Lugar final" />
+        <Entry
+            Grid.Row="5"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            HorizontalTextAlignment="Start"
+            Text="{Binding Dia.ServicioPrincipal.LugarFinal}" />
+
+        <!--  Bus  -->
+        <Label
+            Grid.Row="6"
+            Grid.Column="0"
+            Text="Bus" />
+        <Entry
+            Grid.Row="6"
+            Grid.Column="0"
+            Text="{Binding Dia.Bus}" />
+
+        <!--  Toma y deje  -->
+        <Label
+            Grid.Row="6"
+            Grid.Column="1"
+            Text="Toma/deje" />
+        <Entry
+            Grid.Row="6"
+            Grid.Column="1"
+            Text="{Binding Dia.TomaDeje}" />
+
+        <!--  Euros  -->
+        <Label
+            Grid.Row="6"
+            Grid.Column="2"
+            Text="€/Serv." />
+        <Entry
+            Grid.Row="6"
+            Grid.Column="2"
+            Text="{Binding Dia.Euros}" />
+
+        <!--  Relevo  -->
+        <Label
+            Grid.Row="7"
+            Grid.Column="0"
+            Text="Relevo" />
+        <Entry
+            Grid.Row="7"
+            Grid.Column="0"
+            Text="{Binding Dia.Relevo.Matricula}" />
+        <Entry
+            Grid.Row="7"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            HorizontalTextAlignment="Start"
+            Text="{Binding Dia.Relevo.Apellidos}" />
+
+        <!--  Notas  -->
+        <Label
+            Grid.Row="8"
+            Grid.Column="0"
+            Margin="5,10,0,0"
+            Text="Notas" />
+        <Border
+            Grid.Row="8"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Margin="5,30,5,5"
+            HorizontalOptions="Fill"
+            StrokeShape="RoundRectangle, 5,5,5,5"
+            VerticalOptions="Fill">
+            <Editor
+                Margin="5,0,5,0"
+                HorizontalOptions="Fill"
+                Text="{Binding Dia.Notas}"
+                VerticalOptions="Fill" />
+        </Border>
+
+        <!--  Dietas  -->
+        <HorizontalStackLayout
+            Grid.Row="8"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            Margin="10,0,20,0"
+            HorizontalOptions="End"
+            Spacing="10"
+            VerticalOptions="Start">
+            <Label
+                Padding="10,0,10,0"
+                FontFamily="Material"
+                FontSize="Small"
+                Text="&#xEB18;">
+                <Label.Triggers>
+                    <DataTrigger
+                        Binding="{Binding Dia.Desayuno}"
+                        TargetType="Label"
+                        Value="False">
+                        <Setter Property="TextColor" Value="LightGray" />
+                    </DataTrigger>
+                </Label.Triggers>
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CambiaDietaDesayunoCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+            <Label
+                Padding="10,0,10,0"
+                FontFamily="Material"
+                FontSize="Small"
+                Text="&#xEB29;">
+                <Label.Triggers>
+                    <DataTrigger
+                        Binding="{Binding Dia.Comida}"
+                        TargetType="Label"
+                        Value="False">
+                        <Setter Property="TextColor" Value="LightGray" />
+                    </DataTrigger>
+                </Label.Triggers>
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CambiaDietaComidaCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+            <Label
+                Padding="10,0,10,0"
+                FontFamily="Material"
+                FontSize="Small"
+                Text="&#xED9A;">
+                <Label.Triggers>
+                    <DataTrigger
+                        Binding="{Binding Dia.Cena}"
+                        TargetType="Label"
+                        Value="False">
+                        <Setter Property="TextColor" Value="LightGray" />
+                    </DataTrigger>
+                </Label.Triggers>
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CambiaDietaCenaCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+        </HorizontalStackLayout>
+
+    </Grid>
+</ContentView>

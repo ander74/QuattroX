@@ -5,19 +5,9 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-using SQLite;
 
-namespace QuattroX.Data.Entities;
+namespace QuattroX.View.CustomViews {
 
-
-/// <summary>
-/// Representa el servicio principal de un día.
-/// </summary>
-[Table(name: "ServiciosDia")]
-public class ServicioDiaEntity : ServicioBaseEntity {
-
-
-    public int DiaId { get; set; }
-
-
+    public class CalendarioCellBorder : Border {
+    }
 }
