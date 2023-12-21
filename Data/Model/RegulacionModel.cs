@@ -19,7 +19,7 @@ public partial class RegulacionModel : ModelBase {
 
 
     [ObservableProperty]
-    int diaId;
+    DateTime fecha;
 
 
     [ObservableProperty]

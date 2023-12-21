@@ -20,7 +20,7 @@ namespace QuattroX.Data.Entities;
 public class RegulacionEntity : EntityBase {
 
 
-    public int DiaId { get; set; }
+    public DateTime Fecha { get; set; }
 
 
     [EnumDataType(typeof(TipoRegulacion))]

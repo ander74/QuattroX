@@ -23,6 +23,15 @@ public static class CustomizePlatformViews {
         });
 
 
+        Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("EntrySelectAll", (handler, view) => {
+#if ANDROID
+
+            handler.PlatformView.SetSelectAllOnFocus(true);
+
+#endif
+        });
+
+
         Microsoft.Maui.Handlers.PickerHandler.Mapper.AppendToMapping("PickerFocusable", (handler, view) => {
 #if ANDROID
 

@@ -23,10 +23,12 @@ public partial class TrabajadorModel : ModelBase {
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NombreCompleto))]
     string nombre;
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NombreCompleto))]
     string apellidos;
 
 
@@ -48,6 +50,22 @@ public partial class TrabajadorModel : ModelBase {
 
     [ObservableProperty]
     string notas;
+
+
+    #endregion
+    // ====================================================================================================
+
+
+    // ====================================================================================================
+    #region Propiedades no enlazadas
+    // ====================================================================================================
+
+
+    public string NombreCompleto => $"{Nombre} {Apellidos}";
+
+
+    public int RowIndex { get; set; }
+
 
 
     #endregion

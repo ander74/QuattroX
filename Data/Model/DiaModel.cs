@@ -34,23 +34,45 @@ public partial class DiaModel : ModelBase {
 
 
     [ObservableProperty]
-    IncidenciaModel incidencia = new();
+    [NotifyPropertyChangedFor(nameof(TextoIncidencia))]
+    string linea;
 
 
     [ObservableProperty]
-    int servicioPrincipalId;
+    [NotifyPropertyChangedFor(nameof(TextoIncidencia))]
+    string textoLinea;
 
 
     [ObservableProperty]
-    ServicioDiaModel servicioPrincipal = new();
+    [NotifyPropertyChangedFor(nameof(TextoIncidencia))]
+    string servicio;
 
 
     [ObservableProperty]
-    ObservableCollection<ServicioSecundarioDiaModel> servicios = new();
+    [NotifyPropertyChangedFor(nameof(TextoIncidencia))]
+    int turno;
 
 
     [ObservableProperty]
-    ObservableCollection<RegulacionModel> regulaciones = new();
+    [NotifyPropertyChangedFor(nameof(TextoHoras))]
+    TimeSpan inicio;
+
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TextoHoras))]
+    TimeSpan final;
+
+
+    [ObservableProperty]
+    string lugarInicio;
+
+
+    [ObservableProperty]
+    string lugarFinal;
+
+
+    [ObservableProperty]
+    ObservableCollection<ServicioDiaModel> servicios = new();
 
 
     [ObservableProperty]
@@ -58,10 +80,12 @@ public partial class DiaModel : ModelBase {
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HayHoras))]
     decimal acumuladas;
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HayHoras))]
     decimal nocturnas;
 
 
@@ -98,15 +122,7 @@ public partial class DiaModel : ModelBase {
 
 
     [ObservableProperty]
-    TrabajadorModel relevo = new();
-
-
-    [ObservableProperty]
     int sustiId;
-
-
-    [ObservableProperty]
-    TrabajadorModel susti = new();
 
 
     [ObservableProperty]
@@ -114,6 +130,7 @@ public partial class DiaModel : ModelBase {
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasNotas))]
     string notas;
 
 
@@ -126,7 +143,44 @@ public partial class DiaModel : ModelBase {
     // ====================================================================================================
 
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TextoRelevo))]
+    int matricula;
+
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TextoRelevo))]
+    string apellidos;
+
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TextoIncidencia))]
+    IncidenciaModel incidencia;
+
+
     public bool EsDiaPar => Fecha.Day % 2 == 0;
+
+
+    public string TextoRelevo => Matricula > 0 ? $"{Matricula}: {Apellidos}" : string.Empty;
+
+
+    public string TextoHoras => Inicio == Final ? string.Empty : $"{Inicio.ToTexto()} - {Final.ToTexto()}";
+
+
+    public bool HasNotas => !string.IsNullOrWhiteSpace(Notas);
+
+
+    public bool HayHoras => Acumuladas != 0 || Nocturnas > 0;
+
+
+    public string TextoIncidencia {
+        get {
+            if (string.IsNullOrEmpty(Linea) || string.IsNullOrEmpty(Servicio) || Turno == 0) {
+                return Incidencia.Descripcion;
+            }
+            return $"{Servicio} / {Turno} - {Linea} : {TextoLinea}";
+        }
+    }
 
 
     #endregion

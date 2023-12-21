@@ -35,14 +35,14 @@ public static class MauiProgram {
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<CalendarioPage>();
         builder.Services.AddTransient<DetalleDiaPage>();
-        //builder.Services.AddTransient<DiaTabPage>();
+        builder.Services.AddTransient<TrabajadoresPage>();
 
 
         // ViewModels
         builder.Services.AddSingleton<MainViewModel>();
         builder.Services.AddSingleton<CalendarioViewModel>();
         builder.Services.AddTransient<DetalleDiaViewModel>();
-        //builder.Services.AddTransient<DiaTabViewModel>();
+        builder.Services.AddTransient<TrabajadoresViewModel>();
 
 
 #if DEBUG

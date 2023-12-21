@@ -18,6 +18,9 @@ public class ServicioBaseEntity : EntityBase {
     public string Linea { get; set; }
 
 
+    public string TextoLinea { get; set; }
+
+
     public string Servicio { get; set; }
 
 

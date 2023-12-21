@@ -6,18 +6,7 @@
 // ===============================================
 #endregion
 
-using SQLite;
-
-namespace QuattroX.Data.Entities;
-
-
-/// <summary>
-/// Representa a un susti en un día.
-/// </summary>
-[Table(name: "Sustis")]
-public class SustiEntity : TrabajadorEntity {
-
-    public int DiaId { get; set; }
-
-
+namespace QuattroX.View.CustomViews {
+    public class CalendarioButton : Button {
+    }
 }

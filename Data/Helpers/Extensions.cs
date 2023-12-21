@@ -15,130 +15,6 @@ public static class Extensions {
 
 
     // ====================================================================================================
-    #region Trabajador
-    // ====================================================================================================
-
-
-    public static TrabajadorModel ToModel(this TrabajadorEntity entity) {
-        if (entity is null) return null;
-        var model = new TrabajadorModel {
-            Id = entity.Id,
-            Nombre = entity.Nombre,
-            Apellidos = entity.Apellidos,
-            Telefono = entity.Telefono,
-            Email = entity.Email,
-            Calificacion = entity.Calificacion,
-            DeudaInicial = entity.DeudaInicial,
-            Notas = entity.Notas,
-        };
-        model.Modified = false;
-        return model;
-    }
-
-
-    public static TrabajadorEntity ToEntity(this TrabajadorModel model) {
-        if (model is null) return null;
-        return new TrabajadorEntity {
-            Id = model.Id,
-            Nombre = model.Nombre,
-            Apellidos = model.Apellidos,
-            Telefono = model.Telefono,
-            Email = model.Email,
-            Calificacion = model.Calificacion,
-            DeudaInicial = model.DeudaInicial,
-            Notas = model.Notas,
-        };
-    }
-
-    #endregion
-    // ====================================================================================================
-
-
-    // ====================================================================================================
-    #region Relevo
-    // ====================================================================================================
-
-
-    public static RelevoModel ToModel(this RelevoEntity entity) {
-        if (entity is null) return null;
-        var model = new RelevoModel {
-            Id = entity.Id,
-            DiaId = entity.DiaId,
-            Nombre = entity.Nombre,
-            Apellidos = entity.Apellidos,
-            Telefono = entity.Telefono,
-            Email = entity.Email,
-            Calificacion = entity.Calificacion,
-            DeudaInicial = entity.DeudaInicial,
-            Notas = entity.Notas,
-        };
-        model.Modified = false;
-        return model;
-    }
-
-
-    public static RelevoEntity ToEntity(this RelevoModel model) {
-        if (model is null) return null;
-        return new RelevoEntity {
-            Id = model.Id,
-            DiaId = model.DiaId,
-            Nombre = model.Nombre,
-            Apellidos = model.Apellidos,
-            Telefono = model.Telefono,
-            Email = model.Email,
-            Calificacion = model.Calificacion,
-            DeudaInicial = model.DeudaInicial,
-            Notas = model.Notas,
-        };
-    }
-
-    #endregion
-    // ====================================================================================================
-
-
-    // ====================================================================================================
-    #region Susti
-    // ====================================================================================================
-
-
-    public static SustiModel ToModel(this SustiEntity entity) {
-        if (entity is null) return null;
-        var model = new SustiModel {
-            Id = entity.Id,
-            DiaId = entity.DiaId,
-            Nombre = entity.Nombre,
-            Apellidos = entity.Apellidos,
-            Telefono = entity.Telefono,
-            Email = entity.Email,
-            Calificacion = entity.Calificacion,
-            DeudaInicial = entity.DeudaInicial,
-            Notas = entity.Notas,
-        };
-        model.Modified = false;
-        return model;
-    }
-
-
-    public static SustiEntity ToEntity(this SustiModel model) {
-        if (model is null) return null;
-        return new SustiEntity {
-            Id = model.Id,
-            DiaId = model.DiaId,
-            Nombre = model.Nombre,
-            Apellidos = model.Apellidos,
-            Telefono = model.Telefono,
-            Email = model.Email,
-            Calificacion = model.Calificacion,
-            DeudaInicial = model.DeudaInicial,
-            Notas = model.Notas,
-        };
-    }
-
-    #endregion
-    // ====================================================================================================
-
-
-    // ====================================================================================================
     #region Línea
     // ====================================================================================================
 
@@ -149,7 +25,7 @@ public static class Extensions {
             Id = entity.Id,
             Linea = entity.Linea,
             Texto = entity.Texto,
-            Servicios = entity.Servicios.Select(s => s.ToModel()).ToObservableCollection(),
+            Servicios = entity.Servicios == null ? new() : entity.Servicios.ToModelObservable(),
         };
         model.Modified = false;
         return model;
@@ -162,8 +38,23 @@ public static class Extensions {
             Id = model.Id,
             Linea = model.Linea,
             Texto = model.Texto,
-            Servicios = model.Servicios.Select(s => s.ToEntity()).ToList(),
+            Servicios = model.Servicios == null ? new() : model.Servicios.ToEntity(),
         };
+    }
+
+
+    public static List<LineaModel> ToModel(this IEnumerable<LineaEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToList();
+    }
+
+
+    public static ObservableCollection<LineaModel> ToModelObservable(this IEnumerable<LineaEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToObservableCollection();
+    }
+
+
+    public static List<LineaEntity> ToEntity(this IEnumerable<LineaModel> lista) {
+        return lista.Select(item => item.ToEntity()).ToList();
     }
 
 
@@ -181,6 +72,7 @@ public static class Extensions {
         var model = new ServicioBaseModel {
             Id = entity.Id,
             Linea = entity.Linea,
+            TextoLinea = entity.TextoLinea,
             Servicio = entity.Servicio,
             Turno = entity.Turno,
             Inicio = entity.Inicio,
@@ -198,6 +90,7 @@ public static class Extensions {
         return new ServicioBaseEntity {
             Id = model.Id,
             Linea = model.Linea,
+            TextoLinea = model.TextoLinea,
             Servicio = model.Servicio,
             Turno = model.Turno,
             Inicio = model.Inicio,
@@ -205,6 +98,49 @@ public static class Extensions {
             LugarInicio = model.LugarInicio,
             LugarFinal = model.LugarFinal,
         };
+    }
+
+
+    public static void FromEntity(this ServicioBaseModel model, ServicioBaseEntity entity) {
+        if (model is null || entity is null) return;
+        model.Id = entity.Id;
+        model.Linea = entity.Linea;
+        model.TextoLinea = entity.TextoLinea;
+        model.Servicio = entity.Servicio;
+        model.Turno = entity.Turno;
+        model.Inicio = entity.Inicio;
+        model.Final = entity.Final;
+        model.LugarInicio = entity.LugarInicio;
+        model.LugarFinal = entity.LugarFinal;
+    }
+
+
+    public static void FromModel(this ServicioBaseEntity entity, ServicioBaseModel model) {
+        if (entity is null || model is null) return;
+        entity.Id = model.Id;
+        entity.Linea = model.Linea;
+        entity.TextoLinea = model.TextoLinea;
+        entity.Servicio = model.Servicio;
+        entity.Turno = model.Turno;
+        entity.Inicio = model.Inicio;
+        entity.Final = model.Final;
+        entity.LugarInicio = model.LugarInicio;
+        entity.LugarFinal = model.LugarFinal;
+    }
+
+
+    public static List<ServicioBaseModel> ToModel(this IEnumerable<ServicioBaseEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToList();
+    }
+
+
+    public static ObservableCollection<ServicioBaseModel> ToModelObservable(this IEnumerable<ServicioBaseEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToObservableCollection();
+    }
+
+
+    public static List<ServicioBaseEntity> ToEntity(this IEnumerable<ServicioBaseModel> lista) {
+        return lista.Select(item => item.ToEntity()).ToList();
     }
 
 
@@ -223,13 +159,14 @@ public static class Extensions {
             Id = entity.Id,
             LineaId = entity.LineaId,
             Linea = entity.Linea,
+            TextoLinea = entity.TextoLinea,
             Servicio = entity.Servicio,
             Turno = entity.Turno,
             Inicio = entity.Inicio,
             Final = entity.Final,
             LugarInicio = entity.LugarInicio,
             LugarFinal = entity.LugarFinal,
-            Servicios = entity.Servicios.Select(s => s.ToModel()).ToObservableCollection(),
+            Servicios = entity.Servicios == null ? new() : entity.Servicios.ToModelObservable(),
         };
         model.Modified = false;
         return model;
@@ -242,14 +179,30 @@ public static class Extensions {
             Id = model.Id,
             LineaId = model.LineaId,
             Linea = model.Linea,
+            TextoLinea = model.TextoLinea,
             Servicio = model.Servicio,
             Turno = model.Turno,
             Inicio = model.Inicio,
             Final = model.Final,
             LugarInicio = model.LugarInicio,
             LugarFinal = model.LugarFinal,
-            Servicios = model.Servicios.Select(s => s.ToEntity()).ToList(),
+            Servicios = model.Servicios == null ? new() : model.Servicios.ToEntity(),
         };
+    }
+
+
+    public static List<ServicioLineaModel> ToModel(this IEnumerable<ServicioLineaEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToList();
+    }
+
+
+    public static ObservableCollection<ServicioLineaModel> ToModelObservable(this IEnumerable<ServicioLineaEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToObservableCollection();
+    }
+
+
+    public static List<ServicioLineaEntity> ToEntity(this IEnumerable<ServicioLineaModel> lista) {
+        return lista.Select(item => item.ToEntity()).ToList();
     }
 
 
@@ -268,6 +221,7 @@ public static class Extensions {
             Id = entity.Id,
             DiaId = entity.DiaId,
             Linea = entity.Linea,
+            TextoLinea = entity.TextoLinea,
             Servicio = entity.Servicio,
             Turno = entity.Turno,
             Inicio = entity.Inicio,
@@ -286,6 +240,7 @@ public static class Extensions {
             Id = model.Id,
             DiaId = model.DiaId,
             Linea = model.Linea,
+            TextoLinea = model.TextoLinea,
             Servicio = model.Servicio,
             Turno = model.Turno,
             Inicio = model.Inicio,
@@ -296,46 +251,18 @@ public static class Extensions {
     }
 
 
-    #endregion
-    // ====================================================================================================
-
-
-    // ====================================================================================================
-    #region ServicioSecundarioDia
-    // ====================================================================================================
-
-
-    public static ServicioSecundarioDiaModel ToModel(this ServicioSecundarioDiaEntity entity) {
-        if (entity is null) return null;
-        var model = new ServicioSecundarioDiaModel {
-            Id = entity.Id,
-            DiaId = entity.DiaId,
-            Linea = entity.Linea,
-            Servicio = entity.Servicio,
-            Turno = entity.Turno,
-            Inicio = entity.Inicio,
-            Final = entity.Final,
-            LugarInicio = entity.LugarInicio,
-            LugarFinal = entity.LugarFinal,
-        };
-        model.Modified = false;
-        return model;
+    public static List<ServicioDiaModel> ToModel(this IEnumerable<ServicioDiaEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToList();
     }
 
 
-    public static ServicioSecundarioDiaEntity ToEntity(this ServicioSecundarioDiaModel model) {
-        if (model is null) return null;
-        return new ServicioSecundarioDiaEntity {
-            Id = model.Id,
-            DiaId = model.DiaId,
-            Linea = model.Linea,
-            Servicio = model.Servicio,
-            Turno = model.Turno,
-            Inicio = model.Inicio,
-            Final = model.Final,
-            LugarInicio = model.LugarInicio,
-            LugarFinal = model.LugarFinal,
-        };
+    public static ObservableCollection<ServicioDiaModel> ToModelObservable(this IEnumerable<ServicioDiaEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToObservableCollection();
+    }
+
+
+    public static List<ServicioDiaEntity> ToEntity(this IEnumerable<ServicioDiaModel> lista) {
+        return lista.Select(item => item.ToEntity()).ToList();
     }
 
 
@@ -354,6 +281,7 @@ public static class Extensions {
             Id = entity.Id,
             ServicioId = entity.ServicioId,
             Linea = entity.Linea,
+            TextoLinea = entity.TextoLinea,
             Servicio = entity.Servicio,
             Turno = entity.Turno,
             Inicio = entity.Inicio,
@@ -372,6 +300,7 @@ public static class Extensions {
             Id = model.Id,
             ServicioId = model.ServicioId,
             Linea = model.Linea,
+            TextoLinea = model.TextoLinea,
             Servicio = model.Servicio,
             Turno = model.Turno,
             Inicio = model.Inicio,
@@ -379,6 +308,21 @@ public static class Extensions {
             LugarInicio = model.LugarInicio,
             LugarFinal = model.LugarFinal,
         };
+    }
+
+
+    public static List<ServicioSecundarioModel> ToModel(this IEnumerable<ServicioSecundarioEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToList();
+    }
+
+
+    public static ObservableCollection<ServicioSecundarioModel> ToModelObservable(this IEnumerable<ServicioSecundarioEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToObservableCollection();
+    }
+
+
+    public static List<ServicioSecundarioEntity> ToEntity(this IEnumerable<ServicioSecundarioModel> lista) {
+        return lista.Select(item => item.ToEntity()).ToList();
     }
 
 
@@ -415,38 +359,27 @@ public static class Extensions {
     }
 
 
-    #endregion
-    // ====================================================================================================
-
-
-    // ====================================================================================================
-    #region IncidenciaDia
-    // ====================================================================================================
-
-
-    public static IncidenciaDiaModel ToModel(this IncidenciaDiaEntity entity) {
-        if (entity is null) return null;
-        var model = new IncidenciaDiaModel {
-            Id = entity.Id,
-            DiaId = entity.DiaId,
-            Tipo = entity.Tipo,
-            Codigo = entity.Codigo,
-            Descripcion = entity.Descripcion,
-        };
-        model.Modified = false;
-        return model;
+    public static void FromModel(this IncidenciaModel model, IncidenciaModel newModel) {
+        if (model is null || newModel is null) return;
+        model.Id = newModel.Id;
+        model.Tipo = newModel.Tipo;
+        model.Codigo = newModel.Codigo;
+        model.Descripcion = newModel.Descripcion;
     }
 
 
-    public static IncidenciaDiaEntity ToEntity(this IncidenciaDiaModel model) {
-        if (model is null) return null;
-        return new IncidenciaDiaEntity {
-            Id = model.Id,
-            DiaId = model.DiaId,
-            Tipo = model.Tipo,
-            Codigo = model.Codigo,
-            Descripcion = model.Descripcion,
-        };
+    public static List<IncidenciaModel> ToModel(this IEnumerable<IncidenciaEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToList();
+    }
+
+
+    public static ObservableCollection<IncidenciaModel> ToModelObservable(this IEnumerable<IncidenciaEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToObservableCollection();
+    }
+
+
+    public static List<IncidenciaEntity> ToEntity(this IEnumerable<IncidenciaModel> lista) {
+        return lista.Select(item => item.ToEntity()).ToList();
     }
 
 
@@ -463,7 +396,7 @@ public static class Extensions {
         if (entity is null) return null;
         var model = new RegulacionModel {
             Id = entity.Id,
-            DiaId = entity.DiaId,
+            Fecha = entity.Fecha,
             Tipo = entity.Tipo,
             Horas = entity.Horas,
             Motivo = entity.Motivo,
@@ -477,11 +410,26 @@ public static class Extensions {
         if (model is null) return null;
         return new RegulacionEntity {
             Id = model.Id,
-            DiaId = model.DiaId,
+            Fecha = model.Fecha,
             Tipo = model.Tipo,
             Horas = model.Horas,
             Motivo = model.Motivo,
         };
+    }
+
+
+    public static List<RegulacionModel> ToModel(this IEnumerable<RegulacionEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToList();
+    }
+
+
+    public static ObservableCollection<RegulacionModel> ToModelObservable(this IEnumerable<RegulacionEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToObservableCollection();
+    }
+
+
+    public static List<RegulacionEntity> ToEntity(this IEnumerable<RegulacionModel> lista) {
+        return lista.Select(item => item.ToEntity()).ToList();
     }
 
 
@@ -502,11 +450,15 @@ public static class Extensions {
             EsFranqueo = entity.EsFranqueo,
             EsFestivo = entity.EsFestivo,
             IncidenciaId = entity.IncidenciaId,
-            Incidencia = entity.Incidencia is null ? null : entity.Incidencia.ToModel(),
-            ServicioPrincipalId = entity.ServicioPrincipalId,
-            ServicioPrincipal = entity.ServicioPrincipal is null ? null : entity.ServicioPrincipal.ToModel(),
-            Servicios = entity.Servicios is null ? null : entity.Servicios.Select(s => s.ToModel()).ToObservableCollection(),
-            Regulaciones = entity.Regulaciones is null ? null : entity.Regulaciones.Select(s => s.ToModel()).ToObservableCollection(),
+            Linea = entity.Linea,
+            TextoLinea = entity.TextoLinea,
+            Servicio = entity.Servicio,
+            Turno = entity.Turno,
+            Inicio = entity.Inicio,
+            Final = entity.Final,
+            LugarInicio = entity.LugarInicio,
+            LugarFinal = entity.LugarFinal,
+            Servicios = entity.Servicios is null ? new() : entity.Servicios.ToModelObservable(),
             Trabajadas = entity.Trabajadas,
             Acumuladas = entity.Acumuladas,
             Nocturnas = entity.Nocturnas,
@@ -518,9 +470,7 @@ public static class Extensions {
             HuelgaParcial = entity.HuelgaParcial,
             HorasHuelga = entity.HorasHuelga,
             RelevoId = entity.RelevoId,
-            Relevo = entity.Relevo is null ? null : entity.Relevo.ToModel(),
             SustiId = entity.SustiId,
-            Susti = entity.Susti is null ? null : entity.Susti.ToModel(),
             Bus = entity.Bus,
             Notas = entity.Notas,
         };
@@ -537,11 +487,15 @@ public static class Extensions {
             EsFranqueo = model.EsFranqueo,
             EsFestivo = model.EsFestivo,
             IncidenciaId = model.IncidenciaId,
-            Incidencia = model.Incidencia is null ? null : model.Incidencia.ToEntity(),
-            ServicioPrincipalId = model.ServicioPrincipalId,
-            ServicioPrincipal = model.ServicioPrincipal is null ? null : model.ServicioPrincipal.ToEntity(),
-            Servicios = model.Servicios is null ? null : model.Servicios.Select(s => s.ToEntity()).ToList(),
-            Regulaciones = model.Regulaciones is null ? null : model.Regulaciones.Select(s => s.ToEntity()).ToList(),
+            Linea = model.Linea,
+            TextoLinea = model.TextoLinea,
+            Servicio = model.Servicio,
+            Turno = model.Turno,
+            Inicio = model.Inicio,
+            Final = model.Final,
+            LugarInicio = model.LugarInicio,
+            LugarFinal = model.LugarFinal,
+            Servicios = model.Servicios is null ? new() : model.Servicios.ToEntity(),
             Trabajadas = model.Trabajadas,
             Acumuladas = model.Acumuladas,
             Nocturnas = model.Nocturnas,
@@ -553,41 +507,10 @@ public static class Extensions {
             HuelgaParcial = model.HuelgaParcial,
             HorasHuelga = model.HorasHuelga,
             RelevoId = model.RelevoId,
-            Relevo = model.Relevo is null ? null : model.Relevo.ToEntity(),
             SustiId = model.SustiId,
-            Susti = model.Susti is null ? null : model.Susti.ToEntity(),
             Bus = model.Bus,
             Notas = model.Notas,
         };
-    }
-
-
-    public static void Vaciar(this DiaModel model) {
-        if (model is null) return;
-        model.EsFranqueo = false;
-        model.EsFestivo = false;
-        model.IncidenciaId = 0;
-        model.Incidencia = null;
-        model.ServicioPrincipalId = 0;
-        model.ServicioPrincipal = null;
-        model.Servicios = new();
-        model.Regulaciones = new();
-        model.Trabajadas = 0m;
-        model.Acumuladas = 0m;
-        model.Nocturnas = 0m;
-        model.Desayuno = false;
-        model.Comida = false;
-        model.Cena = false;
-        model.TomaDeje = 0m;
-        model.Euros = 0m;
-        model.HuelgaParcial = false;
-        model.HorasHuelga = 0m;
-        model.RelevoId = 0;
-        model.Relevo = null;
-        model.SustiId = 0;
-        model.Susti = null;
-        model.Bus = string.Empty;
-        model.Notas = string.Empty;
     }
 
 
@@ -598,11 +521,15 @@ public static class Extensions {
         model.EsFranqueo = entity.EsFranqueo;
         model.EsFestivo = entity.EsFestivo;
         model.IncidenciaId = entity.IncidenciaId;
-        model.Incidencia = entity.Incidencia is null ? null : entity.Incidencia.ToModel();
-        model.ServicioPrincipalId = entity.ServicioPrincipalId;
-        model.ServicioPrincipal = entity.ServicioPrincipal is null ? null : entity.ServicioPrincipal.ToModel();
-        model.Servicios = entity.Servicios is null ? null : entity.Servicios.Select(s => s.ToModel()).ToObservableCollection();
-        model.Regulaciones = entity.Regulaciones is null ? null : entity.Regulaciones.Select(s => s.ToModel()).ToObservableCollection();
+        model.Linea = entity.Linea;
+        model.TextoLinea = entity.TextoLinea;
+        model.Servicio = entity.Servicio;
+        model.Turno = entity.Turno;
+        model.Inicio = entity.Inicio;
+        model.Final = entity.Final;
+        model.LugarInicio = entity.LugarInicio;
+        model.LugarFinal = entity.LugarFinal;
+        model.Servicios = entity.Servicios is null ? new() : entity.Servicios.ToModelObservable();
         model.Trabajadas = entity.Trabajadas;
         model.Acumuladas = entity.Acumuladas;
         model.Nocturnas = entity.Nocturnas;
@@ -614,11 +541,122 @@ public static class Extensions {
         model.HuelgaParcial = entity.HuelgaParcial;
         model.HorasHuelga = entity.HorasHuelga;
         model.RelevoId = entity.RelevoId;
-        model.Relevo = entity.Relevo is null ? null : entity.Relevo.ToModel();
         model.SustiId = entity.SustiId;
-        model.Susti = entity.Susti is null ? null : entity.Susti.ToModel();
         model.Bus = entity.Bus;
         model.Notas = entity.Notas;
+    }
+
+
+    public static void FromModel(this DiaModel model, DiaModel newModel) {
+        if (model is null || newModel is null) return;
+        model.Id = newModel.Id;
+        model.Fecha = newModel.Fecha;
+        model.EsFranqueo = newModel.EsFranqueo;
+        model.EsFestivo = newModel.EsFestivo;
+        model.IncidenciaId = newModel.IncidenciaId;
+        model.Linea = newModel.Linea;
+        model.TextoLinea = newModel.TextoLinea;
+        model.Servicio = newModel.Servicio;
+        model.Turno = newModel.Turno;
+        model.Inicio = newModel.Inicio;
+        model.Final = newModel.Final;
+        model.LugarInicio = newModel.LugarInicio;
+        model.LugarFinal = newModel.LugarFinal;
+        model.Servicios = newModel.Servicios is null ? new() : newModel.Servicios.ToObservableCollection();
+        model.Trabajadas = newModel.Trabajadas;
+        model.Acumuladas = newModel.Acumuladas;
+        model.Nocturnas = newModel.Nocturnas;
+        model.Desayuno = newModel.Desayuno;
+        model.Comida = newModel.Comida;
+        model.Cena = newModel.Cena;
+        model.TomaDeje = newModel.TomaDeje;
+        model.Euros = newModel.Euros;
+        model.HuelgaParcial = newModel.HuelgaParcial;
+        model.HorasHuelga = newModel.HorasHuelga;
+        model.RelevoId = newModel.RelevoId;
+        model.SustiId = newModel.SustiId;
+        model.Bus = newModel.Bus;
+        model.Notas = newModel.Notas;
+        model.Matricula = newModel.Matricula;
+        model.Apellidos = newModel.Apellidos;
+    }
+
+
+    public static void FromServicioEntity(this DiaModel model, ServicioBaseEntity entity) {
+        if (model is null || entity is null) return;
+        model.Id = entity.Id;
+        model.Linea = entity.Linea;
+        model.TextoLinea = entity.TextoLinea;
+        model.Servicio = entity.Servicio;
+        model.Turno = entity.Turno;
+        model.Inicio = entity.Inicio;
+        model.Final = entity.Final;
+        model.LugarInicio = entity.LugarInicio;
+        model.LugarFinal = entity.LugarFinal;
+    }
+
+
+    public static void FromServicioModel(this DiaEntity entity, ServicioBaseModel model) {
+        if (entity is null || model is null) return;
+        entity.Id = model.Id;
+        entity.Linea = model.Linea;
+        entity.TextoLinea = model.TextoLinea;
+        entity.Servicio = model.Servicio;
+        entity.Turno = model.Turno;
+        entity.Inicio = model.Inicio;
+        entity.Final = model.Final;
+        entity.LugarInicio = model.LugarInicio;
+        entity.LugarFinal = model.LugarFinal;
+    }
+
+
+    /// <summary>
+    /// Pone a cero todos los valores del día, manteniendo Id y Fecha intactas.
+    /// </summary>
+    public static void Vaciar(this DiaModel model) {
+        if (model is null) return;
+        model.EsFranqueo = false;
+        model.EsFestivo = false;
+        model.IncidenciaId = 0;
+        model.Linea = string.Empty;
+        model.TextoLinea = string.Empty;
+        model.Servicio = string.Empty;
+        model.Turno = 0;
+        model.Inicio = TimeSpan.Zero;
+        model.Final = TimeSpan.Zero;
+        model.LugarInicio = string.Empty;
+        model.LugarFinal = string.Empty;
+        model.Servicios = new();
+        model.Trabajadas = 0m;
+        model.Acumuladas = 0m;
+        model.Nocturnas = 0m;
+        model.Desayuno = false;
+        model.Comida = false;
+        model.Cena = false;
+        model.TomaDeje = 0m;
+        model.Euros = 0m;
+        model.HuelgaParcial = false;
+        model.HorasHuelga = 0m;
+        model.RelevoId = 0;
+        model.SustiId = 0;
+        model.Bus = string.Empty;
+        model.Notas = string.Empty;
+
+    }
+
+
+    public static List<DiaModel> ToModel(this IEnumerable<DiaEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToList();
+    }
+
+
+    public static ObservableCollection<DiaModel> ToModelObservable(this IEnumerable<DiaEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToObservableCollection();
+    }
+
+
+    public static List<DiaEntity> ToEntity(this IEnumerable<DiaModel> lista) {
+        return lista.Select(item => item.ToEntity()).ToList();
     }
 
 
@@ -662,6 +700,79 @@ public static class Extensions {
             Euros = model.Euros,
             Regulaciones = model.Regulaciones,
         };
+    }
+
+
+    public static List<ResumenModel> ToModel(this IEnumerable<ResumenEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToList();
+    }
+
+
+    public static ObservableCollection<ResumenModel> ToModelObservable(this IEnumerable<ResumenEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToObservableCollection();
+    }
+
+
+    public static List<ResumenEntity> ToEntity(this IEnumerable<ResumenModel> lista) {
+        return lista.Select(item => item.ToEntity()).ToList();
+    }
+
+
+    #endregion
+    // ====================================================================================================
+
+
+    // ====================================================================================================
+    #region Trabajador
+    // ====================================================================================================
+
+
+    public static TrabajadorModel ToModel(this TrabajadorEntity entity) {
+        if (entity is null) return null;
+        var model = new TrabajadorModel {
+            Id = entity.Id,
+            Matricula = entity.Matricula,
+            Nombre = entity.Nombre,
+            Apellidos = entity.Apellidos,
+            Telefono = entity.Telefono,
+            Email = entity.Email,
+            Calificacion = entity.Calificacion,
+            DeudaInicial = entity.DeudaInicial,
+            Notas = entity.Notas,
+        };
+        model.Modified = false;
+        return model;
+    }
+
+
+    public static TrabajadorEntity ToEntity(this TrabajadorModel model) {
+        if (model is null) return null;
+        return new TrabajadorEntity {
+            Id = model.Id,
+            Matricula = model.Matricula,
+            Nombre = model.Nombre,
+            Apellidos = model.Apellidos,
+            Telefono = model.Telefono,
+            Email = model.Email,
+            Calificacion = model.Calificacion,
+            DeudaInicial = model.DeudaInicial,
+            Notas = model.Notas,
+        };
+    }
+
+
+    public static List<TrabajadorModel> ToModel(this IEnumerable<TrabajadorEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToList();
+    }
+
+
+    public static ObservableCollection<TrabajadorModel> ToModelObservable(this IEnumerable<TrabajadorEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToObservableCollection();
+    }
+
+
+    public static List<TrabajadorEntity> ToEntity(this IEnumerable<TrabajadorModel> lista) {
+        return lista.Select(item => item.ToEntity()).ToList();
     }
 
 
@@ -725,6 +836,21 @@ public static class Extensions {
             FechaReferenciaTurnos = model.FechaReferenciaTurnos,
             AcumularTomaDeje = model.AcumularTomaDeje,
         };
+    }
+
+
+    public static List<OpcionesModel> ToModel(this IEnumerable<OpcionesEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToList();
+    }
+
+
+    public static ObservableCollection<OpcionesModel> ToModelObservable(this IEnumerable<OpcionesEntity> lista) {
+        return lista.Select(item => item.ToModel()).ToObservableCollection();
+    }
+
+
+    public static List<OpcionesEntity> ToEntity(this IEnumerable<OpcionesModel> lista) {
+        return lista.Select(item => item.ToEntity()).ToList();
     }
 
 

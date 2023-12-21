@@ -48,6 +48,15 @@ public class CalculosService {
     /// Si el día tiene servicios auxiliares, se calcula en función a estos, incluido el principal.
     /// </summary>
     public void CalcularHoras(DiaModel dia) {
+        if (dia.Inicio == dia.Final || dia.Turno == 0) {
+            dia.Trabajadas = 0m;
+            dia.Acumuladas = 0m;
+            dia.Nocturnas = 0m;
+            dia.Desayuno = false;
+            dia.Comida = false;
+            dia.Cena = false;
+            return;
+        }
         if (dia.Servicios?.Any() == true) {
             CalcularHorasCompleto(dia);
             return;
@@ -72,6 +81,20 @@ public class CalculosService {
     }
 
 
+    public decimal GetTrabajadasConvenio(TipoIncidencia tipoIncidencia) {
+        return tipoIncidencia switch {
+            TipoIncidencia.Trabajo => configService.Opciones.JornadaMedia,
+            TipoIncidencia.TrabajoSinAcumular => configService.Opciones.JornadaMedia,
+            TipoIncidencia.FranqueoTrabajado => configService.Opciones.JornadaMedia,
+            TipoIncidencia.FiestaPorOtroDia => 0m,
+            TipoIncidencia.Franqueo => 0m,
+            TipoIncidencia.Huelga => configService.Opciones.JornadaMedia,
+            TipoIncidencia.JornadaMedia => configService.Opciones.JornadaMedia,
+            TipoIncidencia.Ninguna => 0m,
+            _ => 0m,
+        };
+    }
+
     #endregion
     // ====================================================================================================
 
@@ -86,8 +109,8 @@ public class CalculosService {
     /// </summary>
     private void CalcularHorasSingle(DiaModel dia) {
         // Horas de inicio y final
-        var horaInicio = dia.ServicioPrincipal.Inicio;
-        var horaFinal = dia.ServicioPrincipal.Final < dia.ServicioPrincipal.Inicio ? dia.ServicioPrincipal.Final + TimeSpan.FromDays(1) : dia.ServicioPrincipal.Final;
+        var horaInicio = dia.Inicio;
+        var horaFinal = dia.Final < dia.Inicio ? dia.Final + TimeSpan.FromDays(1) : dia.Final;
         // Horas trabajadas.
         dia.Trabajadas = (horaFinal - horaInicio).ToDecimal();
         if (dia.Trabajadas < configService.Opciones.JornadaMinima) dia.Trabajadas = configService.Opciones.JornadaMinima;
@@ -95,20 +118,20 @@ public class CalculosService {
         dia.Acumuladas = GetAcumuladas(dia.Trabajadas, dia.Incidencia.Tipo);
         // Horas nocturnas.
         dia.Nocturnas = 0m;
-        if (dia.ServicioPrincipal.Turno == 1) {
+        if (dia.Turno == 1) {
             dia.Nocturnas += (horaInicio < configService.Opciones.FinalNocturnas ? configService.Opciones.FinalNocturnas - horaInicio : TimeSpan.Zero).ToDecimal();
         }
-        if (dia.ServicioPrincipal.Turno == 2) {
+        if (dia.Turno == 2) {
             dia.Nocturnas += (horaFinal > configService.Opciones.InicioNocturnas ? horaFinal - configService.Opciones.InicioNocturnas : TimeSpan.Zero).ToDecimal();
         }
         // Dieta de desayuno.
         dia.Desayuno = horaInicio < configService.Opciones.HoraLimiteDesayuno;
         // Dieta de comida.
         dia.Comida = false;
-        if (dia.ServicioPrincipal.Turno == 1) {
+        if (dia.Turno == 1) {
             dia.Comida = horaFinal > configService.Opciones.HoraLimiteComida1;
         }
-        if (dia.ServicioPrincipal.Turno == 2) {
+        if (dia.Turno == 2) {
             dia.Comida = horaInicio < configService.Opciones.HoraLimiteComida2;
         }
         // Dieta de cena.
@@ -127,7 +150,7 @@ public class CalculosService {
             Inicio = s.Inicio.ToDecimal(),
             Final = (s.Final < s.Inicio ? s.Final + TimeSpan.FromDays(1) : s.Final).ToDecimal()
         }).ToList();
-        servicios.Add(new { Inicio = dia.ServicioPrincipal.Inicio.ToDecimal(), Final = dia.ServicioPrincipal.Final.ToDecimal() });
+        servicios.Add(new { Inicio = dia.Inicio.ToDecimal(), Final = dia.Final.ToDecimal() });
         // Definimos las variables en local para acortar nombres
         var jornada = configService.Opciones.JornadaMedia;
         var jornadaMinima = configService.Opciones.JornadaMinima;
@@ -167,7 +190,7 @@ public class CalculosService {
                     if (minutoActual > hora.Inicio && minutoActual <= hora.Final) {
                         minutosTrabajados += 0.01m;
                         // Evaluamos si hay alguna dieta.
-                        switch (dia.ServicioPrincipal.Turno) {
+                        switch (dia.Turno) {
                             case 1:
                                 if (minutoActual < desayuno) dietaDesayuno = true;
                                 if (minutoActual > comida1) dietaComida = true;

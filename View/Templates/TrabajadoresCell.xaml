@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  ===========================================================================================  -->
+<!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
+<!--  ===========================================================================================  -->
+<DataTemplate
+    x:Class="QuattroX.View.Templates.TrabajadoresCell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:cnv="clr-namespace:QuattroX.View.Converters"
+    xmlns:customView="clr-namespace:QuattroX.View.CustomViews"
+    xmlns:enums="clr-namespace:QuattroX.Data.Enums"
+    xmlns:model="clr-namespace:QuattroX.Data.Model"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:QuattroX.ViewModel"
+    x:DataType="model:TrabajadorModel">
+
+    <SwipeView android:SwipeView.SwipeTransitionMode="Reveal">
+        <SwipeView.Resources>
+            <cnv:IndexToColorConverter
+                x:Key="indexToColorConverter"
+                ColorImpar="GhostWhite"
+                ColorPar="AntiqueWhite" />
+        </SwipeView.Resources>
+
+        <SwipeView.LeftItems>
+            <SwipeItems Mode="Execute">
+                <SwipeItemView
+                    BackgroundColor="#56acff"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=DesactivarSeleccionCommand}"
+                    CommandParameter="{Binding .}">
+                    <Label
+                        Margin="0"
+                        Padding="10,5"
+                        FontFamily="Material"
+                        FontSize="Title"
+                        HorizontalOptions="Fill"
+                        HorizontalTextAlignment="Start"
+                        Text="&#xEAE3;"
+                        TextColor="GhostWhite"
+                        VerticalOptions="Center"
+                        WidthRequest="125" />
+                </SwipeItemView>
+            </SwipeItems>
+        </SwipeView.LeftItems>
+
+        <SwipeView.RightItems>
+            <SwipeItems Mode="Execute">
+                <SwipeItem
+                    BackgroundColor="DarkRed"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=DesactivarSeleccionCommand}"
+                    CommandParameter="{Binding .}"
+                    Text="Borrar">
+                    <SwipeItem.IconImageSource>
+                        <FontImageSource
+                            FontFamily="Material"
+                            Glyph="&#x39d;" />
+                    </SwipeItem.IconImageSource>
+                </SwipeItem>
+            </SwipeItems>
+        </SwipeView.RightItems>
+
+        <customView:TrabajadorCellBorder
+            x:Name="Marco"
+            Margin="2,0,4,5"
+            BackgroundColor="{Binding RowIndex, Converter={StaticResource indexToColorConverter}}"
+            StrokeShape="RoundRectangle, 5,5,5,5">
+
+            <customView:TrabajadorCellBorder.Shadow>
+                <Shadow
+                    Brush="DimGray"
+                    Opacity="0.5"
+                    Radius="12"
+                    Offset="2,2" />
+            </customView:TrabajadorCellBorder.Shadow>
+
+            <Grid
+                ColumnDefinitions="Auto,*"
+                RowDefinitions="*,*">
+
+                <!--  NOTA DE ESTE BOTÓN  -->
+                <!--  ==================  -->
+                <!--  Este botón está encima de todos los controles para gestionar el evento Click a través del comando del propio botón  -->
+                <!--  y para gestionar el evento LongClick a través del Handler que se modifica en el viewmodel.  -->
+                <customView:TrabajadorButton
+                    Grid.RowSpan="2"
+                    Grid.ColumnSpan="2"
+                    Background="Transparent"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=AbrirDiaCommand}"
+                    CommandParameter="{Binding .}"
+                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=IsNotSelectionMode}" />
+
+                <!--  Matrícula  -->
+                <Label
+                    Grid.Row="0"
+                    Grid.RowSpan="3"
+                    Grid.Column="0"
+                    Margin="5,0,15,0"
+                    Padding="5"
+                    FontFamily="Consolas"
+                    FontSize="Title"
+                    HorizontalOptions="Center"
+                    Text="{Binding Matricula}"
+                    VerticalOptions="Center" />
+
+                <!--  Nombre y apellidos  -->
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="5"
+                    FontAttributes="Bold"
+                    FontSize="Micro"
+                    HorizontalOptions="Start"
+                    Text="{Binding NombreCompleto}"
+                    VerticalOptions="Center" />
+
+                <!--  Calificación  -->
+                <Label
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Grid.Column="1"
+                    Margin="10"
+                    FontAttributes="Bold"
+                    FontFamily="Material"
+                    FontSize="Medium"
+                    HorizontalOptions="End"
+                    VerticalOptions="Center">
+                    <Label.Triggers>
+                        <DataTrigger
+                            Binding="{Binding Calificacion}"
+                            TargetType="Label"
+                            Value="{x:Static enums:CalificacionTrabajador.Buena}">
+                            <Setter Property="Text" Value="&#xEBBB;" />
+                            <Setter Property="TextColor" Value="DarkGreen" />
+                        </DataTrigger>
+                        <DataTrigger
+                            Binding="{Binding Calificacion}"
+                            TargetType="Label"
+                            Value="{x:Static enums:CalificacionTrabajador.Mala}">
+                            <Setter Property="Text" Value="&#xEBBA;" />
+                            <Setter Property="TextColor" Value="DarkRed" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+
+                <!--  Notas y deuda  -->
+                <HorizontalStackLayout
+                    Grid.Row="1"
+                    Grid.Column="1">
+
+                    <!--  Notas  -->
+                    <Label
+                        Margin="5"
+                        FontFamily="Material"
+                        FontSize="Small"
+                        HorizontalOptions="Center"
+                        Text="&#xEE4C;"
+                        TextColor="Goldenrod"
+                        VerticalOptions="Center" />
+
+                    <!--  Deuda  -->
+                    <Label
+                        Margin="5"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="Me debe un día"
+                        TextColor="DarkGreen"
+                        VerticalOptions="Center" />
+
+                </HorizontalStackLayout>
+
+            </Grid>
+
+        </customView:TrabajadorCellBorder>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup Name="CommonStates">
+                <VisualState Name="Normal">
+                    <VisualState.Setters>
+                        <Setter Property="BackgroundColor" Value="Transparent" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState Name="Selected">
+                    <VisualState.Setters>
+                        <Setter Property="BackgroundColor" Value="Transparent" />
+                        <Setter TargetName="Marco" Property="BackgroundColor" Value="BurlyWood" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </SwipeView>
+
+</DataTemplate>

@@ -8,8 +8,11 @@
 using QuattroX.Data.Entities;
 using QuattroX.Data.Enums;
 using QuattroX.Data.Helpers;
+using QuattroX.Data.Messages;
 using QuattroX.Data.Model;
 using QuattroX.Data.Repositories;
+using QuattroX.Services;
+
 #if IOS
 using UIKit;
 #endif
@@ -28,11 +31,15 @@ public partial class CalendarioViewModel : BaseViewModel {
     // ====================================================================================================
 
     private readonly DbRepository dbRepository;
+    private readonly ConfigService configService;
+    private readonly CalculosService calculosService;
 
-    private DiaEntity diaCopiado;
+    private DiaModel diaCopiado;
 
-    public CalendarioViewModel(DbRepository dbRepository) {
+    public CalendarioViewModel(DbRepository dbRepository, ConfigService configService, CalculosService calculosService) {
         this.dbRepository = dbRepository;
+        this.configService = configService;
+        this.calculosService = calculosService;
         Title = "Calendario";
 
         DiasSeleccionados.CollectionChanged += (sender, e) => {
@@ -46,7 +53,11 @@ public partial class CalendarioViewModel : BaseViewModel {
             OnPropertyChanged(nameof(OnlyOneItemSelected));
         };
 
+        // Responde a la petición de recalcular el resumen.
+        Messenger.Register<CalcularResumenRequest>(this, async (r, m) => await CalcularResumen());
+
         HandlerLongPress();
+
     }
 
     #endregion
@@ -68,11 +79,34 @@ public partial class CalendarioViewModel : BaseViewModel {
 
 
     [ObservableProperty]
-    ResumenModel resumen;
+    [NotifyPropertyChangedFor(nameof(AcumuladasHastaMes))]
+    [NotifyPropertyChangedFor(nameof(NocturnasHastaMes))]
+    [NotifyPropertyChangedFor(nameof(TrabajadasHastaMes))]
+    [NotifyPropertyChangedFor(nameof(TrabajadasConvenioHastaMes))]
+    [NotifyPropertyChangedFor(nameof(EurosHastaMes))]
+    [NotifyPropertyChangedFor(nameof(TomaDejeHastaMes))]
+    [NotifyPropertyChangedFor(nameof(RegulacionesHastaMes))]
+    ResumenModel resumenMes;
+
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AcumuladasHastaMes))]
+    [NotifyPropertyChangedFor(nameof(NocturnasHastaMes))]
+    [NotifyPropertyChangedFor(nameof(TrabajadasHastaMes))]
+    [NotifyPropertyChangedFor(nameof(TrabajadasConvenioHastaMes))]
+    [NotifyPropertyChangedFor(nameof(EurosHastaMes))]
+    [NotifyPropertyChangedFor(nameof(TomaDejeHastaMes))]
+    [NotifyPropertyChangedFor(nameof(RegulacionesHastaMes))]
+    ResumenModel resumenHastaMes;
 
 
     [ObservableProperty]
     List<IncidenciaModel> incidencias;
+
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AcumuladasHastaMes))]
+    List<RegulacionModel> regulaciones;
 
 
     // Propiedades que gestionan la selección
@@ -96,6 +130,43 @@ public partial class CalendarioViewModel : BaseViewModel {
     public bool OnlyOneItemSelected => IsSelectionMode && (DiasSeleccionados?.Count == 1) == true;
 
 
+    public decimal AcumuladasHastaMes =>
+        (configService?.Opciones?.AcumuladasAnteriores ?? 0m) +
+        (ResumenHastaMes?.Acumuladas ?? 0m) +
+        (ResumenHastaMes?.Regulaciones ?? 0m) +
+        (ResumenMes?.Acumuladas ?? 0m) +
+        (ResumenMes?.Regulaciones ?? 0m);
+
+
+    public decimal NocturnasHastaMes =>
+        (ResumenHastaMes?.Nocturnas ?? 0m) +
+        (ResumenMes?.Nocturnas ?? 0m);
+
+
+    public decimal TrabajadasHastaMes =>
+        (ResumenHastaMes?.Trabajadas ?? 0m) +
+        (ResumenMes?.Trabajadas ?? 0m);
+
+
+    public decimal TrabajadasConvenioHastaMes =>
+        (ResumenHastaMes?.TrabajadasConvenio ?? 0m) +
+        (ResumenMes?.TrabajadasConvenio ?? 0m);
+
+
+    public decimal EurosHastaMes =>
+        (ResumenHastaMes?.Euros ?? 0m) +
+        (ResumenMes?.Euros ?? 0m);
+
+
+    public decimal TomaDejeHastaMes =>
+        (ResumenHastaMes?.TomaDeje ?? 0m) +
+        (ResumenMes?.TomaDeje ?? 0m);
+
+
+    public decimal RegulacionesHastaMes =>
+        (ResumenHastaMes?.Regulaciones ?? 0m) +
+        (ResumenMes?.Regulaciones ?? 0m);
+
 
     #endregion
     // ====================================================================================================
@@ -106,18 +177,22 @@ public partial class CalendarioViewModel : BaseViewModel {
     // ====================================================================================================
 
     private void HandlerLongPress() {
-        Microsoft.Maui.Handlers.BorderHandler.Mapper.AppendToMapping("BorderLongPress", (handler, view) => {
+
+        Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping("BotonLongPress", (handler, view) => {
 #if ANDROID
 
-            if (view is CalendarioCellBorder) {
+            if (view is CalendarioButton) {
                 handler.PlatformView.LongClick += (sender, e) => {
+                    if (!IsSelectionMode) {
+                        IsSelectionMode = true;
+                    }
                     handler.PlatformView.CancelLongPress();
                 };
                 //handler.PlatformView.Click += Border_Click;
             }
 #endif
 #if IOS
-            if (view is CalendarioCellBorder) {
+            if (view is CalendarioButton) {
                 handler.PlatformView.UserInteractionEnabled = true;
                 handler.PlatformView.AddGestureRecognizer(new UILongPressGestureRecognizer((s) => {
                     if (!IsSelectionMode) {
@@ -127,7 +202,6 @@ public partial class CalendarioViewModel : BaseViewModel {
             }
 #endif
         });
-
 
     }
 
@@ -142,57 +216,82 @@ public partial class CalendarioViewModel : BaseViewModel {
 
 
     private async Task CrearMesAsync(DateTime fecha) {
-        try {
-            IsBusy = true;
-            var dias = new List<DiaEntity>();
-            for (int dia = 1; dia <= DateTime.DaysInMonth(fecha.Year, fecha.Month); dia++) {
-                dias.Add(new DiaEntity {
-                    Fecha = new DateTime(fecha.Year, fecha.Month, dia),
-                });
-            }
-            await dbRepository.SaveDiasAsync(dias);
-        } catch (Exception ex) {
-            await Shell.Current.DisplaySnackbar(ex.Message);
-        } finally {
-            IsBusy = false;
+        var dias = new List<DiaEntity>();
+        for (int dia = 1; dia <= DateTime.DaysInMonth(fecha.Year, fecha.Month); dia++) {
+            dias.Add(new DiaEntity {
+                Fecha = new DateTime(fecha.Year, fecha.Month, dia),
+            });
         }
+        await dbRepository.SaveDiasAsync(dias);
     }
 
 
     private async Task CargarMes() {
-        try {
-            IsBusy = true;
-            var dias = await dbRepository.GetDiasByMesAsync(FechaActual);
-            if (!dias.Any()) {
-                await CrearMesAsync(FechaActual);
-                dias = await dbRepository.GetDiasByMesAsync(FechaActual);
+        var dias = await dbRepository.GetDiasAsync(FechaActual, false);
+        if (!dias.Any()) {
+            await CrearMesAsync(FechaActual);
+            dias = await dbRepository.GetDiasAsync(FechaActual, false);
+        }
+        Dias = dias.ToModelObservable();
+        foreach (var dia in Dias) {
+            if (dia.Incidencia == null) dia.Incidencia = new();
+            dia.Incidencia.FromModel(Incidencias.FirstOrDefault(i => i.Id == dia.IncidenciaId));
+            if (dia.RelevoId > 0) {
+                TrabajadorModel relevo = Messenger.Send(new TrabajadorRequest(dia.RelevoId));
+                if (relevo is not null) {
+                    dia.Matricula = relevo.Matricula;
+                    dia.Apellidos = relevo.Apellidos;
+                }
             }
-            Dias = dias.Select(d => d.ToModel()).ToObservableCollection();
-            var resumen = await dbRepository.GetResumenByFechaAsync(FechaActual);
-            if (resumen == null) resumen = new();
-            Resumen = resumen.ToModel();
-        } catch (Exception ex) {
-            await Shell.Current.DisplaySnackbar(ex.Message);
-        } finally {
-            IsBusy = false;
         }
     }
 
 
     private async Task CargarIncidencias() {
-        try {
-            IsBusy = true;
-            if (Incidencias is null || Incidencias.Count == 0) {
-                var incid = await dbRepository.GetIncidenciasAsync();
-                if (incid.Any()) {
-                    Incidencias = incid.Select(i => i.ToModel()).ToList();
-                }
+        if (Incidencias is null || Incidencias.Count == 0) {
+            var incid = await dbRepository.GetIncidenciasAsync();
+            if (incid.Any()) {
+                Incidencias = incid.ToModel();
             }
-        } catch (Exception ex) {
-            await Shell.Current.DisplaySnackbar(ex.Message);
-        } finally {
-            IsBusy = false;
         }
+    }
+
+
+    private async Task CargarResumenes() {
+        var resumen = await dbRepository.GetResumenAsync(FechaActual);
+        if (resumen is null) {
+            ResumenMes = new() { Fecha = FechaActual };
+            await CalcularResumen();
+        } else {
+            ResumenMes = resumen.ToModel();
+        }
+        var fechaHasta = FechaActual.AddDays(-1);
+        var resumen2 = await dbRepository.GetResumenHastaFechaAsync(fechaHasta);
+        ResumenHastaMes = resumen2 is null ? new() : resumen2.ToModel();
+    }
+
+
+    private async Task CargarRegulaciones() {
+        var regul = await dbRepository.GetRegulacionesByMesAsync(FechaActual);
+        Regulaciones = regul.ToModel();
+    }
+
+
+    private async Task CalcularResumen() {
+        if (ResumenMes is null) ResumenMes = new() { Fecha = FechaActual };
+        if (Regulaciones is null) Regulaciones = new();
+        ResumenMes.Trabajadas = Dias.Sum(d => Math.Round(d.Trabajadas, 2));
+        ResumenMes.Acumuladas = Dias.Sum(d => Math.Round(d.Acumuladas, 2));
+        ResumenMes.Nocturnas = Dias.Sum(d => Math.Round(d.Nocturnas, 2));
+        ResumenMes.TrabajadasConvenio = Dias.Sum(d => calculosService.GetTrabajadasConvenio(d.Incidencia.Tipo));
+        ResumenMes.Euros = Dias.Sum(d => Math.Round(d.Euros, 2));
+        ResumenMes.TomaDeje = Dias.Sum(d => Math.Round(d.TomaDeje, 2));
+        ResumenMes.Regulaciones = Regulaciones.Sum(r => Math.Round(r.Horas, 2));
+        var id = await dbRepository.SaveResumenAsync(ResumenMes.ToEntity());
+        ResumenMes.Id = id;
+        OnPropertyChanged(nameof(ResumenMes));
+        OnPropertyChanged(nameof(AcumuladasHastaMes));
+        OnPropertyChanged(nameof(NocturnasHastaMes));
     }
 
 
@@ -215,8 +314,54 @@ public partial class CalendarioViewModel : BaseViewModel {
     async Task LoadAsync() {
         try {
             IsBusy = true;
+            if (Incidencias is null || Incidencias.Count == 0) await CargarIncidencias();
+            if (Dias is null || Dias.Count == 0) {
+                await CargarMes();
+                await CargarResumenes();
+                await CargarRegulaciones();
+            }
+        } catch (Exception ex) {
+            await Shell.Current.DisplaySnackbar(ex.Message);
+        } finally {
+            IsBusy = false;
+        }
+    }
+
+
+    [RelayCommand]
+    void Back() {
+        if (IsSelectionMode) {
+            DiasSeleccionados.Clear();
+        }
+    }
+
+
+    [RelayCommand]
+    async Task MesAnteriorAsync() {
+        if (IsBusy) return;
+        try {
+            IsBusy = true;
+            FechaActual = FechaActual.AddMonths(-1);
             await CargarMes();
-            await CargarIncidencias();
+            await CargarResumenes();
+            await CargarRegulaciones();
+        } catch (Exception ex) {
+            await Shell.Current.DisplaySnackbar(ex.Message);
+        } finally {
+            IsBusy = false;
+        }
+    }
+
+
+    [RelayCommand]
+    async Task MesSiguienteAsync() {
+        if (IsBusy) return;
+        try {
+            IsBusy = true;
+            FechaActual = FechaActual.AddMonths(1);
+            await CargarMes();
+            await CargarResumenes();
+            await CargarRegulaciones();
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
         } finally {
@@ -289,7 +434,8 @@ public partial class CalendarioViewModel : BaseViewModel {
             IsBusy = true;
             if (DiasSeleccionados is null || DiasSeleccionados.Count == 0) return;
             var dia = (DiaModel)DiasSeleccionados.FirstOrDefault();
-            diaCopiado = dia.ToEntity();
+            if (diaCopiado is null) diaCopiado = new();
+            diaCopiado.FromModel(dia);
             await Shell.Current.DisplaySnackbar("Se ha copiado el día");
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
@@ -308,11 +454,12 @@ public partial class CalendarioViewModel : BaseViewModel {
             foreach (DiaModel dia in DiasSeleccionados) {
                 var id = dia.Id;
                 var fecha = dia.Fecha;
-                dia.FromEntity(diaCopiado);
+                dia.FromModel(diaCopiado);
                 dia.Id = id;
                 dia.Fecha = fecha;
                 await dbRepository.SaveDiaAsync(dia.ToEntity());
             }
+            await CalcularResumen();
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
         } finally {
@@ -355,12 +502,15 @@ public partial class CalendarioViewModel : BaseViewModel {
             IsBusy = true;
             if (motivo is null) return;
             var regulacion = new RegulacionModel {
-                DiaId = dia.Id,
+                Fecha = dia.Fecha,
                 Horas = horasDecimal,
                 Motivo = motivo,
                 Tipo = TipoRegulacion.Manual,
             };
             await dbRepository.SaveRegulacionAsync(regulacion.ToEntity());
+            await CargarRegulaciones();
+            await CalcularResumen();
+            DiasSeleccionados.Clear();
             await Shell.Current.DisplaySnackbar("Regulación creada correctamente.");
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
@@ -381,6 +531,7 @@ public partial class CalendarioViewModel : BaseViewModel {
                 dia.Vaciar();
                 await dbRepository.SaveDiaAsync(dia.ToEntity());
             }
+            await CalcularResumen();
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
         } finally {

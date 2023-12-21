@@ -7,6 +7,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:cnv="clr-namespace:QuattroX.View.Converters"
     xmlns:customView="clr-namespace:QuattroX.View.CustomViews"
     xmlns:model="clr-namespace:QuattroX.Data.Model"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -14,14 +15,26 @@
     x:DataType="model:DiaModel">
 
     <SwipeView android:SwipeView.SwipeTransitionMode="Reveal">
+        <SwipeView.Resources>
+            <cnv:DecimalColorConverter x:Key="decimalColorConverter" />
+
+            <LinearGradientBrush x:Key="colorItemsIzquierdos" EndPoint="0,1">
+                <GradientStop Offset="0" Color="Transparent" />
+                <GradientStop Offset="0.05" Color="#56acff" />
+                <GradientStop Offset="0.95" Color="#56acff" />
+                <GradientStop Offset="1" Color="Transparent" />
+            </LinearGradientBrush>
+
+        </SwipeView.Resources>
+
         <SwipeView.LeftItems>
             <SwipeItems Mode="Execute">
                 <SwipeItemView
-                    BackgroundColor="#56acff"
+                    Padding="0,15,0,15"
+                    Background="{StaticResource colorItemsIzquierdos}"
                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=ActivarFranqueoFestivoCommand}"
                     CommandParameter="{Binding .}">
                     <Label
-                        Margin="0"
                         Padding="10,5"
                         FontFamily="Material"
                         FontSize="Title"
@@ -80,13 +93,11 @@
 
                 <!--  NOTA DE ESTE BOTÓN  -->
                 <!--  ==================  -->
-                <!--  Este botón está aqui, porque al añadir el long click, el TapGestureRecognizer del borde  -->
-                <!--  deja de tener efecto. Pero si el botón ocupara toda la celda, el LongClick deja de tener  -->
-                <!--  efecto, por lo que se pone en la columna 2, dejando las columnas 0 y 1 que tienen el  -->
-                <!--  marcador de franqueo y festivo y la fecha para el LongCLick.  -->
-                <Button
+                <!--  Este botón está encima de todos los controles para gestionar el evento Click a través del comando del propio botón  -->
+                <!--  y para gestionar el evento LongClick a través del Handler que se modifica en el viewmodel.  -->
+                <customView:CalendarioButton
                     Grid.RowSpan="3"
-                    Grid.Column="2"
+                    Grid.ColumnSpan="3"
                     Background="Transparent"
                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=AbrirDiaCommand}"
                     CommandParameter="{Binding .}"
@@ -178,25 +189,26 @@
                 <Label
                     Grid.Row="0"
                     Grid.Column="2"
-                    Margin="0,5,0,0"
+                    Margin="0,5,10,0"
                     FontAttributes="Bold"
                     FontSize="Micro"
                     HorizontalOptions="Start"
-                    Text="{Binding Incidencia.Descripcion}"
+                    LineBreakMode="NoWrap"
+                    Text="{Binding TextoIncidencia}"
                     VerticalOptions="Center" />
 
                 <!--  Turno inferido  -->
                 <Label
-                    Grid.Row="0"
+                    Grid.Row="2"
                     Grid.Column="2"
-                    Margin="0,5,10,0"
+                    Margin="0,0,10,5"
                     FontSize="Micro"
                     HorizontalOptions="End"
-                    Text="{Binding ServicioPrincipal.Turno}"
+                    Text="{Binding Turno}"
                     VerticalOptions="Center">
                     <Label.Triggers>
                         <DataTrigger
-                            Binding="{Binding ServicioPrincipal.Turno}"
+                            Binding="{Binding Turno}"
                             TargetType="Label"
                             Value="0">
                             <Setter Property="IsVisible" Value="False" />
@@ -204,6 +216,7 @@
                     </Label.Triggers>
                 </Label>
 
+                <!--  Horas de inicio y final  -->
                 <Label
                     Grid.Row="1"
                     Grid.Column="2"
@@ -211,8 +224,89 @@
                     FontFamily="Consolas"
                     FontSize="Micro"
                     HorizontalOptions="Start"
-                    Text="{Binding Incidencia.Descripcion}"
+                    Text="{Binding TextoHoras}"
                     VerticalOptions="Center" />
+
+                <!--  Notas y dietas  -->
+                <HorizontalStackLayout
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Margin="0"
+                    HorizontalOptions="Center"
+                    Spacing="5"
+                    VerticalOptions="Center">
+                    <Label
+                        Margin="0"
+                        FontFamily="Material"
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        IsVisible="{Binding HasNotas}"
+                        Text="&#xEE4C;"
+                        TextColor="Goldenrod"
+                        VerticalOptions="Center" />
+                    <Label
+                        Margin="0"
+                        FontFamily="Material"
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        IsVisible="{Binding Desayuno}"
+                        Text="&#xEB18;"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Margin="0"
+                        FontFamily="Material"
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        IsVisible="{Binding Comida}"
+                        Text="&#xEB29;"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Margin="0"
+                        FontFamily="Material"
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        IsVisible="{Binding Cena}"
+                        Text="&#xED9A;"
+                        TextColor="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <!--  Acumuladas y nocturnas  -->
+                <HorizontalStackLayout
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Margin="0,0,10,0"
+                    HorizontalOptions="End"
+                    IsVisible="{Binding HayHoras}"
+                    VerticalOptions="Center">
+                    <Label
+                        Margin="0"
+                        FontFamily="Consolas"
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        Text="{Binding Acumuladas, StringFormat='{}{0:0.00}'}"
+                        TextColor="{Binding Acumuladas, Converter={StaticResource decimalColorConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Margin="0"
+                        FontFamily="Consolas"
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        Text=" - "
+                        VerticalOptions="Center" />
+                    <Label
+                        Margin="0"
+                        FontFamily="Consolas"
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        Text="{Binding Nocturnas, StringFormat='{}{0:0.00}'}"
+                        TextColor="Blue"
+                        VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <!--  Relevo  -->
                 <Label
                     Grid.Row="2"
                     Grid.Column="2"
@@ -220,7 +314,7 @@
                     FontFamily="Consolas"
                     FontSize="Micro"
                     HorizontalOptions="Start"
-                    Text="{Binding Incidencia.Descripcion}"
+                    Text="{Binding TextoRelevo}"
                     VerticalOptions="Center" />
             </Grid>
 
@@ -236,7 +330,7 @@
                 <VisualState Name="Selected">
                     <VisualState.Setters>
                         <Setter Property="BackgroundColor" Value="Transparent" />
-                        <Setter TargetName="Marco" Property="BackgroundColor" Value="PeachPuff" />
+                        <Setter TargetName="Marco" Property="BackgroundColor" Value="BurlyWood" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>

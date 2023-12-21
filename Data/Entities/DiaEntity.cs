@@ -30,23 +30,32 @@ public class DiaEntity : EntityBase {
     public int IncidenciaId { get; set; }
 
 
+    public string Linea { get; set; }
+
+
+    public string TextoLinea { get; set; }
+
+
+    public string Servicio { get; set; }
+
+
+    public int Turno { get; set; }
+
+
+    public TimeSpan Inicio { get; set; }
+
+
+    public TimeSpan Final { get; set; }
+
+
+    public string LugarInicio { get; set; }
+
+
+    public string LugarFinal { get; set; }
+
+
     [Ignore]
-    public IncidenciaEntity Incidencia { get; set; } = new();
-
-
-    public int ServicioPrincipalId { get; set; }
-
-
-    [Ignore]
-    public ServicioDiaEntity ServicioPrincipal { get; set; } = new();
-
-
-    [Ignore]
-    public List<ServicioSecundarioDiaEntity> Servicios { get; set; } = new();
-
-
-    [Ignore]
-    public List<RegulacionEntity> Regulaciones { get; set; } = new();
+    public List<ServicioDiaEntity> Servicios { get; set; } = new();
 
 
     public decimal Trabajadas { get; set; }
@@ -82,15 +91,7 @@ public class DiaEntity : EntityBase {
     public int RelevoId { get; set; }
 
 
-    [Ignore]
-    public TrabajadorEntity Relevo { get; set; } = new();
-
-
     public int SustiId { get; set; }
-
-
-    [Ignore]
-    public TrabajadorEntity Susti { get; set; } = new();
 
 
     public string Bus { get; set; }

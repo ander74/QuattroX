@@ -59,7 +59,6 @@ public class DatabaseService {
             await Db.CreateTableAsync<TrabajadorEntity>();
             await Db.CreateTableAsync<ServicioSecundarioEntity>();
             await Db.CreateTableAsync<ServicioDiaEntity>();
-            await Db.CreateTableAsync<ServicioSecundarioDiaEntity>();
             await Db.CreateTableAsync<ServicioLineaEntity>();
             await Db.CreateTableAsync<LineaEntity>();
             await Db.CreateTableAsync<DiaEntity>();
@@ -112,7 +111,7 @@ public class DatabaseService {
 
     private List<IncidenciaEntity> GetIncidenciasFijas() {
         return new List<IncidenciaEntity> {
-            new IncidenciaEntity { Codigo = 0, Descripcion = "Repite día anterior", Tipo = TipoIncidencia.Ninguna },
+            //new IncidenciaEntity { Codigo = 0, Descripcion = "Repite día anterior", Tipo = TipoIncidencia.Ninguna },
             new IncidenciaEntity { Codigo = 1, Descripcion = "Trabajo", Tipo = TipoIncidencia.Trabajo },
             new IncidenciaEntity { Codigo = 2, Descripcion = "Franqueo", Tipo = TipoIncidencia.Franqueo },
             new IncidenciaEntity { Codigo = 3, Descripcion = "Vacaciones", Tipo = TipoIncidencia.Franqueo },
@@ -156,6 +155,9 @@ public class DatabaseService {
             AcumularTomaDeje = false,
         };
     }
+
+
+
 }
 
 #endregion

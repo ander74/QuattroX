@@ -6,11 +6,22 @@
     x:Class="QuattroX.View.Templates.DiaTabPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:cnv="clr-namespace:QuattroX.View.Converters"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:QuattroX.ViewModel"
     x:DataType="vm:DetalleDiaViewModel">
 
     <ContentView.Resources>
+        <cnv:DecimalColorConverter x:Key="decimalColorConverter" />
+        <cnv:DecimalConverter x:Key="decimalConverter" />
+
         <Style TargetType="Entry">
+            <Setter Property="HorizontalOptions" Value="Fill" />
+            <Setter Property="Margin" Value="5,15,5,5" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+        <Style TargetType="Picker">
             <Setter Property="HorizontalOptions" Value="Fill" />
             <Setter Property="Margin" Value="5,15,5,5" />
             <Setter Property="HorizontalTextAlignment" Value="Center" />
@@ -34,7 +45,7 @@
 
     <Grid
         ColumnDefinitions="*,*,*"
-        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
+        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
 
         <!--  Incidencia  -->
         <Picker
@@ -42,12 +53,11 @@
             Grid.Row="0"
             Grid.Column="0"
             Grid.ColumnSpan="3"
-            Margin="5"
-            HorizontalOptions="Fill"
+            Margin="5,10,5,5"
+            HorizontalTextAlignment="Start"
             ItemDisplayBinding="{Binding Descripcion}"
             ItemsSource="{Binding Incidencias}"
-            SelectedItem="{Binding IncidenciaSeleccionada}"
-            VerticalOptions="Center" />
+            SelectedItem="{Binding IncidenciaSeleccionada}" />
 
         <!--  Parámetros de huelga  -->
         <Label
@@ -64,13 +74,14 @@
             <Label
                 Margin="5,15,5,5"
                 Padding="0"
-                FontSize="Small"
+                FontSize="Header"
                 Text="Parcial"
                 TextColor="#333333"
                 VerticalOptions="Center" />
             <Switch
                 Margin="5,15,5,5"
                 IsToggled="{Binding Dia.HuelgaParcial}"
+                Scale="0.8"
                 VerticalOptions="Center" />
         </HorizontalStackLayout>
         <Label
@@ -78,7 +89,7 @@
             Grid.Column="1"
             Margin="5,15,5,5"
             Padding="0"
-            FontSize="Small"
+            FontSize="Header"
             HorizontalOptions="End"
             IsVisible="{Binding EsHuelgaParcial}"
             Text="Horas: "
@@ -89,7 +100,13 @@
             Grid.Column="2"
             HorizontalOptions="FillAndExpand"
             IsVisible="{Binding EsHuelgaParcial}"
-            Text="{Binding Dia.HorasHuelga}" />
+            Text="{Binding Dia.HorasHuelga}">
+            <Entry.Behaviors>
+                <toolkit:EventToCommandBehavior
+                    Command="{Binding CalcularCommand}"
+                    EventName="Unfocused" />
+            </Entry.Behaviors>
+        </Entry>
 
         <!--  Línea  -->
         <Label
@@ -99,7 +116,13 @@
         <Entry
             Grid.Row="2"
             Grid.Column="0"
-            Text="{Binding Dia.ServicioPrincipal.Linea}" />
+            Text="{Binding Dia.Linea}">
+            <Entry.Behaviors>
+                <toolkit:EventToCommandBehavior
+                    Command="{Binding CalcularCommand}"
+                    EventName="Unfocused" />
+            </Entry.Behaviors>
+        </Entry>
 
         <!--  Servicio  -->
         <Label
@@ -109,18 +132,29 @@
         <Entry
             Grid.Row="2"
             Grid.Column="1"
-            Text="{Binding Dia.ServicioPrincipal.Servicio}" />
+            Text="{Binding Dia.Servicio}">
+            <Entry.Behaviors>
+                <toolkit:EventToCommandBehavior
+                    Command="{Binding CalcularCommand}"
+                    EventName="Unfocused" />
+            </Entry.Behaviors>
+        </Entry>
 
         <!--  Turno  -->
         <Label
             Grid.Row="2"
             Grid.Column="2"
             Text="Turno" />
-        <Entry
+        <!--<Entry
             Grid.Row="2"
             Grid.Column="2"
-            Text="{Binding Dia.ServicioPrincipal.Turno}" />
-
+            Text="{Binding Dia.Turno}" />-->
+        <Picker
+            Title="Turno"
+            Grid.Row="2"
+            Grid.Column="2"
+            ItemsSource="{Binding Turnos}"
+            SelectedItem="{Binding TurnoSeleccionado}" />
         <!--  Texto Línea  -->
         <Entry
             Grid.Row="3"
@@ -128,7 +162,7 @@
             Grid.ColumnSpan="3"
             Margin="5,0,5,5"
             HorizontalTextAlignment="Start"
-            Text="{Binding Dia.ServicioPrincipal.Linea}" />
+            Text="{Binding Dia.TextoLinea}" />
 
         <!--  Inicio  -->
         <Label
@@ -139,7 +173,7 @@
         <TimePicker
             Grid.Row="4"
             Grid.Column="0"
-            Time="{Binding Dia.ServicioPrincipal.Inicio}" />
+            Time="{Binding Dia.Inicio}" />
 
         <!--  Lugar inicio  -->
         <Label
@@ -152,7 +186,7 @@
             Grid.Column="1"
             Grid.ColumnSpan="2"
             HorizontalTextAlignment="Start"
-            Text="{Binding Dia.ServicioPrincipal.LugarInicio}" />
+            Text="{Binding Dia.LugarInicio}" />
 
         <!--  Final  -->
         <Label
@@ -162,7 +196,7 @@
         <TimePicker
             Grid.Row="5"
             Grid.Column="0"
-            Time="{Binding Dia.ServicioPrincipal.Final}" />
+            Time="{Binding Dia.Final}" />
 
         <!--  Lugar final  -->
         <Label
@@ -175,7 +209,7 @@
             Grid.Column="1"
             Grid.ColumnSpan="2"
             HorizontalTextAlignment="Start"
-            Text="{Binding Dia.ServicioPrincipal.LugarFinal}" />
+            Text="{Binding Dia.LugarFinal}" />
 
         <!--  Bus  -->
         <Label
@@ -215,22 +249,105 @@
         <Entry
             Grid.Row="7"
             Grid.Column="0"
-            Text="{Binding Dia.Relevo.Matricula}" />
+            Text="{Binding Dia.Matricula}">
+            <Entry.Behaviors>
+                <toolkit:EventToCommandBehavior
+                    Command="{Binding BuscarRelevoCommand}"
+                    EventName="Unfocused" />
+            </Entry.Behaviors>
+        </Entry>
         <Entry
             Grid.Row="7"
             Grid.Column="1"
             Grid.ColumnSpan="2"
             HorizontalTextAlignment="Start"
-            Text="{Binding Dia.Relevo.Apellidos}" />
+            Text="{Binding Dia.Apellidos}">
+            <Entry.Behaviors>
+                <toolkit:EventToCommandBehavior
+                    Command="{Binding CrearRelevoCommand}"
+                    EventName="Unfocused" />
+            </Entry.Behaviors>
+        </Entry>
+
+        <!--  Horas trabajadas, acumuladas y nocturnas  -->
+        <Label
+            Grid.Row="8"
+            Grid.Column="0"
+            Margin="5"
+            Padding="0,15,0,10"
+            FontSize="Small"
+            HorizontalOptions="Fill"
+            HorizontalTextAlignment="Center"
+            Text="{Binding Dia.Trabajadas, Converter={StaticResource decimalConverter}}"
+            TextColor="Black"
+            VerticalOptions="Fill">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer
+                    Command="{Binding EditarHoraCommand}"
+                    CommandParameter="Trabajadas" />
+            </Label.GestureRecognizers>
+        </Label>
+        <Label
+            Grid.Row="8"
+            Grid.Column="0"
+            Margin="0"
+            HorizontalOptions="Center"
+            Text="Trabajadas" />
+        <Label
+            Grid.Row="8"
+            Grid.Column="1"
+            Margin="5"
+            Padding="0,15,0,10"
+            FontSize="Small"
+            HorizontalOptions="Fill"
+            HorizontalTextAlignment="Center"
+            Text="{Binding Dia.Acumuladas, Converter={StaticResource decimalConverter}}"
+            TextColor="{Binding Dia.Acumuladas, Converter={StaticResource decimalColorConverter}}"
+            VerticalOptions="Fill">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer
+                    Command="{Binding EditarHoraCommand}"
+                    CommandParameter="Acumuladas" />
+            </Label.GestureRecognizers>
+        </Label>
+        <Label
+            Grid.Row="8"
+            Grid.Column="1"
+            Margin="0"
+            HorizontalOptions="Center"
+            Text="Acumuladas" />
+        <Label
+            Grid.Row="8"
+            Grid.Column="2"
+            Margin="5"
+            Padding="0,15,0,10"
+            FontSize="Small"
+            HorizontalOptions="Fill"
+            HorizontalTextAlignment="Center"
+            Text="{Binding Dia.Nocturnas, Converter={StaticResource decimalConverter}}"
+            TextColor="Blue"
+            VerticalOptions="Fill">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer
+                    Command="{Binding EditarHoraCommand}"
+                    CommandParameter="Nocturnas" />
+            </Label.GestureRecognizers>
+        </Label>
+        <Label
+            Grid.Row="8"
+            Grid.Column="2"
+            Margin="0"
+            HorizontalOptions="Center"
+            Text="Nocturnas" />
 
         <!--  Notas  -->
         <Label
-            Grid.Row="8"
+            Grid.Row="9"
             Grid.Column="0"
             Margin="5,10,0,0"
             Text="Notas" />
         <Border
-            Grid.Row="8"
+            Grid.Row="9"
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Margin="5,30,5,5"
@@ -246,7 +363,7 @@
 
         <!--  Dietas  -->
         <HorizontalStackLayout
-            Grid.Row="8"
+            Grid.Row="9"
             Grid.Column="1"
             Grid.ColumnSpan="2"
             Margin="10,0,20,0"

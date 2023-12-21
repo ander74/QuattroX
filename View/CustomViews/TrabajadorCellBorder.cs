@@ -5,18 +5,8 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-using SQLite;
 
-namespace QuattroX.Data.Entities;
-
-
-/// <summary>
-/// Representa cada uno de los servicios secundarios de un día.
-/// </summary>
-[Table(name: "ServiciosSecundariosDia")]
-public class ServicioSecundarioDiaEntity : ServicioBaseEntity {
-
-    public int DiaId { get; set; }
-
-
+namespace QuattroX.View.CustomViews {
+    public class TrabajadorCellBorder : Border {
+    }
 }

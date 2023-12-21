@@ -19,5 +19,10 @@
         ContentTemplate="{DataTemplate view:CalendarioPage}"
         Route="CalendarioPage" />
 
+    <ShellContent
+        Title="Trabajadores"
+        ContentTemplate="{DataTemplate view:TrabajadoresPage}"
+        Route="TrabajadoresPage" />
+
 
 </Shell>

@@ -21,6 +21,10 @@ public partial class ServicioBaseModel : ModelBase {
 
 
     [ObservableProperty]
+    string textoLinea;
+
+
+    [ObservableProperty]
     string servicio;
 
 
@@ -43,6 +47,16 @@ public partial class ServicioBaseModel : ModelBase {
     [ObservableProperty]
     string lugarFinal;
 
+
+    #endregion
+    // ====================================================================================================
+
+
+    // ====================================================================================================
+    #region Propiedades no enlazadas
+    // ====================================================================================================
+
+    public string TextoServicio => $"{Servicio}/{Turno}";
 
     #endregion
     // ====================================================================================================

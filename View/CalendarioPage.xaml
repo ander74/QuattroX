@@ -6,12 +6,18 @@
     x:Class="QuattroX.View.CalendarioPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:cnv="clr-namespace:QuattroX.View.Converters"
     xmlns:templates="clr-namespace:QuattroX.View.Templates"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:QuattroX.ViewModel"
     x:DataType="{x:Type vm:CalendarioViewModel}"
     Shell.BackgroundColor="{StaticResource Primary}"
     Shell.ForegroundColor="{StaticResource Secondary}">
+
+    <ContentPage.Resources>
+        <cnv:DecimalColorConverter x:Key="decimalColorConverter" />
+        <cnv:DecimalConverter x:Key="decimalConverter" />
+    </ContentPage.Resources>
 
     <Shell.TitleView>
         <HorizontalStackLayout>
@@ -101,7 +107,7 @@
             </CollectionView.ItemTemplate>
 
             <CollectionView.Footer>
-                <Label HeightRequest="80" />
+                <Label HeightRequest="100" />
             </CollectionView.Footer>
 
         </CollectionView>
@@ -116,7 +122,9 @@
             VerticalOptions="End">
 
             <Border.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding DummyCommand}" />
+                <TapGestureRecognizer
+                    Command="{Binding DummyCommand}"
+                    Tapped="TapGestureRecognizer_Tapped" />
             </Border.GestureRecognizers>
 
             <Border.Shadow>
@@ -129,33 +137,43 @@
 
             <Grid
                 ColumnDefinitions="Auto, *, *, Auto"
-                RowDefinitions="Auto,*">
+                RowDefinitions="Auto,*, Auto, Auto">
 
                 <!--  Mes Anterior  -->
                 <Label
                     Grid.Row="0"
                     Grid.RowSpan="2"
                     Grid.Column="0"
-                    Margin="10"
+                    Margin="0"
+                    Padding="10,10,0,10"
                     FontFamily="Material"
                     FontSize="Title"
-                    HorizontalOptions="Center"
+                    HorizontalOptions="Fill"
                     Text="&#xEA5A;"
                     TextColor="{StaticResource Primary}"
-                    VerticalOptions="Center" />
+                    VerticalOptions="CenterAndExpand">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding MesAnteriorCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
 
                 <!--  Mes Siguiente  -->
                 <Label
                     Grid.Row="0"
                     Grid.RowSpan="2"
                     Grid.Column="3"
-                    Margin="10"
+                    Margin="0"
+                    Padding="0,10,10,10"
                     FontFamily="Material"
                     FontSize="Title"
-                    HorizontalOptions="Center"
+                    HorizontalOptions="Fill"
                     Text="&#xEDB8;"
                     TextColor="{StaticResource Primary}"
-                    VerticalOptions="Center" />
+                    VerticalOptions="CenterAndExpand">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding MesSiguienteCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
 
                 <!--  Mes actual  -->
                 <Label
@@ -163,33 +181,349 @@
                     Grid.Column="1"
                     Grid.ColumnSpan="2"
                     Margin="4"
-                    FontSize="Medium"
+                    FontSize="Small"
                     HorizontalOptions="Center"
                     Text="{Binding TextoMesActual}"
                     TextColor="Black"
                     VerticalOptions="Center" />
 
                 <!--  Horas acumuladas  -->
-                <Label
+                <HorizontalStackLayout
+                    x:Name="Horas1"
                     Grid.Row="1"
                     Grid.Column="1"
                     Margin="4"
-                    FontSize="Micro"
                     HorizontalOptions="Center"
-                    Text="Acum: 12,35"
-                    TextColor="DarkGreen"
-                    VerticalOptions="Center" />
+                    VerticalOptions="Center">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        Text="Acum: "
+                        TextColor="{Binding AcumuladasHastaMes, Converter={StaticResource decimalColorConverter}}" />
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        Text="{Binding AcumuladasHastaMes, Converter={StaticResource decimalConverter}}"
+                        TextColor="{Binding AcumuladasHastaMes, Converter={StaticResource decimalColorConverter}}" />
+                </HorizontalStackLayout>
 
                 <!--  Horas nocturnas  -->
-                <Label
+                <HorizontalStackLayout
+                    x:Name="Horas2"
                     Grid.Row="1"
                     Grid.Column="2"
                     Margin="4"
-                    FontSize="Micro"
                     HorizontalOptions="Center"
-                    Text="Noct: 2,33"
-                    TextColor="Blue"
-                    VerticalOptions="Center" />
+                    VerticalOptions="Center">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        Text="Noct: "
+                        TextColor="Blue" />
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        Text="{Binding NocturnasHastaMes, Converter={StaticResource decimalConverter}}"
+                        TextColor="Blue" />
+                </HorizontalStackLayout>
+
+                <!--  Resumen extendido  -->
+                <Grid
+                    x:Name="ResumenExtendido"
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    Padding="10,0,10,10"
+                    ColumnDefinitions="Auto,*,*,*"
+                    IsVisible="False"
+                    RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+                    <!--  Título de resumen  -->
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="4"
+                        Margin="0,0,0,5"
+                        FontSize="Header"
+                        HorizontalOptions="Center"
+                        Text="Resumen mensual"
+                        VerticalOptions="Center" />
+
+                    <!--  Bordes y fondos  -->
+                    <Border
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="4"
+                        Padding="10,5"
+                        BackgroundColor="#f0f0fc"
+                        HorizontalOptions="FillAndExpand"
+                        StrokeThickness="0"
+                        VerticalOptions="FillAndExpand" />
+
+                    <Border
+                        Grid.Row="5"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="4"
+                        Padding="10,5"
+                        BackgroundColor="#f0f0fc"
+                        HorizontalOptions="FillAndExpand"
+                        StrokeThickness="0"
+                        VerticalOptions="FillAndExpand" />
+
+                    <Border
+                        Grid.Row="7"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="4"
+                        Padding="10,5"
+                        BackgroundColor="#f0f0fc"
+                        HorizontalOptions="FillAndExpand"
+                        StrokeShape="RoundRectangle 0,0,5,5"
+                        StrokeThickness="0"
+                        VerticalOptions="FillAndExpand" />
+
+                    <Border
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="4"
+                        Padding="10,5"
+                        BackgroundColor="Goldenrod"
+                        HorizontalOptions="FillAndExpand"
+                        StrokeShape="RoundRectangle 5,5,0,0"
+                        VerticalOptions="FillAndExpand" />
+
+                    <Border
+                        Grid.Row="1"
+                        Grid.RowSpan="7"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="4"
+                        Padding="10,5"
+                        BackgroundColor="Transparent"
+                        HorizontalOptions="FillAndExpand"
+                        StrokeShape="RoundRectangle 5,5,5,5"
+                        VerticalOptions="FillAndExpand" />
+
+                    <!--  Encabezados  -->
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="5"
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="Anterior"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        Margin="5"
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="Actual"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="3"
+                        Margin="5"
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="Total"
+                        VerticalOptions="Center" />
+
+                    <!--  Trabajadas  -->
+                    <Label
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Padding="10,5"
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        HorizontalOptions="End"
+                        Text="Trabajadas"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding ResumenHastaMes.Trabajadas, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="2"
+                        Grid.Column="2"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding ResumenMes.Trabajadas, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="2"
+                        Grid.Column="3"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding TrabajadasHastaMes, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+
+                    <!--  Trabajadas convenio  -->
+                    <Label
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Padding="10,5"
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        HorizontalOptions="End"
+                        Text="Trabajadas convenio"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding ResumenHastaMes.TrabajadasConvenio, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="3"
+                        Grid.Column="2"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding ResumenMes.TrabajadasConvenio, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="3"
+                        Grid.Column="3"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding TrabajadasConvenioHastaMes, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+
+                    <!--  Acumuladas  -->
+                    <Label
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        Padding="10,5"
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        HorizontalOptions="End"
+                        Text="Acumuladas"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="4"
+                        Grid.Column="1"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding ResumenHastaMes.Acumuladas, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="4"
+                        Grid.Column="2"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding ResumenMes.Acumuladas, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="4"
+                        Grid.Column="3"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding AcumuladasHastaMes, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+
+                    <!--  Nocturnas  -->
+                    <Label
+                        Grid.Row="5"
+                        Grid.Column="0"
+                        Padding="10,5"
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        HorizontalOptions="End"
+                        Text="Nocturnas"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="5"
+                        Grid.Column="1"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding ResumenHastaMes.Nocturnas, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="5"
+                        Grid.Column="2"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding ResumenMes.Nocturnas, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="5"
+                        Grid.Column="3"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding NocturnasHastaMes, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+
+                    <!--  Euros  -->
+                    <Label
+                        Grid.Row="6"
+                        Grid.Column="0"
+                        Padding="10,5"
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        HorizontalOptions="End"
+                        Text="Euros por servicio"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="6"
+                        Grid.Column="1"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding ResumenHastaMes.Euros, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="6"
+                        Grid.Column="2"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding ResumenMes.Euros, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="6"
+                        Grid.Column="3"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding EurosHastaMes, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+
+                    <!--  Toma Deje  -->
+                    <Label
+                        Grid.Row="7"
+                        Grid.Column="0"
+                        Padding="10,5"
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        HorizontalOptions="End"
+                        Text="Toma y deje"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="7"
+                        Grid.Column="1"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding ResumenHastaMes.TomaDeje, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="7"
+                        Grid.Column="2"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding ResumenMes.TomaDeje, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Grid.Row="7"
+                        Grid.Column="3"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding TomaDejeHastaMes, Converter={StaticResource decimalConverter}}"
+                        VerticalOptions="Center" />
+
+                </Grid>
 
             </Grid>
 
