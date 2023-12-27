@@ -288,6 +288,20 @@ public class DbRepository {
     }
 
 
+    public async Task<int> GetDiasHagoATrabajadorAsync(int id) {
+        var incidencia = await dbService.Db.Table<IncidenciaEntity>().Where(i => i.Codigo == 12).FirstOrDefaultAsync();
+        if (incidencia is null) return 0;
+        return await dbService.Db.Table<DiaEntity>().CountAsync(t => t.SustiId == id && t.IncidenciaId == incidencia.Id);
+    }
+
+
+    public async Task<int> GetDiasMeHaceTrabajadorAsync(int id) {
+        var incidencia = await dbService.Db.Table<IncidenciaEntity>().Where(i => i.Codigo == 11).FirstOrDefaultAsync();
+        if (incidencia is null) return 0;
+        return await dbService.Db.Table<DiaEntity>().CountAsync(t => t.SustiId == id && t.IncidenciaId == incidencia.Id);
+    }
+
+
     public async Task<bool> ExisteTrabajadorByIdAsync(int relevoId) {
         return await dbService.Db.Table<TrabajadorEntity>().CountAsync(t => t.Id == relevoId) > 0;
     }

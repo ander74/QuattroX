@@ -12,9 +12,22 @@ namespace QuattroX.View;
 
 public partial class TrabajadoresPage : ContentPage {
 
+    private readonly TrabajadoresViewModel viewModel;
+
     public TrabajadoresPage(TrabajadoresViewModel viewModel) {
         InitializeComponent();
         BindingContext = viewModel;
+        this.viewModel = viewModel;
+    }
+
+
+    protected override bool OnBackButtonPressed() {
+        base.OnBackButtonPressed();
+        var resultado = viewModel.IsSelectionMode;
+        if (viewModel.BackCommand.CanExecute(null)) {
+            viewModel.BackCommand.Execute(null);
+        }
+        return resultado;
     }
 
 }

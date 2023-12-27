@@ -43,6 +43,8 @@ public partial class MainViewModel : BaseViewModel {
     // ====================================================================================================
 
 
+    public string TextoVersion => $"Versión {AppInfo.Current.VersionString}";
+
 
     #endregion
     // ====================================================================================================

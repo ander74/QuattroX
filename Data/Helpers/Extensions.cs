@@ -618,6 +618,7 @@ public static class Extensions {
         model.EsFranqueo = false;
         model.EsFestivo = false;
         model.IncidenciaId = 0;
+        model.Incidencia = new();
         model.Linea = string.Empty;
         model.TextoLinea = string.Empty;
         model.Servicio = string.Empty;
@@ -641,6 +642,8 @@ public static class Extensions {
         model.SustiId = 0;
         model.Bus = string.Empty;
         model.Notas = string.Empty;
+        model.Apellidos = string.Empty;
+        model.Matricula = 0;
 
     }
 
@@ -788,6 +791,7 @@ public static class Extensions {
     public static OpcionesModel ToModel(this OpcionesEntity entity) {
         if (entity is null) return null;
         var model = new OpcionesModel {
+            Id = entity.Id,
             PrimerMesMostrado = entity.PrimerMesMostrado,
             AcumuladasAnteriores = entity.AcumuladasAnteriores,
             RelevoFijo = entity.RelevoFijo,
@@ -816,6 +820,7 @@ public static class Extensions {
     public static OpcionesEntity ToEntity(this OpcionesModel model) {
         if (model is null) return null;
         return new OpcionesEntity {
+            Id = model.Id,
             PrimerMesMostrado = model.PrimerMesMostrado,
             AcumuladasAnteriores = model.AcumuladasAnteriores,
             RelevoFijo = model.RelevoFijo,

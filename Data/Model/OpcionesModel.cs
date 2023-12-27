@@ -145,5 +145,4 @@ public partial class OpcionesModel : ModelBase {
     [ObservableProperty]
     bool acumularTomaDeje;
 
-
 }

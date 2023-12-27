@@ -5,8 +5,47 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:QuattroX"
     xmlns:view="clr-namespace:QuattroX.View"
+    xmlns:vm="clr-namespace:QuattroX.ViewModel"
     Title="Quattro X"
+    x:DataType="vm:MainViewModel"
     Shell.FlyoutBehavior="Flyout">
+
+    <Shell.FlyoutHeader>
+
+        <Grid>
+
+            <Image
+                Aspect="AspectFill"
+                HeightRequest="150"
+                Source="fondo_azul.png" />
+
+            <Label
+                Margin="7,22,5,5"
+                FontSize="40"
+                HorizontalOptions="Start"
+                Text="Quattro X"
+                TextColor="Gray"
+                VerticalOptions="Start" />
+
+            <Label
+                Margin="5,20,5,5"
+                FontSize="40"
+                HorizontalOptions="Start"
+                Text="Quattro X"
+                TextColor="White"
+                VerticalOptions="Start" />
+
+            <Label
+                Margin="10"
+                FontSize="Micro"
+                HorizontalOptions="End"
+                Text="{Binding TextoVersion}"
+                TextColor="White"
+                VerticalOptions="End" />
+
+        </Grid>
+
+    </Shell.FlyoutHeader>
 
     <ShellContent
         Title="Cargando"
@@ -17,12 +56,48 @@
     <ShellContent
         Title="Calendario"
         ContentTemplate="{DataTemplate view:CalendarioPage}"
-        Route="CalendarioPage" />
+        Route="CalendarioPage">
+        <ShellContent.Icon>
+            <FontImageSource
+                FontFamily="Material"
+                Glyph="&#xEC87;"
+                Color="DimGray" />
+        </ShellContent.Icon>
+    </ShellContent>
 
     <ShellContent
-        Title="Trabajadores"
+        Title="Trabajador@s"
         ContentTemplate="{DataTemplate view:TrabajadoresPage}"
-        Route="TrabajadoresPage" />
+        Route="TrabajadoresPage">
+        <ShellContent.Icon>
+            <FontImageSource
+                FontFamily="Material"
+                Glyph="&#xEBAD;"
+                Color="DimGray" />
+        </ShellContent.Icon>
+    </ShellContent>
 
+    <ShellContent
+        Title="Configuración"
+        ContentTemplate="{DataTemplate view:ConfigPage}"
+        Route="ConfigPage">
+        <ShellContent.Icon>
+            <FontImageSource
+                FontFamily="Material"
+                Glyph="&#xEC16;"
+                Color="DimGray" />
+        </ShellContent.Icon>
+    </ShellContent>
+
+
+    <Shell.FlyoutFooter>
+        <Label
+            Padding="20"
+            FontSize="Micro"
+            HorizontalOptions="Fill"
+            HorizontalTextAlignment="Center"
+            Text="Quattro X - © 2024 (GNU GPL 3.0)"
+            TextColor="LightSlateGray" />
+    </Shell.FlyoutFooter>
 
 </Shell>

@@ -12,6 +12,7 @@ using QuattroX.Data.Model;
 using UIKit;
 #endif
 using QuattroX.Data.Repositories;
+using QuattroX.View;
 using QuattroX.View.CustomViews;
 
 namespace QuattroX.ViewModel;
@@ -29,6 +30,17 @@ public partial class TrabajadoresViewModel : BaseViewModel {
 
     public TrabajadoresViewModel(DbRepository dbRepository) {
         this.dbRepository = dbRepository;
+        Title = "Trabajador@s";
+
+        TrabajadoresSeleccionados.CollectionChanged += (sender, e) => {
+            var num = TrabajadoresSeleccionados.Count;
+            IsSelectionMode = num > 0;
+            if (num > 0) {
+                Title = num == 1 ? "1 persona sel." : $"{num} personas sel.";
+            } else {
+                Title = "Trabajador@s";
+            }
+        };
 
         // Responde a la petición de un trabajador por su id.
         Messenger.Register<TrabajadorRequest>(this, (r, m) => {
@@ -38,7 +50,6 @@ public partial class TrabajadoresViewModel : BaseViewModel {
 
         HandlerLongPress();
 
-        Title = "Trabajador@s";
     }
 
     #endregion
@@ -60,6 +71,7 @@ public partial class TrabajadoresViewModel : BaseViewModel {
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNotSelectionMode))]
     bool isSelectionMode;
 
 
@@ -134,11 +146,15 @@ public partial class TrabajadoresViewModel : BaseViewModel {
             IsBusy = true;
             var lista = await dbRepository.GetTrabajadoresAsync();
             var index = 1;
-            Trabajadores = lista.Select(t => {
-                var model = t.ToModel();
+            Trabajadores = new();
+            foreach (var trabajador in lista) {
+                var model = trabajador.ToModel();
                 model.RowIndex = index++;
-                return model;
-            }).ToObservableCollection();
+                model.DiasLeHago = await dbRepository.GetDiasHagoATrabajadorAsync(trabajador.Id);
+                model.DiasMeHace = await dbRepository.GetDiasMeHaceTrabajadorAsync(trabajador.Id);
+                model.Modified = false;
+                Trabajadores.Add(model);
+            }
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
         } finally {
@@ -170,6 +186,14 @@ public partial class TrabajadoresViewModel : BaseViewModel {
 
 
     [RelayCommand]
+    void Back() {
+        if (IsSelectionMode) {
+            TrabajadoresSeleccionados.Clear();
+        }
+    }
+
+
+    [RelayCommand]
     async Task DesactivarSeleccionAsync() {
         try {
             IsBusy = true;
@@ -180,6 +204,84 @@ public partial class TrabajadoresViewModel : BaseViewModel {
             IsBusy = false;
         }
     }
+
+
+    [RelayCommand]
+    async Task AbrirTrabajadorAsync(TrabajadorModel trabajador) {
+        if (IsSelectionMode || trabajador is null) return;
+        await Shell.Current.GoToAsync(nameof(DetalleTrabajadorPage), true, new Dictionary<string, object> { { "Trabajador", trabajador } });
+    }
+
+
+    [RelayCommand]
+    async Task CrearTrabajadorAsync() {
+        if (Trabajadores is null) return;
+        var resultado = await Shell.Current.DisplayPromptAsync("Nuevo trabajador/a", "Introduce la matrícula", "Crear", "Cancelar");
+        if (resultado is null) return;
+        if (int.TryParse(resultado, out int matricula)) {
+            if (await dbRepository.ExisteTrabajadorByMatriculaAsync(matricula)) {
+                await Shell.Current.DisplayAlert("ERROR", $"Ya existe una persona registrada con la matrícula {matricula}.", "Cerrar");
+                return;
+            }
+            var newTrabajador = new TrabajadorModel { Matricula = matricula };
+            var id = await dbRepository.SaveTrabajadorAsync(newTrabajador.ToEntity());
+            newTrabajador.Id = id;
+            Trabajadores.Add(newTrabajador);
+            await AbrirTrabajadorAsync(newTrabajador);
+        }
+    }
+
+
+    [RelayCommand]
+    async Task BorrarTrabajadoresAsync() {
+        if (TrabajadoresSeleccionados is null || TrabajadoresSeleccionados.Count == 0) return;
+        var mensaje = TrabajadoresSeleccionados.Count > 1 ?
+            $"Vas a borrar {TrabajadoresSeleccionados.Count} trabajador@s.\n\n¿Estás segur@?\n\nEsta acción no se puede deshacer." :
+            $"Vas a borrar un trabajador/a.\n\n¿Estás segur@?\n\nEsta acción no se puede deshacer.";
+        var resultado = await Shell.Current.DisplayAlert("Borrar trabajador@s", mensaje, "Borrar", "Cancelar");
+        if (!resultado) return;
+        try {
+            IsBusy = true;
+            foreach (TrabajadorModel trabajador in TrabajadoresSeleccionados) {
+                await dbRepository.DeleteTrabajadorAsync(trabajador.Id);
+                Trabajadores.Remove(trabajador);
+            }
+            TrabajadoresSeleccionados.Clear();
+        } catch (Exception ex) {
+            await Shell.Current.DisplaySnackbar(ex.Message);
+        } finally {
+            IsBusy = false;
+        }
+
+    }
+
+
+    [RelayCommand(CanExecute = nameof(CanLlamar))]
+    void Llamar(TrabajadorModel trabajador) {
+        if (trabajador is null) return;
+        if (string.IsNullOrWhiteSpace(trabajador.Telefono)) return;
+        if (PhoneDialer.Default.IsSupported) {
+            PhoneDialer.Default.Open(trabajador.Telefono);
+        }
+    }
+    private bool CanLlamar(TrabajadorModel trabajador) => !string.IsNullOrWhiteSpace(trabajador?.Telefono);
+
+
+    [RelayCommand(CanExecute = nameof(CanMandarEmail))]
+    async Task MandarEmail(TrabajadorModel trabajador) {
+        if (trabajador is null) return;
+        if (string.IsNullOrWhiteSpace(trabajador.Email)) return;
+        if (Email.Default.IsComposeSupported) {
+            var message = new EmailMessage {
+                Subject = "From Quattro X",
+                Body = string.Empty,
+                BodyFormat = EmailBodyFormat.PlainText,
+                To = [trabajador.Email],
+            };
+            await Email.Default.ComposeAsync(message);
+        }
+    }
+    private bool CanMandarEmail(TrabajadorModel trabajador) => !string.IsNullOrWhiteSpace(trabajador?.Telefono);
 
 
     #endregion

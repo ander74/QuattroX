@@ -154,7 +154,16 @@ public partial class DiaModel : ModelBase {
 
 
     [ObservableProperty]
+    int matriculaSusti;
+
+
+    [ObservableProperty]
+    string apellidosSusti;
+
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TextoIncidencia))]
+    [NotifyPropertyChangedFor(nameof(HaySusti))]
     IncidenciaModel incidencia;
 
 
@@ -181,6 +190,9 @@ public partial class DiaModel : ModelBase {
             return $"{Servicio} / {Turno} - {Linea} : {TextoLinea}";
         }
     }
+
+
+    public bool HaySusti => Incidencia?.Codigo == 11 || Incidencia?.Codigo == 12;
 
 
     #endregion

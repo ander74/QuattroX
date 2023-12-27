@@ -224,6 +224,22 @@ public partial class DetalleDiaViewModel : BaseViewModel {
 
 
     [RelayCommand]
+    async Task BuscarSustiAsync() {
+        try {
+            IsBusy = true;
+            var susti = await dbRepository.GetTrabajadorByMatriculaAsync(Dia.MatriculaSusti);
+            if (susti is null) return;
+            Dia.SustiId = susti.Id;
+            Dia.ApellidosSusti = susti.Apellidos;
+        } catch (Exception ex) {
+            await Shell.Current.DisplaySnackbar(ex.Message);
+        } finally {
+            IsBusy = false;
+        }
+    }
+
+
+    [RelayCommand]
     async Task CrearRelevoAsync() {
         try {
             IsBusy = true;
@@ -242,6 +258,30 @@ public partial class DetalleDiaViewModel : BaseViewModel {
             IsBusy = false;
         }
     }
+
+
+    [RelayCommand]
+    async Task CrearSustiAsync() {
+        try {
+            IsBusy = true;
+            if (Dia.MatriculaSusti <= 0) return;
+            if (await dbRepository.ExisteTrabajadorByMatriculaAsync(Dia.MatriculaSusti)) return;
+            var trabajador = new TrabajadorEntity {
+                Matricula = Dia.MatriculaSusti,
+                Apellidos = Dia.ApellidosSusti,
+            };
+            await dbRepository.SaveTrabajadorAsync(trabajador);
+            Dia.SustiId = trabajador.Id;
+            await dbRepository.SaveDiaAsync(Dia.ToEntity());
+        } catch (Exception ex) {
+            await Shell.Current.DisplaySnackbar(ex.Message);
+        } finally {
+            IsBusy = false;
+        }
+    }
+
+
+
 
     #endregion
     // ====================================================================================================

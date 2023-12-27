@@ -24,7 +24,7 @@
             <Label
                 Margin="10,0,20,0"
                 FontFamily="Material"
-                FontSize="Title"
+                FontSize="Medium"
                 IsVisible="{Binding IsSelectionMode}"
                 Text="&#xe999;"
                 TextColor="{StaticResource Secondary}"
@@ -35,10 +35,11 @@
             </Label>
             <Label
                 Margin="0"
+                FontSize="Medium"
                 Text="{Binding Title}"
                 TextColor="{StaticResource Secondary}"
                 VerticalOptions="Center">
-                <Label.Triggers>
+                <!--<Label.Triggers>
                     <DataTrigger
                         Binding="{Binding IsSelectionMode}"
                         TargetType="Label"
@@ -49,9 +50,9 @@
                         Binding="{Binding IsSelectionMode}"
                         TargetType="Label"
                         Value="False">
-                        <Setter Property="FontSize" Value="Title" />
+                        <Setter Property="FontSize" Value="Medium" />
                     </DataTrigger>
-                </Label.Triggers>
+                </Label.Triggers>-->
             </Label>
         </HorizontalStackLayout>
     </Shell.TitleView>

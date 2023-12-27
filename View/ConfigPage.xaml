@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  ===========================================================================================  -->
+<!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
+<!--  ===========================================================================================  -->
+<ContentPage
+    x:Class="QuattroX.View.ConfigPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:cnv="clr-namespace:QuattroX.View.Converters"
+    xmlns:nely="clr-namespace:Nelya.Maui.Controls.Label;assembly=Nelya.Maui"
+    xmlns:templates="clr-namespace:QuattroX.View.Templates"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:QuattroX.ViewModel"
+    x:DataType="{x:Type vm:ConfigViewModel}"
+    Shell.BackgroundColor="{StaticResource Primary}"
+    Shell.ForegroundColor="{StaticResource Secondary}">
+
+    <ContentPage.Resources>
+        <cnv:DecimalConverter x:Key="decimalConverter" />
+    </ContentPage.Resources>
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            Command="{Binding CloseCommand}"
+            EventName="Disappearing" />
+    </ContentPage.Behaviors>
+
+    <Shell.TitleView>
+        <Label
+            Margin="0"
+            FontSize="Medium"
+            Text="{Binding Title}"
+            TextColor="{StaticResource Secondary}"
+            VerticalOptions="Center" />
+    </Shell.TitleView>
+
+    <ScrollView Orientation="Vertical">
+
+        <VerticalStackLayout>
+
+            <nely:LabelValue
+                Command="{Binding GoToOpcionesGeneralesCommand}"
+                Detail="Opciones que definen el comportamiento de la aplicación."
+                Text="Opciones generales" />
+
+            <nely:LabelValue
+                Command="{Binding GoToConvenioCommand}"
+                Detail="Opciones que afectan al cálculo de horas y dietas."
+                Text="Opciones de convenio" />
+
+            <nely:LabelSwitch
+                Detail="Si está activado, se pondrá el turno automáticamente en los días vacíos."
+                IsToggled="{Binding ConfigService.Opciones.InferirTurnos}"
+                Text="Inferencia de turnos" />
+
+            <nely:LabelDateValue
+                Detail="Fecha del primer día de un ciclo en el que tengas turno 1."
+                Text="Fecha con turno 1"
+                Value="{Binding ConfigService.Opciones.FechaReferenciaTurnos}">
+                <nely:LabelDateValue.Triggers>
+                    <DataTrigger
+                        Binding="{Binding ConfigService.Opciones.InferirTurnos}"
+                        TargetType="nely:LabelDateValue"
+                        Value="False">
+                        <Setter Property="IsEnabled" Value="False" />
+                    </DataTrigger>
+                    <DataTrigger
+                        Binding="{Binding ConfigService.Opciones.InferirTurnos}"
+                        TargetType="nely:LabelDateValue"
+                        Value="True">
+                        <Setter Property="IsEnabled" Value="True" />
+                    </DataTrigger>
+                </nely:LabelDateValue.Triggers>
+            </nely:LabelDateValue>
+
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>

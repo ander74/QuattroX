@@ -21,42 +21,104 @@
                 x:Key="indexToColorConverter"
                 ColorImpar="GhostWhite"
                 ColorPar="AntiqueWhite" />
+
+            <cnv:DecimalColorConverter x:Key="decimalColorConverter" />
+
+            <LinearGradientBrush x:Key="colorLlamada" EndPoint="0,1">
+                <GradientStop Offset="0" Color="Transparent" />
+                <GradientStop Offset="0.05" Color="DarkRed" />
+                <GradientStop Offset="0.95" Color="DarkRed" />
+                <GradientStop Offset="1" Color="Transparent" />
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="colorEmail" EndPoint="0,1">
+                <GradientStop Offset="0" Color="Transparent" />
+                <GradientStop Offset="0.05" Color="DarkGreen" />
+                <GradientStop Offset="0.95" Color="DarkGreen" />
+                <GradientStop Offset="1" Color="Transparent" />
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="colorItemsIzquierdos" EndPoint="0,1">
+                <GradientStop Offset="0" Color="Transparent" />
+                <GradientStop Offset="0.05" Color="#56acff" />
+                <GradientStop Offset="0.95" Color="#56acff" />
+                <GradientStop Offset="1" Color="Transparent" />
+            </LinearGradientBrush>
+
         </SwipeView.Resources>
 
         <SwipeView.LeftItems>
-            <SwipeItems Mode="Execute">
+            <SwipeItems
+                Mode="Reveal"
+                SwipeBehaviorOnInvoked="Close">
                 <SwipeItemView
-                    BackgroundColor="#56acff"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=DesactivarSeleccionCommand}"
+                    Background="{StaticResource colorLlamada}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrabajadoresViewModel}}, Path=LlamarCommand}"
                     CommandParameter="{Binding .}">
                     <Label
-                        Margin="0"
+                        Margin="10,0"
                         Padding="10,5"
                         FontFamily="Material"
                         FontSize="Title"
                         HorizontalOptions="Fill"
-                        HorizontalTextAlignment="Start"
-                        Text="&#xEAE3;"
+                        HorizontalTextAlignment="Center"
+                        Text="&#xE970;"
                         TextColor="GhostWhite"
-                        VerticalOptions="Center"
-                        WidthRequest="125" />
+                        VerticalOptions="Center" />
+                </SwipeItemView>
+                <SwipeItemView
+                    Background="{StaticResource colorEmail}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrabajadoresViewModel}}, Path=MandarEmailCommand}"
+                    CommandParameter="{Binding .}">
+                    <Label
+                        Margin="10,0"
+                        Padding="10,5"
+                        FontFamily="Material"
+                        FontSize="Title"
+                        HorizontalOptions="Fill"
+                        HorizontalTextAlignment="Center"
+                        Text="&#xE965;"
+                        TextColor="GhostWhite"
+                        VerticalOptions="Center" />
                 </SwipeItemView>
             </SwipeItems>
         </SwipeView.LeftItems>
 
+
         <SwipeView.RightItems>
-            <SwipeItems Mode="Execute">
-                <SwipeItem
-                    BackgroundColor="DarkRed"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=DesactivarSeleccionCommand}"
-                    CommandParameter="{Binding .}"
-                    Text="Borrar">
-                    <SwipeItem.IconImageSource>
-                        <FontImageSource
-                            FontFamily="Material"
-                            Glyph="&#x39d;" />
-                    </SwipeItem.IconImageSource>
-                </SwipeItem>
+            <SwipeItems
+                Mode="Reveal"
+                SwipeBehaviorOnInvoked="Close">
+                <SwipeItemView
+                    Background="{StaticResource colorLlamada}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrabajadoresViewModel}}, Path=LlamarCommand}"
+                    CommandParameter="{Binding .}">
+                    <Label
+                        Margin="10,0"
+                        Padding="10,5"
+                        FontFamily="Material"
+                        FontSize="Title"
+                        HorizontalOptions="Fill"
+                        HorizontalTextAlignment="Center"
+                        Text="&#xE970;"
+                        TextColor="GhostWhite"
+                        VerticalOptions="Center" />
+                </SwipeItemView>
+                <SwipeItemView
+                    Background="{StaticResource colorEmail}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrabajadoresViewModel}}, Path=MandarEmailCommand}"
+                    CommandParameter="{Binding .}">
+                    <Label
+                        Margin="10,0"
+                        Padding="10,5"
+                        FontFamily="Material"
+                        FontSize="Title"
+                        HorizontalOptions="Fill"
+                        HorizontalTextAlignment="Center"
+                        Text="&#xE965;"
+                        TextColor="GhostWhite"
+                        VerticalOptions="Center" />
+                </SwipeItemView>
             </SwipeItems>
         </SwipeView.RightItems>
 
@@ -86,9 +148,9 @@
                     Grid.RowSpan="2"
                     Grid.ColumnSpan="2"
                     Background="Transparent"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=AbrirDiaCommand}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrabajadoresViewModel}}, Path=AbrirTrabajadorCommand}"
                     CommandParameter="{Binding .}"
-                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=IsNotSelectionMode}" />
+                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type vm:TrabajadoresViewModel}}, Path=IsNotSelectionMode}" />
 
                 <!--  Matrícula  -->
                 <Label
@@ -154,6 +216,7 @@
                         FontFamily="Material"
                         FontSize="Small"
                         HorizontalOptions="Center"
+                        IsVisible="{Binding HayNotas}"
                         Text="&#xEE4C;"
                         TextColor="Goldenrod"
                         VerticalOptions="Center" />
@@ -163,8 +226,8 @@
                         Margin="5"
                         FontSize="Micro"
                         HorizontalOptions="Center"
-                        Text="Me debe un día"
-                        TextColor="DarkGreen"
+                        Text="{Binding TextoDeuda}"
+                        TextColor="{Binding DiasDeuda, Converter={StaticResource decimalColorConverter}}"
                         VerticalOptions="Center" />
 
                 </HorizontalStackLayout>

@@ -58,6 +58,7 @@
 
 	<ItemGroup>
 	  <None Remove="Resources\Fonts\Material.ttf" />
+	  <None Remove="Resources\Images\fondo_azul.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -73,13 +74,26 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Nelya2\Nelya.Core\Nelya.Core.csproj" />
+	  <ProjectReference Include="..\..\Nelya2\Nelya.Maui\Nelya.Maui.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <MauiXaml Update="View\CalendarioPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="View\ConfigPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="View\DetalleDiaPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="View\DetalleTrabajadorPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="View\OpcionesConvenioPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="View\OpcionesGeneralesPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\Templates\CalendarioCell.xaml">

@@ -18,7 +18,7 @@
             <Label
                 Margin="10,0,20,0"
                 FontFamily="Material"
-                FontSize="Title"
+                FontSize="Medium"
                 IsVisible="{Binding IsSelectionMode}"
                 Text="&#xe999;"
                 TextColor="{StaticResource Secondary}"
@@ -29,23 +29,24 @@
             </Label>
             <Label
                 Margin="0"
+                FontSize="Medium"
                 Text="{Binding Title}"
                 TextColor="{StaticResource Secondary}"
                 VerticalOptions="Center">
-                <Label.Triggers>
+                <!--<Label.Triggers>
                     <DataTrigger
                         Binding="{Binding IsSelectionMode}"
                         TargetType="Label"
                         Value="True">
-                        <Setter Property="FontSize" Value="Medium" />
+                        <Setter Property="FontSize" Value="Small" />
                     </DataTrigger>
                     <DataTrigger
                         Binding="{Binding IsSelectionMode}"
                         TargetType="Label"
                         Value="False">
-                        <Setter Property="FontSize" Value="Title" />
+                        <Setter Property="FontSize" Value="Medium" />
                     </DataTrigger>
-                </Label.Triggers>
+                </Label.Triggers>-->
             </Label>
         </HorizontalStackLayout>
     </Shell.TitleView>
@@ -107,6 +108,42 @@
             </CollectionView.Footer>
 
         </CollectionView>
+
+        <!--  Botón añadir trabajador  -->
+        <Button
+            Margin="30"
+            Padding="0"
+            BackgroundColor="{StaticResource Primary}"
+            Command="{Binding CrearTrabajadorCommand}"
+            CornerRadius="25"
+            FontAttributes="Bold"
+            FontFamily="Material"
+            FontSize="30"
+            HeightRequest="50"
+            HorizontalOptions="End"
+            IsVisible="{Binding IsNotSelectionMode}"
+            Text="&#xE992;"
+            TextColor="{StaticResource Secondary}"
+            VerticalOptions="End"
+            WidthRequest="50" />
+
+        <!--  Botón borrar trabajadores  -->
+        <Button
+            Margin="30"
+            Padding="0"
+            BackgroundColor="DarkRed"
+            Command="{Binding BorrarTrabajadoresCommand}"
+            CornerRadius="25"
+            FontAttributes="Bold"
+            FontFamily="Material"
+            FontSize="25"
+            HeightRequest="50"
+            HorizontalOptions="End"
+            IsVisible="{Binding IsSelectionMode}"
+            Text="&#xEC7D;"
+            TextColor="{StaticResource Secondary}"
+            VerticalOptions="End"
+            WidthRequest="50" />
 
         <!--  Progress indicator  -->
         <ActivityIndicator

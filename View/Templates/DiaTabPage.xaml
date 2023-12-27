@@ -45,7 +45,7 @@
 
     <Grid
         ColumnDefinitions="*,*,*"
-        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
+        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
 
         <!--  Incidencia  -->
         <Picker
@@ -59,14 +59,45 @@
             ItemsSource="{Binding Incidencias}"
             SelectedItem="{Binding IncidenciaSeleccionada}" />
 
-        <!--  Parámetros de huelga  -->
+        <!--  Susti  -->
         <Label
             Grid.Row="1"
+            Grid.Column="0"
+            IsVisible="{Binding Dia.HaySusti}"
+            Text="Compañera/o" />
+        <Entry
+            Grid.Row="1"
+            Grid.Column="0"
+            IsVisible="{Binding Dia.HaySusti}"
+            Text="{Binding Dia.MatriculaSusti}">
+            <Entry.Behaviors>
+                <toolkit:EventToCommandBehavior
+                    Command="{Binding BuscarSustiCommand}"
+                    EventName="Unfocused" />
+            </Entry.Behaviors>
+        </Entry>
+        <Entry
+            Grid.Row="1"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            HorizontalTextAlignment="Start"
+            IsVisible="{Binding Dia.HaySusti}"
+            Text="{Binding Dia.ApellidosSusti}">
+            <Entry.Behaviors>
+                <toolkit:EventToCommandBehavior
+                    Command="{Binding CrearSustiCommand}"
+                    EventName="Unfocused" />
+            </Entry.Behaviors>
+        </Entry>
+
+        <!--  Parámetros de huelga  -->
+        <Label
+            Grid.Row="2"
             Grid.Column="0"
             IsVisible="{Binding EsHuelga}"
             Text="Huelga" />
         <HorizontalStackLayout
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="0"
             Margin="5"
             HorizontalOptions="Fill"
@@ -85,7 +116,7 @@
                 VerticalOptions="Center" />
         </HorizontalStackLayout>
         <Label
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="1"
             Margin="5,15,5,5"
             Padding="0"
@@ -96,7 +127,7 @@
             TextColor="#333333"
             VerticalOptions="Center" />
         <Entry
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="2"
             HorizontalOptions="FillAndExpand"
             IsVisible="{Binding EsHuelgaParcial}"
@@ -110,11 +141,11 @@
 
         <!--  Línea  -->
         <Label
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="0"
             Text="Línea" />
         <Entry
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="0"
             Text="{Binding Dia.Linea}">
             <Entry.Behaviors>
@@ -126,11 +157,11 @@
 
         <!--  Servicio  -->
         <Label
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="1"
             Text="Servicio" />
         <Entry
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="1"
             Text="{Binding Dia.Servicio}">
             <Entry.Behaviors>
@@ -142,7 +173,7 @@
 
         <!--  Turno  -->
         <Label
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="2"
             Text="Turno" />
         <!--<Entry
@@ -151,13 +182,13 @@
             Text="{Binding Dia.Turno}" />-->
         <Picker
             Title="Turno"
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="2"
             ItemsSource="{Binding Turnos}"
             SelectedItem="{Binding TurnoSeleccionado}" />
         <!--  Texto Línea  -->
         <Entry
-            Grid.Row="3"
+            Grid.Row="4"
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Margin="5,0,5,5"
@@ -166,23 +197,23 @@
 
         <!--  Inicio  -->
         <Label
-            Grid.Row="4"
+            Grid.Row="5"
             Grid.Column="0"
             HorizontalOptions="FillAndExpand"
             Text="Inicio" />
         <TimePicker
-            Grid.Row="4"
+            Grid.Row="5"
             Grid.Column="0"
             Time="{Binding Dia.Inicio}" />
 
         <!--  Lugar inicio  -->
         <Label
-            Grid.Row="4"
+            Grid.Row="5"
             Grid.Column="1"
             Grid.ColumnSpan="2"
             Text="Lugar inicio" />
         <Entry
-            Grid.Row="4"
+            Grid.Row="5"
             Grid.Column="1"
             Grid.ColumnSpan="2"
             HorizontalTextAlignment="Start"
@@ -190,22 +221,22 @@
 
         <!--  Final  -->
         <Label
-            Grid.Row="5"
+            Grid.Row="6"
             Grid.Column="0"
             Text="Final" />
         <TimePicker
-            Grid.Row="5"
+            Grid.Row="6"
             Grid.Column="0"
             Time="{Binding Dia.Final}" />
 
         <!--  Lugar final  -->
         <Label
-            Grid.Row="5"
+            Grid.Row="6"
             Grid.Column="1"
             Grid.ColumnSpan="2"
             Text="Lugar final" />
         <Entry
-            Grid.Row="5"
+            Grid.Row="6"
             Grid.Column="1"
             Grid.ColumnSpan="2"
             HorizontalTextAlignment="Start"
@@ -213,41 +244,41 @@
 
         <!--  Bus  -->
         <Label
-            Grid.Row="6"
+            Grid.Row="7"
             Grid.Column="0"
             Text="Bus" />
         <Entry
-            Grid.Row="6"
+            Grid.Row="7"
             Grid.Column="0"
             Text="{Binding Dia.Bus}" />
 
         <!--  Toma y deje  -->
         <Label
-            Grid.Row="6"
+            Grid.Row="7"
             Grid.Column="1"
             Text="Toma/deje" />
         <Entry
-            Grid.Row="6"
+            Grid.Row="7"
             Grid.Column="1"
             Text="{Binding Dia.TomaDeje}" />
 
         <!--  Euros  -->
         <Label
-            Grid.Row="6"
+            Grid.Row="7"
             Grid.Column="2"
             Text="€/Serv." />
         <Entry
-            Grid.Row="6"
+            Grid.Row="7"
             Grid.Column="2"
             Text="{Binding Dia.Euros}" />
 
         <!--  Relevo  -->
         <Label
-            Grid.Row="7"
+            Grid.Row="8"
             Grid.Column="0"
             Text="Relevo" />
         <Entry
-            Grid.Row="7"
+            Grid.Row="8"
             Grid.Column="0"
             Text="{Binding Dia.Matricula}">
             <Entry.Behaviors>
@@ -257,7 +288,7 @@
             </Entry.Behaviors>
         </Entry>
         <Entry
-            Grid.Row="7"
+            Grid.Row="8"
             Grid.Column="1"
             Grid.ColumnSpan="2"
             HorizontalTextAlignment="Start"
@@ -271,7 +302,7 @@
 
         <!--  Horas trabajadas, acumuladas y nocturnas  -->
         <Label
-            Grid.Row="8"
+            Grid.Row="9"
             Grid.Column="0"
             Margin="5"
             Padding="0,15,0,10"
@@ -288,13 +319,13 @@
             </Label.GestureRecognizers>
         </Label>
         <Label
-            Grid.Row="8"
+            Grid.Row="9"
             Grid.Column="0"
             Margin="0"
             HorizontalOptions="Center"
             Text="Trabajadas" />
         <Label
-            Grid.Row="8"
+            Grid.Row="9"
             Grid.Column="1"
             Margin="5"
             Padding="0,15,0,10"
@@ -311,13 +342,13 @@
             </Label.GestureRecognizers>
         </Label>
         <Label
-            Grid.Row="8"
+            Grid.Row="9"
             Grid.Column="1"
             Margin="0"
             HorizontalOptions="Center"
             Text="Acumuladas" />
         <Label
-            Grid.Row="8"
+            Grid.Row="9"
             Grid.Column="2"
             Margin="5"
             Padding="0,15,0,10"
@@ -334,7 +365,7 @@
             </Label.GestureRecognizers>
         </Label>
         <Label
-            Grid.Row="8"
+            Grid.Row="9"
             Grid.Column="2"
             Margin="0"
             HorizontalOptions="Center"
@@ -342,12 +373,12 @@
 
         <!--  Notas  -->
         <Label
-            Grid.Row="9"
+            Grid.Row="10"
             Grid.Column="0"
             Margin="5,10,0,0"
             Text="Notas" />
         <Border
-            Grid.Row="9"
+            Grid.Row="10"
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Margin="5,30,5,5"
@@ -363,7 +394,7 @@
 
         <!--  Dietas  -->
         <HorizontalStackLayout
-            Grid.Row="9"
+            Grid.Row="10"
             Grid.Column="1"
             Grid.ColumnSpan="2"
             Margin="10,0,20,0"

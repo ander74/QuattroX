@@ -243,6 +243,16 @@ public partial class CalendarioViewModel : BaseViewModel {
                     dia.Apellidos = relevo.Apellidos;
                 }
             }
+            if (dia.SustiId > 0) {
+                TrabajadorModel susti = Messenger.Send(new TrabajadorRequest(dia.SustiId));
+                if (susti is not null) {
+                    dia.MatriculaSusti = susti.Matricula;
+                    dia.ApellidosSusti = susti.Apellidos;
+                }
+            }
+            if (configService.Opciones.InferirTurnos) {
+                if (dia.Turno == 0) dia.Turno = calculosService.InferirTurno(dia.Fecha, configService.Opciones.FechaReferenciaTurnos, 1);
+            }
         }
     }
 
@@ -339,6 +349,10 @@ public partial class CalendarioViewModel : BaseViewModel {
     [RelayCommand]
     async Task MesAnteriorAsync() {
         if (IsBusy) return;
+        if (FechaActual.AddMonths(-1) < configService.Opciones.PrimerMesMostrado) {
+            await Shell.Current.DisplaySnackbar("No puedes ir más atrás de este mes.");
+            return;
+        }
         try {
             IsBusy = true;
             FechaActual = FechaActual.AddMonths(-1);
@@ -529,6 +543,9 @@ public partial class CalendarioViewModel : BaseViewModel {
             IsBusy = true;
             foreach (DiaModel dia in DiasSeleccionados) {
                 dia.Vaciar();
+                if (configService.Opciones.InferirTurnos) {
+                    dia.Turno = calculosService.InferirTurno(dia.Fecha, configService.Opciones.FechaReferenciaTurnos, 1);
+                }
                 await dbRepository.SaveDiaAsync(dia.ToEntity());
             }
             await CalcularResumen();

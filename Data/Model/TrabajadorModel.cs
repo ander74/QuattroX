@@ -45,10 +45,13 @@ public partial class TrabajadorModel : ModelBase {
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DiasDeuda))]
+    [NotifyPropertyChangedFor(nameof(TextoDeuda))]
     int deudaInicial;
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HayNotas))]
     string notas;
 
 
@@ -65,6 +68,37 @@ public partial class TrabajadorModel : ModelBase {
 
 
     public int RowIndex { get; set; }
+
+
+    public bool HayNotas => string.IsNullOrWhiteSpace(Notas);
+
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DiasDeuda))]
+    [NotifyPropertyChangedFor(nameof(TextoDeuda))]
+    int diasMeHace;
+
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DiasDeuda))]
+    [NotifyPropertyChangedFor(nameof(TextoDeuda))]
+    int diasLeHago;
+
+
+    public decimal DiasDeuda => DeudaInicial + DiasLeHago - DiasMeHace;
+
+
+    public string TextoDeuda {
+        get {
+            return DiasDeuda switch {
+                1 => $"Me debe un día",
+                > 1 => $"Me debe {DiasDeuda} días",
+                -1 => $"Le debo un día",
+                < -1 => $"Le debo {-DiasDeuda} días",
+                _ => "",
+            };
+        }
+    }
 
 
 

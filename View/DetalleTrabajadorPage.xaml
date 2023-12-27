@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  ===========================================================================================  -->
+<!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
+<!--  ===========================================================================================  -->
+<ContentPage
+    x:Class="QuattroX.View.DetalleTrabajadorPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:cnv="clr-namespace:QuattroX.View.Converters"
+    xmlns:nely="clr-namespace:Nelya.Maui.Controls.Label;assembly=Nelya.Maui"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:QuattroX.ViewModel"
+    Title="{Binding Title}"
+    x:DataType="{x:Type vm:DetalleTrabajadorViewModel}"
+    Shell.BackgroundColor="{StaticResource Primary}"
+    Shell.ForegroundColor="{StaticResource Secondary}"
+    Shell.TitleColor="{StaticResource Secondary}">
+
+    <ContentPage.Resources>
+        <cnv:DecimalConverter x:Key="decimalConverter" />
+
+        <Style TargetType="Entry">
+            <Setter Property="HorizontalOptions" Value="Fill" />
+            <Setter Property="Margin" Value="5,15,5,5" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+        <Style TargetType="Picker">
+            <Setter Property="HorizontalOptions" Value="Fill" />
+            <Setter Property="Margin" Value="5,15,5,5" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="HorizontalOptions" Value="Start" />
+            <Setter Property="Margin" Value="5,0,0,0" />
+            <Setter Property="HorizontalTextAlignment" Value="Start" />
+            <Setter Property="VerticalOptions" Value="Start" />
+            <Setter Property="FontSize" Value="Micro" />
+            <Setter Property="TextColor" Value="{StaticResource Primary}" />
+        </Style>
+    </ContentPage.Resources>
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            Command="{Binding CloseCommand}"
+            EventName="Disappearing" />
+    </ContentPage.Behaviors>
+
+    <Grid
+        ColumnDefinitions="*,*"
+        RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
+
+        <!--  Nombre  -->
+        <Label
+            Grid.ColumnSpan="2"
+            Text="Nombre" />
+        <Entry
+            Grid.ColumnSpan="2"
+            HorizontalTextAlignment="Start"
+            Text="{Binding Trabajador.Nombre}" />
+
+        <!--  Apellidos  -->
+        <Label
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            Text="Apellidos" />
+        <Entry
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            HorizontalTextAlignment="Start"
+            Text="{Binding Trabajador.Apellidos}" />
+
+        <!--  Deuda inicial  -->
+        <Label
+            Grid.Row="2"
+            Text="Deuda inicial" />
+        <Entry
+            Grid.Row="2"
+            HorizontalTextAlignment="Start"
+            Text="{Binding Trabajador.DeudaInicial}" />
+
+        <!--  Calificación  -->
+        <Label
+            Grid.Row="2"
+            Grid.Column="1"
+            Text="Calificación" />
+        <Picker
+            Grid.Row="2"
+            Grid.Column="1"
+            HorizontalTextAlignment="Start"
+            ItemsSource="{Binding Calificaciones}"
+            SelectedItem="{Binding Trabajador.Calificacion}" />
+
+        <!--  Teléfono  -->
+        <Label
+            Grid.Row="3"
+            Grid.ColumnSpan="2"
+            Text="Telefono" />
+        <Entry
+            Grid.Row="3"
+            Grid.ColumnSpan="2"
+            HorizontalTextAlignment="Start"
+            Text="{Binding Trabajador.Telefono}" />
+
+        <!--  Email  -->
+        <Label
+            Grid.Row="4"
+            Grid.ColumnSpan="2"
+            Text="E-Mail" />
+        <Entry
+            Grid.Row="4"
+            Grid.ColumnSpan="2"
+            HorizontalTextAlignment="Start"
+            Text="{Binding Trabajador.Email}" />
+
+        <!--  Notas  -->
+        <Label
+            Grid.Row="5"
+            Grid.ColumnSpan="2"
+            Margin="5,10,0,0"
+            Text="Notas" />
+        <Border
+            Grid.Row="5"
+            Grid.ColumnSpan="2"
+            Margin="5,30,5,5"
+            HorizontalOptions="Fill"
+            StrokeShape="RoundRectangle, 5,5,5,5"
+            VerticalOptions="Fill">
+            <Editor
+                Margin="5,0,5,0"
+                HorizontalOptions="Fill"
+                Text="{Binding Trabajador.Notas}"
+                VerticalOptions="Fill" />
+        </Border>
+
+        <!--  Boton email  -->
+        <Button
+            Grid.Row="6"
+            Margin="5,10"
+            BackgroundColor="DarkGreen"
+            Command="{Binding MandarEmailCommand}"
+            FontSize="Small"
+            Text="E-Mail"
+            TextColor="GhostWhite">
+            <Button.ImageSource>
+                <FontImageSource
+                    FontFamily="Material"
+                    Glyph="&#xE965;"
+                    Size="25" />
+            </Button.ImageSource>
+        </Button>
+
+        <!--  Boton llamar  -->
+        <Button
+            Grid.Row="6"
+            Grid.Column="1"
+            Margin="5,10"
+            BackgroundColor="DarkRed"
+            Command="{Binding LlamarCommand}"
+            FontSize="Small"
+            Text="Llamar"
+            TextColor="GhostWhite">
+            <Button.ImageSource>
+                <FontImageSource
+                    FontFamily="Material"
+                    Glyph="&#xE970;"
+                    Size="25" />
+            </Button.ImageSource>
+        </Button>
+
+    </Grid>
+
+
+</ContentPage>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  ===========================================================================================  -->
+<!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
+<!--  ===========================================================================================  -->
+<ContentPage
+    x:Class="QuattroX.View.OpcionesConvenioPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:cnv="clr-namespace:QuattroX.View.Converters"
+    xmlns:nely="clr-namespace:Nelya.Maui.Controls.Label;assembly=Nelya.Maui"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:QuattroX.ViewModel"
+    Title="{Binding Title}"
+    x:DataType="{x:Type vm:ConfigViewModel}"
+    Shell.BackgroundColor="{StaticResource Primary}"
+    Shell.ForegroundColor="{StaticResource Secondary}"
+    Shell.TitleColor="{StaticResource Secondary}">
+
+    <ContentPage.Resources>
+        <cnv:DecimalConverter x:Key="decimalConverter" />
+    </ContentPage.Resources>
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            Command="{Binding CloseCommand}"
+            EventName="Disappearing" />
+    </ContentPage.Behaviors>
+
+    <Shell.TitleView>
+        <Label
+            Margin="0"
+            FontSize="Medium"
+            Text="{Binding Title}"
+            TextColor="{StaticResource Secondary}"
+            VerticalOptions="Center" />
+    </Shell.TitleView>
+
+    <ScrollView Orientation="Vertical">
+
+        <VerticalStackLayout>
+
+            <nely:LabelValue
+                Command="{Binding CambiarJornadaMediaCommand}"
+                Detail="Jornada a la que se ajustan los servicios acumulando la diferencia, positiva o negativamente."
+                Text="Jornada media"
+                Value="{Binding ConfigService.Opciones.JornadaMedia, Converter={StaticResource decimalConverter}}" />
+
+            <nely:LabelValue
+                Command="{Binding CambiarJornadaMinimaCommand}"
+                Detail="Si trabajas menos tiempo que esta jornada, esta es la jornada que se computa."
+                Text="Jornada mínima"
+                Value="{Binding ConfigService.Opciones.JornadaMinima, Converter={StaticResource decimalConverter}}" />
+
+            <nely:LabelValue
+                Command="{Binding CambiarJornadaAnualCommand}"
+                Detail="Número de horas de trabajo que debes hacer en un año."
+                Text="Jornada anual"
+                Value="{Binding ConfigService.Opciones.JornadaAnual}" />
+
+            <nely:LabelSwitch
+                Detail="Si está activo, al introducir el 31 de diciembre, se crea una regulación con la diferencia que hay entre la jornada anual y las horas anuales trabajadas."
+                IsToggled="{Binding ConfigService.Opciones.RegularJornadaAnual}"
+                Text="Regular jornada anual" />
+
+            <nely:LabelSwitch
+                Detail="Si está activo, al introducir el 29 de febrero se crea una regulación para ajustar la jornada anual."
+                IsToggled="{Binding ConfigService.Opciones.RegularAñosBisiestos}"
+                Text="Regular años bisiestos" />
+
+            <nely:LabelValue
+                Command="{Binding CambiarLimiteServiciosCommand}"
+                Detail="Número de minutos que deben pasar entre dos servicios para que no sea computado como tiempo de trabajo."
+                Text="Límite entre servicios"
+                Value="{Binding ConfigService.Opciones.LimiteEntreServicios}" />
+
+            <nely:LabelTimeValue
+                Detail="Hora en la que se inicia el período de cómputo de horas nocturnas."
+                Text="Inicio horas nocturnas"
+                Value="{Binding ConfigService.Opciones.InicioNocturnas}" />
+
+            <nely:LabelTimeValue
+                Detail="Hora en la que finaliza el período de cómputo de horas nocturnas."
+                Text="Final horas nocturnas"
+                Value="{Binding ConfigService.Opciones.FinalNocturnas}" />
+
+            <nely:LabelTimeValue
+                Detail="Si empiezas antes de esta hora cobras dieta de desayuno."
+                Text="Hora desayuno"
+                Value="{Binding ConfigService.Opciones.HoraLimiteDesayuno}" />
+
+            <nely:LabelTimeValue
+                Detail="Si estando de mañana terminas más tarde de esta hora cobras dieta de comida."
+                Text="Hora comida (turno 1)"
+                Value="{Binding ConfigService.Opciones.HoraLimiteComida1}" />
+
+            <nely:LabelTimeValue
+                Detail="Si estando de tarde empiezas antes de esta hora cobras dieta de comida."
+                Text="Hora comida (turno 2)"
+                Value="{Binding ConfigService.Opciones.HoraLimiteComida2}" />
+
+            <nely:LabelTimeValue
+                Detail="Si terminas más tarde de esta hora cobras dieta de cena."
+                Text="Hora cena"
+                Value="{Binding ConfigService.Opciones.HoraLimiteCena}" />
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>

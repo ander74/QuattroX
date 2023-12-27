@@ -1,10 +1,12 @@
-﻿namespace QuattroX;
+﻿using QuattroX.ViewModel;
+
+namespace QuattroX;
 
 public partial class App : Application {
-    public App() {
+    public App(MainViewModel viewModel) {
 
         InitializeComponent();
 
-        MainPage = new AppShell();
+        MainPage = new AppShell(viewModel);
     }
 }
