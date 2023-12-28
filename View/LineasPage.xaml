@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  ===========================================================================================  -->
+<!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
+<!--  ===========================================================================================  -->
+<ContentPage
+    x:Class="QuattroX.View.LineasPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:cnv="clr-namespace:QuattroX.View.Converters"
+    xmlns:templates="clr-namespace:QuattroX.View.Templates"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:QuattroX.ViewModel"
+    x:DataType="{x:Type vm:LineasViewModel}"
+    Shell.BackgroundColor="{StaticResource Primary}"
+    Shell.ForegroundColor="{StaticResource Secondary}">
+
+    <ContentPage.Resources>
+        <cnv:DecimalColorConverter x:Key="decimalColorConverter" />
+        <cnv:DecimalConverter x:Key="decimalConverter" />
+    </ContentPage.Resources>
+
+    <Shell.TitleView>
+        <HorizontalStackLayout>
+            <Label
+                Margin="10,0,20,0"
+                FontFamily="Material"
+                FontSize="Medium"
+                IsVisible="{Binding IsSelectionMode}"
+                Text="&#xe999;"
+                TextColor="{StaticResource Secondary}"
+                VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding DesactivarSeleccionCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+            <Label
+                Margin="0"
+                FontSize="Medium"
+                Text="{Binding Title}"
+                TextColor="{StaticResource Secondary}"
+                VerticalOptions="Center" />
+        </HorizontalStackLayout>
+    </Shell.TitleView>
+
+    <ContentPage.Triggers>
+        <DataTrigger
+            Binding="{Binding IsSelectionMode}"
+            TargetType="ContentPage"
+            Value="True">
+            <Setter Property="Shell.FlyoutBehavior" Value="Disabled" />
+        </DataTrigger>
+        <DataTrigger
+            Binding="{Binding IsSelectionMode}"
+            TargetType="ContentPage"
+            Value="False">
+            <Setter Property="Shell.FlyoutBehavior" Value="Flyout" />
+        </DataTrigger>
+    </ContentPage.Triggers>
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            Command="{Binding LoadCommand}"
+            EventName="Loaded" />
+    </ContentPage.Behaviors>
+
+    <Grid>
+
+        <!--  Lineas  -->
+        <CollectionView
+            Margin="0,3,0,0"
+            ItemsSource="{Binding Lineas}"
+            SelectedItems="{Binding LineassSeleccionadas, Mode=TwoWay}"
+            VerticalOptions="Fill">
+
+            <CollectionView.Triggers>
+                <DataTrigger
+                    Binding="{Binding IsSelectionMode}"
+                    TargetType="CollectionView"
+                    Value="True">
+                    <Setter Property="SelectionMode" Value="Multiple" />
+                </DataTrigger>
+                <DataTrigger
+                    Binding="{Binding IsSelectionMode}"
+                    TargetType="CollectionView"
+                    Value="False">
+                    <Setter Property="SelectionMode" Value="None" />
+                </DataTrigger>
+            </CollectionView.Triggers>
+
+            <CollectionView.ItemTemplate>
+                <templates:LineaCell />
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+        <!--  Progress indicator  -->
+        <ActivityIndicator
+            Margin="20"
+            HorizontalOptions="Center"
+            IsRunning="{Binding IsBusy}"
+            VerticalOptions="Start" />
+
+    </Grid>
+
+</ContentPage>

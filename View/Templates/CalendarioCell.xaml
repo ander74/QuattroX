@@ -186,16 +186,29 @@
                 </VerticalStackLayout>
 
                 <!--  Incidencia  -->
-                <Label
+                <HorizontalStackLayout
                     Grid.Row="0"
                     Grid.Column="2"
                     Margin="0,5,10,0"
-                    FontAttributes="Bold"
-                    FontSize="Micro"
                     HorizontalOptions="Start"
-                    LineBreakMode="NoWrap"
-                    Text="{Binding TextoIncidencia}"
-                    VerticalOptions="Center" />
+                    Spacing="5"
+                    VerticalOptions="Center">
+                    <Label
+                        FontFamily="Material"
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        IsVisible="{Binding HaySusti}"
+                        Text="&#xEBAD;"
+                        TextColor="{Binding DeudaDia, Converter={StaticResource decimalColorConverter}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        LineBreakMode="NoWrap"
+                        Text="{Binding TextoIncidencia}"
+                        VerticalOptions="Center" />
+                </HorizontalStackLayout>
 
                 <!--  Turno inferido  -->
                 <Label

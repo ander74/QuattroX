@@ -18,6 +18,7 @@ public static class MauiProgram {
             // Initialize the .NET MAUI Community Toolkit by adding the below line of code
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts => {
+                fonts.AddFont("FontAwesome.ttf", "FontAwesome");
                 fonts.AddFont("Material.ttf", "Material");
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
@@ -29,6 +30,7 @@ public static class MauiProgram {
         builder.Services.AddSingleton<DbRepository>();
         builder.Services.AddSingleton<ConfigService>();
         builder.Services.AddSingleton<CalculosService>();
+        builder.Services.AddSingleton<DropboxService>();
 
 
         // Páginas
@@ -40,6 +42,7 @@ public static class MauiProgram {
         builder.Services.AddSingleton<OpcionesConvenioPage>();
         builder.Services.AddSingleton<OpcionesGeneralesPage>();
         builder.Services.AddTransient<DetalleTrabajadorPage>();
+        builder.Services.AddTransient<LineasPage>();
 
 
         // ViewModels
@@ -49,6 +52,7 @@ public static class MauiProgram {
         builder.Services.AddSingleton<TrabajadoresViewModel>();
         builder.Services.AddSingleton<ConfigViewModel>();
         builder.Services.AddTransient<DetalleTrabajadorViewModel>();
+        builder.Services.AddTransient<LineasViewModel>();
 
 
 #if DEBUG

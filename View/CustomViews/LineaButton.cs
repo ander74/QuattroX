@@ -9,5 +9,5 @@
 namespace QuattroX.View.CustomViews;
 
 
-public class CalendarioButton : Button {
+public class LineaButton : Button {
 }

@@ -70,7 +70,7 @@ public partial class TrabajadorModel : ModelBase {
     public int RowIndex { get; set; }
 
 
-    public bool HayNotas => string.IsNullOrWhiteSpace(Notas);
+    public bool HayNotas => !string.IsNullOrWhiteSpace(Notas);
 
 
     [ObservableProperty]

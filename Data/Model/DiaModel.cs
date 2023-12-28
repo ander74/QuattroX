@@ -195,6 +195,15 @@ public partial class DiaModel : ModelBase {
     public bool HaySusti => Incidencia?.Codigo == 11 || Incidencia?.Codigo == 12;
 
 
+    public decimal DeudaDia {
+        get {
+            if (Incidencia?.Codigo == 11) return -1;
+            if (Incidencia?.Codigo == 12) return 1;
+            return 0;
+        }
+    }
+
+
     #endregion
     // ====================================================================================================
 

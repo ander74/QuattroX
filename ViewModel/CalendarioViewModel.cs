@@ -12,7 +12,6 @@ using QuattroX.Data.Messages;
 using QuattroX.Data.Model;
 using QuattroX.Data.Repositories;
 using QuattroX.Services;
-
 #if IOS
 using UIKit;
 #endif

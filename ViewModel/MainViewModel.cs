@@ -25,12 +25,14 @@ public partial class MainViewModel : BaseViewModel {
     private readonly ConfigService configService;
     private readonly DbRepository dbRepository;
     private readonly TrabajadoresViewModel trabajadoresViewModel;
+    private readonly DropboxService dropboxService;
 
-    public MainViewModel(DatabaseService dbService, ConfigService configService, DbRepository dbRepository, TrabajadoresViewModel trabajadoresViewModel) {
+    public MainViewModel(DatabaseService dbService, ConfigService configService, DbRepository dbRepository, TrabajadoresViewModel trabajadoresViewModel, DropboxService dropboxService) {
         this.dbService = dbService;
         this.configService = configService;
         this.dbRepository = dbRepository;
         this.trabajadoresViewModel = trabajadoresViewModel;
+        this.dropboxService = dropboxService;
         Title = "Cargando";
     }
 
@@ -236,6 +238,10 @@ public partial class MainViewModel : BaseViewModel {
         await dbService.InitAsync();
         await configService.InitAsync();
         await trabajadoresViewModel.InitAsync();
+
+        //TODO: Autenticación de Dropbox.
+
+
 
         //TODO: Quitar los mocks en producción.
         var trabajadores = await dbService.Db.Table<TrabajadorEntity>().CountAsync();

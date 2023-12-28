@@ -114,6 +114,7 @@ public class CalculosService {
         // Horas trabajadas.
         dia.Trabajadas = (horaFinal - horaInicio).ToDecimal();
         if (dia.Trabajadas < configService.Opciones.JornadaMinima) dia.Trabajadas = configService.Opciones.JornadaMinima;
+        dia.Trabajadas = GetTrabajadas(dia.Trabajadas, dia.Incidencia.Tipo);
         // Horas acumuladas.
         dia.Acumuladas = GetAcumuladas(dia.Trabajadas, dia.Incidencia.Tipo);
         // Horas nocturnas.
@@ -124,20 +125,21 @@ public class CalculosService {
         if (dia.Turno == 2) {
             dia.Nocturnas += (horaFinal > configService.Opciones.InicioNocturnas ? horaFinal - configService.Opciones.InicioNocturnas : TimeSpan.Zero).ToDecimal();
         }
+        dia.Nocturnas = GetNocturnas(dia.Nocturnas, dia.Incidencia.Tipo);
         // Dieta de desayuno.
-        dia.Desayuno = horaInicio < configService.Opciones.HoraLimiteDesayuno;
+        dia.Desayuno = GetDieta(horaInicio < configService.Opciones.HoraLimiteDesayuno, dia.Incidencia.Tipo);
         // Dieta de comida.
         dia.Comida = false;
         if (dia.Turno == 1) {
-            dia.Comida = horaFinal > configService.Opciones.HoraLimiteComida1;
+            dia.Comida = GetDieta(horaFinal > configService.Opciones.HoraLimiteComida1, dia.Incidencia.Tipo);
         }
         if (dia.Turno == 2) {
-            dia.Comida = horaInicio < configService.Opciones.HoraLimiteComida2;
+            dia.Comida = GetDieta(horaInicio < configService.Opciones.HoraLimiteComida2, dia.Incidencia.Tipo);
         }
         // Dieta de cena.
         var limiteCena = configService.Opciones.HoraLimiteCena < configService.Opciones.HoraLimiteDesayuno ?
             configService.Opciones.HoraLimiteCena + TimeSpan.FromDays(1) : configService.Opciones.HoraLimiteCena;
-        dia.Cena = horaFinal > limiteCena;
+        dia.Cena = GetDieta(horaFinal > limiteCena, dia.Incidencia.Tipo);
     }
 
 
@@ -234,12 +236,25 @@ public class CalculosService {
         minutosTrabajados += intermedio;
         minutosNocturnos += intermedioNocturno;
         // Establecemos los resultados.
-        dia.Trabajadas = minutosTrabajados;
+        dia.Trabajadas = GetTrabajadas(minutosTrabajados, dia.Incidencia.Tipo);
         dia.Acumuladas = GetAcumuladas(dia.Trabajadas, dia.Incidencia.Tipo);
-        dia.Nocturnas = minutosNocturnos;
-        dia.Desayuno = dietaDesayuno;
-        dia.Comida = dietaComida;
-        dia.Cena = dietaCena;
+        dia.Nocturnas = GetNocturnas(minutosNocturnos, dia.Incidencia.Tipo);
+        dia.Desayuno = GetDieta(dietaDesayuno, dia.Incidencia.Tipo);
+        dia.Comida = GetDieta(dietaComida, dia.Incidencia.Tipo);
+        dia.Cena = GetDieta(dietaCena, dia.Incidencia.Tipo);
+    }
+
+
+    /// <summary>
+    /// Devuelve las horas que se acumulan en función de las horas trabajadas y el tipo de incidencia.
+    /// </summary>
+    private decimal GetTrabajadas(decimal trabajadas, TipoIncidencia tipoIncidencia) {
+        return tipoIncidencia switch {
+            TipoIncidencia.Trabajo => trabajadas,
+            TipoIncidencia.FranqueoTrabajado => trabajadas,
+            TipoIncidencia.FiestaPorOtroDia => 0m,
+            _ => 0m,
+        };
     }
 
 
@@ -252,6 +267,31 @@ public class CalculosService {
             TipoIncidencia.FranqueoTrabajado => trabajadas,
             TipoIncidencia.FiestaPorOtroDia => -configService.Opciones.JornadaMedia,
             _ => 0m,
+        };
+    }
+
+
+    /// <summary>
+    /// Devuelve las horas que se acumulan en función de las horas trabajadas y el tipo de incidencia.
+    /// </summary>
+    private decimal GetNocturnas(decimal nocturnas, TipoIncidencia tipoIncidencia) {
+        return tipoIncidencia switch {
+            TipoIncidencia.Trabajo => nocturnas,
+            TipoIncidencia.FranqueoTrabajado => nocturnas,
+            TipoIncidencia.FiestaPorOtroDia => 0m,
+            _ => 0m,
+        };
+    }
+
+
+    /// <summary>
+    /// Devuelve las horas que se acumulan en función de las horas trabajadas y el tipo de incidencia.
+    /// </summary>
+    private bool GetDieta(bool dieta, TipoIncidencia tipoIncidencia) {
+        return tipoIncidencia switch {
+            TipoIncidencia.Trabajo => dieta,
+            TipoIncidencia.FranqueoTrabajado => dieta,
+            _ => false,
         };
     }
 

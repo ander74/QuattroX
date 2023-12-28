@@ -78,6 +78,18 @@
     </ShellContent>
 
     <ShellContent
+        Title="Líneas"
+        ContentTemplate="{DataTemplate view:LineasPage}"
+        Route="LineasPage">
+        <ShellContent.Icon>
+            <FontImageSource
+                FontFamily="FontAwesome"
+                Glyph="&#xEAD9;"
+                Color="DimGray" />
+        </ShellContent.Icon>
+    </ShellContent>
+
+    <ShellContent
         Title="Configuración"
         ContentTemplate="{DataTemplate view:ConfigPage}"
         Route="ConfigPage">
