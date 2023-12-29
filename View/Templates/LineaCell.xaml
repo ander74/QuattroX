@@ -5,11 +5,176 @@
 <DataTemplate
     x:Class="QuattroX.View.Templates.LineaCell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-    <VerticalStackLayout>
-        <Label
-            HorizontalOptions="Center"
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" />
-    </VerticalStackLayout>
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:cnv="clr-namespace:QuattroX.View.Converters"
+    xmlns:customView="clr-namespace:QuattroX.View.CustomViews"
+    xmlns:enums="clr-namespace:QuattroX.Data.Enums"
+    xmlns:model="clr-namespace:QuattroX.Data.Model"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:QuattroX.ViewModel"
+    x:DataType="model:LineaModel">
+
+    <SwipeView android:SwipeView.SwipeTransitionMode="Reveal">
+        <SwipeView.Resources>
+            <cnv:IndexToColorConverter
+                x:Key="indexToColorConverter"
+                ColorImpar="GhostWhite"
+                ColorPar="Lavender" />
+
+            <cnv:DecimalColorConverter x:Key="decimalColorConverter" />
+
+            <LinearGradientBrush x:Key="colorLlamada" EndPoint="0,1">
+                <GradientStop Offset="0" Color="Transparent" />
+                <GradientStop Offset="0.05" Color="DarkRed" />
+                <GradientStop Offset="0.95" Color="DarkRed" />
+                <GradientStop Offset="1" Color="Transparent" />
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="colorEmail" EndPoint="0,1">
+                <GradientStop Offset="0" Color="Transparent" />
+                <GradientStop Offset="0.05" Color="DarkGreen" />
+                <GradientStop Offset="0.95" Color="DarkGreen" />
+                <GradientStop Offset="1" Color="Transparent" />
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="colorItemsIzquierdos" EndPoint="0,1">
+                <GradientStop Offset="0" Color="Transparent" />
+                <GradientStop Offset="0.05" Color="#56acff" />
+                <GradientStop Offset="0.95" Color="#56acff" />
+                <GradientStop Offset="1" Color="Transparent" />
+            </LinearGradientBrush>
+
+        </SwipeView.Resources>
+
+        <SwipeView.LeftItems>
+            <SwipeItems
+                Mode="Reveal"
+                SwipeBehaviorOnInvoked="Close">
+                <SwipeItemView
+                    Background="{StaticResource colorEmail}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrabajadoresViewModel}}, Path=MandarEmailCommand}"
+                    CommandParameter="{Binding .}">
+                    <Label
+                        Margin="10,0"
+                        Padding="10,5"
+                        FontFamily="Material"
+                        FontSize="Title"
+                        HorizontalOptions="Fill"
+                        HorizontalTextAlignment="Center"
+                        Text="&#xE965;"
+                        TextColor="GhostWhite"
+                        VerticalOptions="Center" />
+                </SwipeItemView>
+            </SwipeItems>
+        </SwipeView.LeftItems>
+
+
+        <SwipeView.RightItems>
+            <SwipeItems
+                Mode="Reveal"
+                SwipeBehaviorOnInvoked="Close">
+                <SwipeItemView
+                    Background="{StaticResource colorEmail}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrabajadoresViewModel}}, Path=MandarEmailCommand}"
+                    CommandParameter="{Binding .}">
+                    <Label
+                        Margin="10,0"
+                        Padding="10,5"
+                        FontFamily="Material"
+                        FontSize="Title"
+                        HorizontalOptions="Fill"
+                        HorizontalTextAlignment="Center"
+                        Text="&#xE965;"
+                        TextColor="GhostWhite"
+                        VerticalOptions="Center" />
+                </SwipeItemView>
+            </SwipeItems>
+        </SwipeView.RightItems>
+
+        <customView:LineaCellBorder
+            x:Name="Marco"
+            Margin="2,0,4,5"
+            BackgroundColor="{Binding RowIndex, Converter={StaticResource indexToColorConverter}}"
+            StrokeShape="RoundRectangle, 5,5,5,5">
+
+            <customView:LineaCellBorder.Shadow>
+                <Shadow
+                    Brush="DimGray"
+                    Opacity="0.5"
+                    Radius="12"
+                    Offset="2,2" />
+            </customView:LineaCellBorder.Shadow>
+
+            <Grid
+                ColumnDefinitions="Auto,*"
+                RowDefinitions="*,*">
+
+                <!--  NOTA DE ESTE BOTÓN  -->
+                <!--  ==================  -->
+                <!--  Este botón está encima de todos los controles para gestionar el evento Click a través del comando del propio botón  -->
+                <!--  y para gestionar el evento LongClick a través del Handler que se modifica en el viewmodel.  -->
+                <customView:LineaButton
+                    Grid.RowSpan="2"
+                    Grid.ColumnSpan="2"
+                    Background="Transparent"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:LineasViewModel}}, Path=AbrirLineaCommand}"
+                    CommandParameter="{Binding .}"
+                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type vm:LineasViewModel}}, Path=IsNotSelectionMode}" />
+
+                <!--  Línea  -->
+                <Label
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Grid.Column="0"
+                    Margin="5,0,15,0"
+                    Padding="5"
+                    FontFamily="Consolas"
+                    FontSize="Title"
+                    HorizontalOptions="Center"
+                    Text="{Binding Linea}"
+                    VerticalOptions="Center" />
+
+                <!--  Descripción  -->
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="5"
+                    FontAttributes="Bold"
+                    FontSize="Micro"
+                    HorizontalOptions="Start"
+                    Text="{Binding Texto}"
+                    VerticalOptions="Center" />
+
+                <!--  Servicios  -->
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="5"
+                    FontSize="Micro"
+                    HorizontalOptions="Start"
+                    Text="{Binding TextoServicios}"
+                    VerticalOptions="Center" />
+
+            </Grid>
+
+        </customView:LineaCellBorder>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup Name="CommonStates">
+                <VisualState Name="Normal">
+                    <VisualState.Setters>
+                        <Setter Property="BackgroundColor" Value="Transparent" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState Name="Selected">
+                    <VisualState.Setters>
+                        <Setter Property="BackgroundColor" Value="Transparent" />
+                        <Setter TargetName="Marco" Property="BackgroundColor" Value="BurlyWood" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </SwipeView>
+
 </DataTemplate>

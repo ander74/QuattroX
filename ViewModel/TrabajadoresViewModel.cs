@@ -176,7 +176,9 @@ public partial class TrabajadoresViewModel : BaseViewModel {
     async Task LoadAsync() {
         try {
             IsBusy = true;
-            await CargarTrabajadores();
+            if (Trabajadores is null || Trabajadores.Count == 0) {
+                await CargarTrabajadores();
+            }
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
         } finally {
@@ -252,7 +254,6 @@ public partial class TrabajadoresViewModel : BaseViewModel {
         } finally {
             IsBusy = false;
         }
-
     }
 
 

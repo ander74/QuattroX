@@ -3,7 +3,7 @@
 <!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
 <!--  ===========================================================================================  -->
 <DataTemplate
-    x:Class="QuattroX.View.Templates.TrabajadoresCell"
+    x:Class="QuattroX.View.Templates.ServicioLineaCell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
@@ -13,16 +13,20 @@
     xmlns:model="clr-namespace:QuattroX.Data.Model"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:QuattroX.ViewModel"
-    x:DataType="model:TrabajadorModel">
+    x:DataType="model:ServicioLineaModel">
 
     <SwipeView android:SwipeView.SwipeTransitionMode="Reveal">
         <SwipeView.Resources>
             <cnv:IndexToColorConverter
                 x:Key="indexToColorConverter"
                 ColorImpar="GhostWhite"
-                ColorPar="AntiqueWhite" />
+                ColorPar="#E1F3FE" />
 
             <cnv:DecimalColorConverter x:Key="decimalColorConverter" />
+
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="Black" />
+            </Style>
 
             <LinearGradientBrush x:Key="colorLlamada" EndPoint="0,1">
                 <GradientStop Offset="0" Color="Transparent" />
@@ -122,19 +126,19 @@
             </SwipeItems>
         </SwipeView.RightItems>
 
-        <customView:TrabajadorCellBorder
+        <customView:ServicioLineaCellBorder
             x:Name="Marco"
             Margin="2,0,4,5"
             BackgroundColor="{Binding RowIndex, Converter={StaticResource indexToColorConverter}}"
             StrokeShape="RoundRectangle, 5,5,5,5">
 
-            <customView:TrabajadorCellBorder.Shadow>
+            <customView:ServicioLineaCellBorder.Shadow>
                 <Shadow
                     Brush="DimGray"
                     Opacity="0.5"
                     Radius="12"
                     Offset="2,2" />
-            </customView:TrabajadorCellBorder.Shadow>
+            </customView:ServicioLineaCellBorder.Shadow>
 
             <Grid
                 ColumnDefinitions="Auto,*"
@@ -144,15 +148,15 @@
                 <!--  ==================  -->
                 <!--  Este botón está encima de todos los controles para gestionar el evento Click a través del comando del propio botón  -->
                 <!--  y para gestionar el evento LongClick a través del Handler que se modifica en el viewmodel.  -->
-                <customView:TrabajadorButton
+                <customView:ServicioLineaButton
                     Grid.RowSpan="2"
                     Grid.ColumnSpan="2"
                     Background="Transparent"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TrabajadoresViewModel}}, Path=AbrirTrabajadorCommand}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleLineaViewModel}}, Path=AbrirServicioCommand}"
                     CommandParameter="{Binding .}"
-                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type vm:TrabajadoresViewModel}}, Path=IsNotSelectionMode}" />
+                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleLineaViewModel}}, Path=IsNotSelectionMode}" />
 
-                <!--  Matrícula  -->
+                <!--  Servicio  -->
                 <Label
                     Grid.Row="0"
                     Grid.RowSpan="2"
@@ -162,79 +166,60 @@
                     FontFamily="Consolas"
                     FontSize="Title"
                     HorizontalOptions="Center"
-                    Text="{Binding Matricula}"
+                    Text="{Binding TextoServicio}"
                     VerticalOptions="Center" />
 
-                <!--  Nombre y apellidos  -->
-                <Label
+                <!--  Inicio y lugar inicio  -->
+                <HorizontalStackLayout
                     Grid.Row="0"
                     Grid.Column="1"
                     Margin="5"
-                    FontAttributes="Bold"
-                    FontSize="Micro"
                     HorizontalOptions="Start"
-                    Text="{Binding NombreCompleto}"
-                    VerticalOptions="Center" />
-
-                <!--  Calificación  -->
-                <Label
-                    Grid.Row="0"
-                    Grid.RowSpan="2"
-                    Grid.Column="1"
-                    Margin="10"
-                    FontAttributes="Bold"
-                    FontFamily="Material"
-                    FontSize="Medium"
-                    HorizontalOptions="End"
                     VerticalOptions="Center">
-                    <Label.Triggers>
-                        <DataTrigger
-                            Binding="{Binding Calificacion}"
-                            TargetType="Label"
-                            Value="{x:Static enums:CalificacionTrabajador.Buena}">
-                            <Setter Property="Text" Value="&#xEBBB;" />
-                            <Setter Property="TextColor" Value="DarkGreen" />
-                        </DataTrigger>
-                        <DataTrigger
-                            Binding="{Binding Calificacion}"
-                            TargetType="Label"
-                            Value="{x:Static enums:CalificacionTrabajador.Mala}">
-                            <Setter Property="Text" Value="&#xEBBA;" />
-                            <Setter Property="TextColor" Value="DarkRed" />
-                        </DataTrigger>
-                    </Label.Triggers>
-                </Label>
+                    <Label
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        Text="{Binding Inicio, StringFormat='{}{0:hh\\:mm}'}"
+                        VerticalOptions="Center" />
+                    <Label
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        Text=" - "
+                        VerticalOptions="Center" />
+                    <Label
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        Text="{Binding LugarInicio}"
+                        VerticalOptions="Center" />
+                </HorizontalStackLayout>
 
-                <!--  Notas y deuda  -->
+                <!--  Final y lugar final  -->
                 <HorizontalStackLayout
                     Grid.Row="1"
-                    Grid.Column="1">
-
-                    <!--  Notas  -->
+                    Grid.Column="1"
+                    Margin="5"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center">
                     <Label
-                        Margin="5"
-                        FontFamily="Material"
-                        FontSize="Small"
-                        HorizontalOptions="Center"
-                        IsVisible="{Binding HayNotas}"
-                        Text="&#xEE4C;"
-                        TextColor="Goldenrod"
-                        VerticalOptions="Center" />
-
-                    <!--  Deuda  -->
-                    <Label
-                        Margin="5"
                         FontSize="Micro"
-                        HorizontalOptions="Center"
-                        Text="{Binding TextoDeuda}"
-                        TextColor="{Binding DiasDeuda, Converter={StaticResource decimalColorConverter}}"
+                        HorizontalOptions="Start"
+                        Text="{Binding Final, StringFormat='{}{0:hh\\:mm}'}"
                         VerticalOptions="Center" />
-
+                    <Label
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        Text=" - "
+                        VerticalOptions="Center" />
+                    <Label
+                        FontSize="Micro"
+                        HorizontalOptions="Start"
+                        Text="{Binding LugarFinal}"
+                        VerticalOptions="Center" />
                 </HorizontalStackLayout>
 
             </Grid>
 
-        </customView:TrabajadorCellBorder>
+        </customView:ServicioLineaCellBorder>
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup Name="CommonStates">

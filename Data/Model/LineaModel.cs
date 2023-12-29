@@ -5,8 +5,6 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-using System.Collections.ObjectModel;
-
 namespace QuattroX.Data.Model;
 
 
@@ -27,7 +25,34 @@ public partial class LineaModel : ModelBase {
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TextoServicios))]
     ObservableCollection<ServicioLineaModel> servicios;
+
+    partial void OnServiciosChanged(ObservableCollection<ServicioLineaModel> value) {
+        Servicios.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TextoServicios));
+    }
+
+
+    #endregion
+    // ====================================================================================================
+
+
+    // ====================================================================================================
+    #region Propiedades no mapeadas
+    // ====================================================================================================
+
+
+    public int RowIndex { get; set; }
+
+
+    public string TextoServicios {
+        get {
+            if (Servicios is null || Servicios.Count == 0) return "No hay servicios";
+            if (Servicios.Count == 1) return "Un servicio";
+            return $"{Servicios.Count} servicios";
+        }
+    }
+
 
 
     #endregion

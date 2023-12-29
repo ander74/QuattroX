@@ -11,6 +11,10 @@ using QuattroX.Data.Messages;
 using QuattroX.Data.Model;
 using QuattroX.Data.Repositories;
 using QuattroX.Services;
+using QuattroX.View.CustomViews;
+#if IOS
+using UIKit;
+#endif
 using System.ComponentModel;
 
 namespace QuattroX.ViewModel;
@@ -30,6 +34,16 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     public DetalleDiaViewModel(DbRepository dbRepository, CalculosService calculosService) {
         this.dbRepository = dbRepository;
         this.calculosService = calculosService;
+
+        ServiciosSeleccionados.CollectionChanged += (sender, e) => {
+            var num = ServiciosSeleccionados.Count;
+            IsSelectionMode = num > 0;
+            if (num > 0) {
+                Title = num == 1 ? "1 servicio sel." : $"{num} servicios sel.";
+            } else {
+                Title = $"{Dia.Fecha.Day:00} - {Textos.MesesAbr[Dia.Fecha.Month]} - {Dia.Fecha.Year}";
+            }
+        };
     }
 
     #endregion
@@ -84,6 +98,20 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     public string[] Turnos => ["Mañana", "Tarde"];
 
 
+    // Propiedades relacionadas con la selección de servicios
+
+    [ObservableProperty]
+    ObservableCollection<object> serviciosSeleccionados = new();
+
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNotSelectionMode))]
+    bool isSelectionMode;
+
+
+    public bool IsNotSelectionMode => !IsSelectionMode;
+
+
     #endregion
     // ====================================================================================================
 
@@ -91,6 +119,44 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     // ====================================================================================================
     #region Métodos públicos
     // ====================================================================================================
+
+
+    #endregion
+    // ====================================================================================================
+
+
+    // ====================================================================================================
+    #region Métodos de plataforma
+    // ====================================================================================================
+
+    private void HandlerLongPress() {
+
+        Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping("BotonLongPress", (handler, view) => {
+#if ANDROID
+
+            if (view is ServicioDiaButton) {
+                handler.PlatformView.LongClick += (sender, e) => {
+                    if (!IsSelectionMode) {
+                        IsSelectionMode = true;
+                    }
+                    handler.PlatformView.CancelLongPress();
+                };
+                //handler.PlatformView.Click += Border_Click;
+            }
+#endif
+#if IOS
+            if (view is ServicioDiaButton) {
+                handler.PlatformView.UserInteractionEnabled = true;
+                handler.PlatformView.AddGestureRecognizer(new UILongPressGestureRecognizer((s) => {
+                    if (!IsSelectionMode) {
+                        IsSelectionMode = true;
+                    }
+                }));
+            }
+#endif
+        });
+
+    }
 
 
     #endregion
@@ -155,6 +221,27 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     async Task CloseAsync() {
         await dbRepository.SaveDiaAsync(Dia.ToEntity());
         Messenger.Send(new CalcularResumenRequest());
+    }
+
+
+    [RelayCommand]
+    void Back() {
+        if (IsSelectionMode) {
+            ServiciosSeleccionados.Clear();
+        }
+    }
+
+
+    [RelayCommand]
+    async Task DesactivarSeleccionAsync() {
+        try {
+            IsBusy = true;
+            ServiciosSeleccionados.Clear();
+        } catch (Exception ex) {
+            await Shell.Current.DisplaySnackbar(ex.Message);
+        } finally {
+            IsBusy = false;
+        }
     }
 
 
@@ -278,6 +365,24 @@ public partial class DetalleDiaViewModel : BaseViewModel {
         } finally {
             IsBusy = false;
         }
+    }
+
+
+    [RelayCommand]
+    async Task AbrirServicioAsync(ServicioDiaModel servicio) {
+
+    }
+
+
+    [RelayCommand]
+    async Task CrearServicioAsync() {
+
+    }
+
+
+    [RelayCommand]
+    async Task BorrarServiciosAsync() {
+
     }
 
 

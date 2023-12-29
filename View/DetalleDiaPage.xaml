@@ -24,6 +24,21 @@
             EventName="Disappearing" />
     </ContentPage.Behaviors>
 
+    <ContentPage.Triggers>
+        <DataTrigger
+            Binding="{Binding IsSelectionMode}"
+            TargetType="ContentPage"
+            Value="True">
+            <Setter Property="Shell.FlyoutBehavior" Value="Disabled" />
+        </DataTrigger>
+        <DataTrigger
+            Binding="{Binding IsSelectionMode}"
+            TargetType="ContentPage"
+            Value="False">
+            <Setter Property="Shell.FlyoutBehavior" Value="Flyout" />
+        </DataTrigger>
+    </ContentPage.Triggers>
+
     <Grid
         ColumnDefinitions="*,*"
         RowDefinitions="Auto,*">

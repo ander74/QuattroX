@@ -5,8 +5,6 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-using System.Collections.ObjectModel;
-
 namespace QuattroX.Data.Model;
 
 
@@ -24,6 +22,18 @@ public partial class ServicioLineaModel : ServicioBaseModel {
 
     [ObservableProperty]
     ObservableCollection<ServicioSecundarioModel> servicios;
+
+
+    #endregion
+    // ====================================================================================================
+
+
+    // ====================================================================================================
+    #region Propiedades no mapeadas
+    // ====================================================================================================
+
+
+    public int RowIndex { get; set; }
 
 
     #endregion

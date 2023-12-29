@@ -5,42 +5,37 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
+
 using QuattroX.Data.Helpers;
 using QuattroX.Data.Model;
-using QuattroX.Data.Repositories;
-using QuattroX.Services;
-using QuattroX.View;
 
 #if IOS
 using UIKit;
 #endif
+using QuattroX.Data.Repositories;
 using QuattroX.View.CustomViews;
 
 namespace QuattroX.ViewModel;
 
 
-public partial class LineasViewModel : BaseViewModel {
-
+[QueryProperty(nameof(Linea), "Linea")]
+public partial class DetalleLineaViewModel : BaseViewModel {
 
     // ====================================================================================================
     #region Campos privados y constructor
     // ====================================================================================================
 
     private readonly DbRepository dbRepository;
-    private readonly ConfigService configService;
-    private readonly CalculosService calculosService;
 
-    public LineasViewModel(DbRepository dbRepository, ConfigService configService, CalculosService calculosService) {
+
+    public DetalleLineaViewModel(DbRepository dbRepository) {
         this.dbRepository = dbRepository;
-        this.configService = configService;
-        this.calculosService = calculosService;
-        Title = "Líneas";
 
-        LineasSeleccionadas.CollectionChanged += (sender, e) => {
-            var num = LineasSeleccionadas.Count;
+        ServiciosSeleccionados.CollectionChanged += (sender, e) => {
+            var num = ServiciosSeleccionados.Count;
             IsSelectionMode = num > 0;
             if (num > 0) {
-                Title = num == 1 ? "1 línea sel." : $"{num} líneas sel.";
+                Title = num == 1 ? "1 servicio sel." : $"{num} servicios sel.";
             } else {
                 Title = "Líneas";
             }
@@ -59,13 +54,21 @@ public partial class LineasViewModel : BaseViewModel {
 
 
     [ObservableProperty]
-    ObservableCollection<LineaModel> lineas;
+    LineaModel linea;
+    partial void OnLineaChanged(LineaModel oldValue, LineaModel newValue) {
+        if (Linea is null) return;
+        Title = Linea.Linea;
+        var index = 1;
+        if (Linea.Servicios is not null) {
+            foreach (var servicio in Linea.Servicios) servicio.RowIndex = index++;
+        }
+    }
 
 
     // Propiedades que gestionan la selección
 
     [ObservableProperty]
-    ObservableCollection<object> lineasSeleccionadas = new();
+    ObservableCollection<object> serviciosSeleccionados = new();
 
 
     [ObservableProperty]
@@ -74,6 +77,7 @@ public partial class LineasViewModel : BaseViewModel {
 
 
     public bool IsNotSelectionMode => !IsSelectionMode;
+
 
     #endregion
     // ====================================================================================================
@@ -97,7 +101,7 @@ public partial class LineasViewModel : BaseViewModel {
         Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping("BotonLongPress", (handler, view) => {
 #if ANDROID
 
-            if (view is LineaButton) {
+            if (view is ServicioLineaButton) {
                 handler.PlatformView.LongClick += (sender, e) => {
                     if (!IsSelectionMode) {
                         IsSelectionMode = true;
@@ -107,7 +111,7 @@ public partial class LineasViewModel : BaseViewModel {
             }
 #endif
 #if IOS
-            if (view is LineaButton) {
+            if (view is ServicioLineaButton) {
                 handler.PlatformView.UserInteractionEnabled = true;
                 handler.PlatformView.AddGestureRecognizer(new UILongPressGestureRecognizer((s) => {
                     if (!IsSelectionMode) {
@@ -129,26 +133,6 @@ public partial class LineasViewModel : BaseViewModel {
     #region Métodos privados
     // ====================================================================================================
 
-    private async Task CargarLineas() {
-        var lista = await dbRepository.GetLineasAsync();
-        Lineas = new();
-        var index = 1;
-        foreach (var linea in lista) {
-            var model = linea.ToModel();
-            model.RowIndex = index++;
-            model.Modified = false;
-            Lineas.Add(model);
-        }
-    }
-
-
-    private void RenumerarLineas() {
-        var index = 1;
-        foreach (var linea in Lineas) {
-            linea.RowIndex = index++;
-        }
-    }
-
 
     #endregion
     // ====================================================================================================
@@ -166,24 +150,15 @@ public partial class LineasViewModel : BaseViewModel {
 
 
     [RelayCommand]
-    async Task LoadAsync() {
-        try {
-            IsBusy = true;
-            if (Lineas is null || Lineas.Count == 0) {
-                await CargarLineas();
-            }
-        } catch (Exception ex) {
-            await Shell.Current.DisplaySnackbar(ex.Message);
-        } finally {
-            IsBusy = false;
-        }
+    async Task CloseAsync() {
+        await dbRepository.SaveLineaAsync(Linea.ToEntity());
     }
 
 
     [RelayCommand]
     void Back() {
         if (IsSelectionMode) {
-            LineasSeleccionadas.Clear();
+            ServiciosSeleccionados.Clear();
         }
     }
 
@@ -192,7 +167,7 @@ public partial class LineasViewModel : BaseViewModel {
     async Task DesactivarSeleccionAsync() {
         try {
             IsBusy = true;
-            LineasSeleccionadas.Clear();
+            ServiciosSeleccionados.Clear();
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
         } finally {
@@ -202,55 +177,15 @@ public partial class LineasViewModel : BaseViewModel {
 
 
     [RelayCommand]
-    async Task AbrirLineaAsync(LineaModel linea) {
-        if (IsSelectionMode || linea is null) return;
-        await Shell.Current.GoToAsync(nameof(DetalleLineaPage), true, new Dictionary<string, object> { { "Linea", linea } });
+    async Task CrearServicioAsync() {
+
     }
 
 
     [RelayCommand]
-    async Task CrearLineaAsync() {
-        if (Lineas is null) return;
-        var resultado = await Shell.Current.DisplayPromptAsync("Nueva línea", "Introduce la línea", "Siguiente", "Cancelar");
-        if (resultado is null) return;
-        if (await dbRepository.ExisteLineaAsync(resultado)) {
-            await Shell.Current.DisplayAlert("ERROR", $"La línea {resultado} ya está registrada.", "Cerrar");
-            return;
-        }
-        var descripcion = await Shell.Current.DisplayPromptAsync("Nueva línea", "Introduce la descripción", "Crear", "Cancelar");
-        if (descripcion is null) return;
-        var newLinea = new LineaModel { Linea = resultado, Texto = descripcion };
-        var id = await dbRepository.SaveLineaAsync(newLinea.ToEntity());
-        newLinea.Id = id;
-        newLinea.RowIndex = Lineas.Count + 1;
-        Lineas.Add(newLinea);
-        await AbrirLineaAsync(newLinea);
+    async Task BorrarServiciosAsync() {
+
     }
-
-
-    [RelayCommand]
-    async Task BorrarLineasAsync() {
-        if (LineasSeleccionadas is null || LineasSeleccionadas.Count == 0) return;
-        var mensaje = LineasSeleccionadas.Count > 1 ?
-            $"Vas a borrar {LineasSeleccionadas.Count} líneas.\n\n¿Estás segur@?\n\nEsta acción no se puede deshacer." :
-            $"Vas a borrar una línea.\n\n¿Estás segur@?\n\nEsta acción no se puede deshacer.";
-        var resultado = await Shell.Current.DisplayAlert("Borrar líneas", mensaje, "Borrar", "Cancelar");
-        if (!resultado) return;
-        try {
-            IsBusy = true;
-            foreach (LineaModel linea in LineasSeleccionadas) {
-                await dbRepository.DeleteLineaAsync(linea.Id);
-                Lineas.Remove(linea);
-            }
-            LineasSeleccionadas.Clear();
-            await CargarLineas();
-        } catch (Exception ex) {
-            await Shell.Current.DisplaySnackbar(ex.Message);
-        } finally {
-            IsBusy = false;
-        }
-    }
-
 
 
     #endregion

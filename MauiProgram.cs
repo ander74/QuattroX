@@ -33,26 +33,32 @@ public static class MauiProgram {
         builder.Services.AddSingleton<DropboxService>();
 
 
-        // Páginas
+        // Páginas generales
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<CalendarioPage>();
-        builder.Services.AddTransient<DetalleDiaPage>();
         builder.Services.AddSingleton<TrabajadoresPage>();
+        builder.Services.AddSingleton<LineasPage>();
         builder.Services.AddSingleton<ConfigPage>();
         builder.Services.AddSingleton<OpcionesConvenioPage>();
         builder.Services.AddSingleton<OpcionesGeneralesPage>();
+
+        // Páginas detalle
+        builder.Services.AddTransient<DetalleDiaPage>();
         builder.Services.AddTransient<DetalleTrabajadorPage>();
-        builder.Services.AddTransient<LineasPage>();
+        builder.Services.AddTransient<DetalleLineaPage>();
 
 
-        // ViewModels
+        // ViewModels generales
         builder.Services.AddSingleton<MainViewModel>();
         builder.Services.AddSingleton<CalendarioViewModel>();
-        builder.Services.AddTransient<DetalleDiaViewModel>();
         builder.Services.AddSingleton<TrabajadoresViewModel>();
         builder.Services.AddSingleton<ConfigViewModel>();
+        builder.Services.AddSingleton<LineasViewModel>();
+
+        // ViewModels detalle
+        builder.Services.AddTransient<DetalleDiaViewModel>();
         builder.Services.AddTransient<DetalleTrabajadorViewModel>();
-        builder.Services.AddTransient<LineasViewModel>();
+        builder.Services.AddTransient<DetalleLineaViewModel>();
 
 
 #if DEBUG

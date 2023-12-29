@@ -5,15 +5,15 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-
 using QuattroX.ViewModel;
 
 namespace QuattroX.View;
 
-public partial class LineasPage : ContentPage {
-    private readonly LineasViewModel viewModel;
+public partial class DetalleLineaPage : ContentPage {
 
-    public LineasPage(LineasViewModel viewModel) {
+    private readonly DetalleLineaViewModel viewModel;
+
+    public DetalleLineaPage(DetalleLineaViewModel viewModel) {
         InitializeComponent();
         this.viewModel = viewModel;
         BindingContext = viewModel;

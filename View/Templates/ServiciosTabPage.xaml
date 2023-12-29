@@ -6,12 +6,102 @@
     x:Class="QuattroX.View.Templates.ServiciosTabPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:templates="clr-namespace:QuattroX.View.Templates"
     xmlns:vm="clr-namespace:QuattroX.ViewModel"
     x:DataType="vm:DetalleDiaViewModel">
-    <VerticalStackLayout>
-        <Label
+
+    <Grid>
+
+        <!--  Servicios  -->
+        <CollectionView
+            x:Name="Collection"
+            Margin="0,3,0,0"
+            ItemsSource="{Binding Dia.Servicios}"
+            SelectedItems="{Binding ServiciosSeleccionados, Mode=TwoWay}"
+            VerticalOptions="Fill">
+
+            <CollectionView.Triggers>
+                <DataTrigger
+                    Binding="{Binding IsSelectionMode}"
+                    TargetType="CollectionView"
+                    Value="True">
+                    <Setter Property="SelectionMode" Value="Multiple" />
+                </DataTrigger>
+                <DataTrigger
+                    Binding="{Binding IsSelectionMode}"
+                    TargetType="CollectionView"
+                    Value="False">
+                    <Setter Property="SelectionMode" Value="None" />
+                </DataTrigger>
+            </CollectionView.Triggers>
+
+
+            <CollectionView.ItemTemplate>
+                <templates:ServicioDiaCell />
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout
+                    Margin="10"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Start">
+                    <Image
+                        Opacity="0.5"
+                        Source="bus.png"
+                        WidthRequest="150" />
+                    <Label
+                        FontSize="Title"
+                        HorizontalOptions="Center"
+                        Text="No hay servicios"
+                        TextColor="LightGray" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+        </CollectionView>
+
+        <!--  Botón añadir servicio  -->
+        <Button
+            Margin="30"
+            Padding="0"
+            BackgroundColor="{StaticResource Primary}"
+            Command="{Binding CrearServicioCommand}"
+            CornerRadius="25"
+            FontAttributes="Bold"
+            FontFamily="Material"
+            FontSize="30"
+            HeightRequest="50"
+            HorizontalOptions="End"
+            IsVisible="{Binding IsNotSelectionMode}"
+            Text="&#xE992;"
+            TextColor="{StaticResource Secondary}"
+            VerticalOptions="End"
+            WidthRequest="50" />
+
+        <!--  Botón borrar servicios  -->
+        <Button
+            Margin="30"
+            Padding="0"
+            BackgroundColor="DarkRed"
+            Command="{Binding BorrarServiciosCommand}"
+            CornerRadius="25"
+            FontAttributes="Bold"
+            FontFamily="Material"
+            FontSize="25"
+            HeightRequest="50"
+            HorizontalOptions="End"
+            IsVisible="{Binding IsSelectionMode}"
+            Text="&#xEC7D;"
+            TextColor="{StaticResource Secondary}"
+            VerticalOptions="End"
+            WidthRequest="50" />
+
+        <!--  Progress indicator  -->
+        <ActivityIndicator
+            Margin="20"
             HorizontalOptions="Center"
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" />
-    </VerticalStackLayout>
+            IsRunning="{Binding IsBusy}"
+            VerticalOptions="Start" />
+
+    </Grid>
+
 </ContentView>

@@ -3,20 +3,42 @@
 <!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
 <!--  ===========================================================================================  -->
 <ContentPage
-    x:Class="QuattroX.View.LineasPage"
+    x:Class="QuattroX.View.DetalleLineaPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:cnv="clr-namespace:QuattroX.View.Converters"
+    xmlns:nely="clr-namespace:Nelya.Maui.Controls.Label;assembly=Nelya.Maui"
     xmlns:templates="clr-namespace:QuattroX.View.Templates"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:QuattroX.ViewModel"
-    x:DataType="{x:Type vm:LineasViewModel}"
+    x:DataType="{x:Type vm:DetalleLineaViewModel}"
     Shell.BackgroundColor="{StaticResource Primary}"
-    Shell.ForegroundColor="{StaticResource Secondary}">
+    Shell.ForegroundColor="{StaticResource Secondary}"
+    Shell.TitleColor="{StaticResource Secondary}">
 
     <ContentPage.Resources>
-        <cnv:DecimalColorConverter x:Key="decimalColorConverter" />
         <cnv:DecimalConverter x:Key="decimalConverter" />
+
+        <Style TargetType="Entry">
+            <Setter Property="HorizontalOptions" Value="Fill" />
+            <Setter Property="Margin" Value="5,15,5,5" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+        <Style TargetType="Picker">
+            <Setter Property="HorizontalOptions" Value="Fill" />
+            <Setter Property="Margin" Value="5,15,5,5" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="HorizontalOptions" Value="Start" />
+            <Setter Property="Margin" Value="5,0,0,0" />
+            <Setter Property="HorizontalTextAlignment" Value="Start" />
+            <Setter Property="VerticalOptions" Value="Start" />
+            <Setter Property="FontSize" Value="Micro" />
+            <Setter Property="TextColor" Value="{StaticResource Primary}" />
+        </Style>
     </ContentPage.Resources>
 
     <Shell.TitleView>
@@ -59,17 +81,27 @@
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
-            Command="{Binding LoadCommand}"
-            EventName="Loaded" />
+            Command="{Binding CloseCommand}"
+            EventName="Disappearing" />
     </ContentPage.Behaviors>
 
-    <Grid>
+    <Grid RowDefinitions="Auto,Auto,*">
 
-        <!--  Lineas  -->
+        <!--  Descripcion  -->
+        <Label Text="Descripción" />
+        <Entry
+            HorizontalTextAlignment="Start"
+            Text="{Binding Linea.Texto}" />
+
+        <!--  Servicios  -->
+        <Label
+            Grid.Row="1"
+            Margin="5,5,0,5"
+            Text="Servicios" />
         <CollectionView
-            Margin="0,3,0,0"
-            ItemsSource="{Binding Lineas}"
-            SelectedItems="{Binding LineasSeleccionadas, Mode=TwoWay}"
+            Grid.Row="2"
+            ItemsSource="{Binding Linea.Servicios}"
+            SelectedItems="{Binding ServiciosSeleccionados, Mode=TwoWay}"
             VerticalOptions="Fill">
 
             <CollectionView.Triggers>
@@ -88,7 +120,7 @@
             </CollectionView.Triggers>
 
             <CollectionView.ItemTemplate>
-                <templates:LineaCell />
+                <templates:ServicioLineaCell />
             </CollectionView.ItemTemplate>
 
             <CollectionView.EmptyView>
@@ -102,19 +134,20 @@
                     <Label
                         FontSize="Title"
                         HorizontalOptions="Center"
-                        Text="No hay líneas"
+                        Text="No hay servicios"
                         TextColor="LightGray" />
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
 
         </CollectionView>
 
-        <!--  Botón añadir línea  -->
+        <!--  Botón añadir servicio  -->
         <Button
+            Grid.Row="2"
             Margin="30"
             Padding="0"
             BackgroundColor="{StaticResource Primary}"
-            Command="{Binding CrearLineaCommand}"
+            Command="{Binding CrearServicioCommand}"
             CornerRadius="25"
             FontAttributes="Bold"
             FontFamily="Material"
@@ -125,14 +158,23 @@
             Text="&#xE992;"
             TextColor="{StaticResource Secondary}"
             VerticalOptions="End"
-            WidthRequest="50" />
+            WidthRequest="50">
+            <Button.Shadow>
+                <Shadow
+                    Brush="DimGray"
+                    Opacity="1"
+                    Radius="12"
+                    Offset="5,5" />
+            </Button.Shadow>
+        </Button>
 
         <!--  Botón borrar líneas  -->
         <Button
+            Grid.Row="2"
             Margin="30"
             Padding="0"
             BackgroundColor="DarkRed"
-            Command="{Binding BorrarLineasCommand}"
+            Command="{Binding BorrarServiciosCommand}"
             CornerRadius="25"
             FontAttributes="Bold"
             FontFamily="Material"
@@ -147,10 +189,14 @@
 
         <!--  Progress indicator  -->
         <ActivityIndicator
+            Grid.Row="2"
             Margin="20"
             HorizontalOptions="Center"
             IsRunning="{Binding IsBusy}"
             VerticalOptions="Start" />
+
+
+
 
     </Grid>
 

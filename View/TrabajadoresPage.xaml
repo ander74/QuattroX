@@ -75,7 +75,7 @@
 
     <Grid>
 
-        <!--  Calendario  -->
+        <!--  Trabajadores  -->
         <CollectionView
             x:Name="Collection"
             Margin="0,3,0,0"
@@ -102,6 +102,22 @@
             <CollectionView.ItemTemplate>
                 <templates:TrabajadoresCell />
             </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout
+                    HorizontalOptions="Center"
+                    VerticalOptions="Start">
+                    <Image
+                        Opacity="0.5"
+                        Source="bus.png"
+                        WidthRequest="150" />
+                    <Label
+                        FontSize="Title"
+                        HorizontalOptions="Center"
+                        Text="No hay trabajador@s"
+                        TextColor="LightGray" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
 
             <CollectionView.Footer>
                 <Label HeightRequest="80" />

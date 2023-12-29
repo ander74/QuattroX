@@ -161,6 +161,11 @@ public class DbRepository {
     }
 
 
+    public async Task<bool> ExisteLineaAsync(string linea) {
+        return await dbService.Db.Table<LineaEntity>().CountAsync(t => t.Linea.ToUpper() == linea.ToUpper()) > 0;
+    }
+
+
     public async Task<int> SaveLineaAsync(LineaEntity linea) {
         if (linea is null) return 0;
         if (linea.Id == 0) {
