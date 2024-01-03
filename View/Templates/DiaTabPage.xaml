@@ -17,7 +17,7 @@
 
         <Style TargetType="Entry">
             <Setter Property="HorizontalOptions" Value="Fill" />
-            <Setter Property="Margin" Value="5,15,5,5" />
+            <Setter Property="Margin" Value="5,15,5,0" />
             <Setter Property="HorizontalTextAlignment" Value="Center" />
             <Setter Property="VerticalOptions" Value="Center" />
         </Style>
@@ -48,6 +48,11 @@
         RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
 
         <!--  Incidencia  -->
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Text="Incidencia" />
         <Picker
             Title="Seleccione una incidencia"
             Grid.Row="0"
@@ -63,313 +68,282 @@
         <Label
             Grid.Row="1"
             Grid.Column="0"
+            Grid.ColumnSpan="3"
             IsVisible="{Binding Dia.HaySusti}"
-            Text="Compañera/o" />
-        <Entry
+            Text="{Binding Dia.TextoHaySusti}" />
+        <Border
             Grid.Row="1"
             Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Margin="5,20,5,10"
+            Padding="10"
             IsVisible="{Binding Dia.HaySusti}"
-            Text="{Binding Dia.MatriculaSusti}">
-            <Entry.Behaviors>
-                <toolkit:EventToCommandBehavior
-                    Command="{Binding BuscarSustiCommand}"
-                    EventName="Unfocused" />
-            </Entry.Behaviors>
-        </Entry>
-        <Entry
-            Grid.Row="1"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            HorizontalTextAlignment="Start"
-            IsVisible="{Binding Dia.HaySusti}"
-            Text="{Binding Dia.ApellidosSusti}">
-            <Entry.Behaviors>
-                <toolkit:EventToCommandBehavior
-                    Command="{Binding CrearSustiCommand}"
-                    EventName="Unfocused" />
-            </Entry.Behaviors>
-        </Entry>
+            Stroke="{StaticResource Primary}"
+            StrokeShape="RoundRectangle 5"
+            StrokeThickness="1"
+            VerticalOptions="End">
+
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding EditarSustiCommand}" />
+            </Border.GestureRecognizers>
+            <Label
+                FontSize="Caption"
+                Text="{Binding Dia.TextoSusti}"
+                TextColor="Black" />
+        </Border>
 
         <!--  Parámetros de huelga  -->
         <Label
             Grid.Row="2"
             Grid.Column="0"
-            IsVisible="{Binding EsHuelga}"
-            Text="Huelga" />
-        <HorizontalStackLayout
+            Grid.ColumnSpan="3"
+            IsVisible="{Binding Dia.EsHuelga}"
+            Text="Parámetros de la huelga" />
+        <Border
             Grid.Row="2"
-            Grid.Column="0"
-            Margin="5"
-            HorizontalOptions="Fill"
-            IsVisible="{Binding EsHuelga}">
-            <Label
-                Margin="5,15,5,5"
-                Padding="0"
-                FontSize="Header"
-                Text="Parcial"
-                TextColor="#333333"
-                VerticalOptions="Center" />
-            <Switch
-                Margin="5,15,5,5"
-                IsToggled="{Binding Dia.HuelgaParcial}"
-                Scale="0.8"
-                VerticalOptions="Center" />
-        </HorizontalStackLayout>
-        <Label
-            Grid.Row="2"
-            Grid.Column="1"
-            Margin="5,15,5,5"
-            Padding="0"
-            FontSize="Header"
-            HorizontalOptions="End"
-            IsVisible="{Binding EsHuelgaParcial}"
-            Text="Horas: "
-            TextColor="#333333"
-            VerticalOptions="Center" />
-        <Entry
-            Grid.Row="2"
-            Grid.Column="2"
-            HorizontalOptions="FillAndExpand"
-            IsVisible="{Binding EsHuelgaParcial}"
-            Text="{Binding Dia.HorasHuelga}">
-            <Entry.Behaviors>
-                <toolkit:EventToCommandBehavior
-                    Command="{Binding CalcularCommand}"
-                    EventName="Unfocused" />
-            </Entry.Behaviors>
-        </Entry>
-
-        <!--  Línea  -->
-        <Label
-            Grid.Row="3"
-            Grid.Column="0"
-            Text="Línea" />
-        <Entry
-            Grid.Row="3"
-            Grid.Column="0"
-            Text="{Binding Dia.Linea}">
-            <Entry.Behaviors>
-                <toolkit:EventToCommandBehavior
-                    Command="{Binding CalcularCommand}"
-                    EventName="Unfocused" />
-            </Entry.Behaviors>
-        </Entry>
-
-        <!--  Servicio  -->
-        <Label
-            Grid.Row="3"
-            Grid.Column="1"
-            Text="Servicio" />
-        <Entry
-            Grid.Row="3"
-            Grid.Column="1"
-            Text="{Binding Dia.Servicio}">
-            <Entry.Behaviors>
-                <toolkit:EventToCommandBehavior
-                    Command="{Binding CalcularCommand}"
-                    EventName="Unfocused" />
-            </Entry.Behaviors>
-        </Entry>
-
-        <!--  Turno  -->
-        <Label
-            Grid.Row="3"
-            Grid.Column="2"
-            Text="Turno" />
-        <!--<Entry
-            Grid.Row="2"
-            Grid.Column="2"
-            Text="{Binding Dia.Turno}" />-->
-        <Picker
-            Title="Turno"
-            Grid.Row="3"
-            Grid.Column="2"
-            ItemsSource="{Binding Turnos}"
-            SelectedItem="{Binding TurnoSeleccionado}" />
-        <!--  Texto Línea  -->
-        <Entry
-            Grid.Row="4"
             Grid.Column="0"
             Grid.ColumnSpan="3"
-            Margin="5,0,5,5"
-            HorizontalTextAlignment="Start"
-            Text="{Binding Dia.TextoLinea}" />
+            Margin="5,20,5,10"
+            Padding="10"
+            IsVisible="{Binding Dia.EsHuelga}"
+            Stroke="{StaticResource Primary}"
+            StrokeShape="RoundRectangle 5"
+            StrokeThickness="1"
+            VerticalOptions="End">
+            <Grid ColumnDefinitions="*,*,*">
+                <HorizontalStackLayout
+                    Grid.Column="0"
+                    HorizontalOptions="Fill"
+                    IsVisible="{Binding Dia.EsHuelga}">
+                    <Label
+                        Margin="0"
+                        FontSize="Header"
+                        Text="Parcial"
+                        TextColor="#333333"
+                        VerticalOptions="Center" />
+                    <Switch
+                        Margin="0"
+                        IsToggled="{Binding Dia.HuelgaParcial}"
+                        Scale="0.8"
+                        VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <Label
+                    Grid.Column="1"
+                    Margin="0"
+                    FontSize="Header"
+                    HorizontalOptions="End"
+                    IsVisible="{Binding Dia.EsHuelgaParcial}"
+                    Text="Horas: "
+                    TextColor="#333333"
+                    VerticalOptions="Center" />
+                <Entry
+                    Grid.Column="2"
+                    Margin="0"
+                    HorizontalOptions="FillAndExpand"
+                    IsVisible="{Binding Dia.EsHuelgaParcial}"
+                    Text="{Binding Dia.HorasHuelga}">
+                    <Entry.Behaviors>
+                        <toolkit:EventToCommandBehavior
+                            Command="{Binding CalcularCommand}"
+                            EventName="Unfocused" />
+                    </Entry.Behaviors>
+                </Entry>
+            </Grid>
+        </Border>
 
-        <!--  Inicio  -->
+        <!--  Servicio completo  -->
         <Label
-            Grid.Row="5"
+            Grid.Row="3"
             Grid.Column="0"
-            HorizontalOptions="FillAndExpand"
-            Text="Inicio" />
-        <TimePicker
-            Grid.Row="5"
+            Grid.ColumnSpan="3"
+            Text="Servicio" />
+        <Border
+            Grid.Row="3"
             Grid.Column="0"
-            Time="{Binding Dia.Inicio}" />
+            Grid.ColumnSpan="3"
+            Margin="5,20,5,10"
+            Padding="10"
+            Stroke="{StaticResource Primary}"
+            StrokeShape="RoundRectangle 5"
+            StrokeThickness="1"
+            VerticalOptions="End">
 
-        <!--  Lugar inicio  -->
-        <Label
-            Grid.Row="5"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            Text="Lugar inicio" />
-        <Entry
-            Grid.Row="5"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            HorizontalTextAlignment="Start"
-            Text="{Binding Dia.LugarInicio}" />
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding EditarServicioPrincipalCommand}" />
+            </Border.GestureRecognizers>
 
-        <!--  Final  -->
-        <Label
-            Grid.Row="6"
-            Grid.Column="0"
-            Text="Final" />
-        <TimePicker
-            Grid.Row="6"
-            Grid.Column="0"
-            Time="{Binding Dia.Final}" />
+            <Grid RowDefinitions="*,*,*">
+                <Label
+                    Grid.Row="0"
+                    FontAttributes="Bold"
+                    FontSize="Caption"
+                    Text="{Binding Dia.TextoServicio}"
+                    TextColor="Black" />
+                <Label
+                    Grid.Row="1"
+                    Margin="15,0,0,0"
+                    FontSize="Caption"
+                    Text="{Binding Dia.TextoInicio}"
+                    TextColor="Black" />
+                <Label
+                    Grid.Row="2"
+                    Margin="15,0,0,0"
+                    FontSize="Caption"
+                    Text="{Binding Dia.TextoFinal}"
+                    TextColor="Black" />
+            </Grid>
+        </Border>
 
-        <!--  Lugar final  -->
-        <Label
-            Grid.Row="6"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            Text="Lugar final" />
-        <Entry
-            Grid.Row="6"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            HorizontalTextAlignment="Start"
-            Text="{Binding Dia.LugarFinal}" />
-
-        <!--  Bus  -->
+        <!--  Datos adicionales  -->
         <Label
             Grid.Row="7"
             Grid.Column="0"
-            Text="Bus" />
-        <Entry
+            Grid.ColumnSpan="3"
+            Text="Datos adicionales" />
+        <Border
             Grid.Row="7"
             Grid.Column="0"
-            Text="{Binding Dia.Bus}" />
+            Grid.ColumnSpan="3"
+            Margin="5,20,5,10"
+            Padding="10"
+            Stroke="{StaticResource Primary}"
+            StrokeShape="RoundRectangle 5"
+            StrokeThickness="1"
+            VerticalOptions="End">
+            <Grid ColumnDefinitions="*,*,*">
+                <!--  Bus  -->
+                <Label
+                    Grid.Column="0"
+                    Text="Bus" />
+                <Entry
+                    Grid.Column="0"
+                    Text="{Binding Dia.Bus}" />
 
-        <!--  Toma y deje  -->
-        <Label
-            Grid.Row="7"
-            Grid.Column="1"
-            Text="Toma/deje" />
-        <Entry
-            Grid.Row="7"
-            Grid.Column="1"
-            Text="{Binding Dia.TomaDeje}" />
+                <!--  Toma y deje  -->
+                <Label
+                    Grid.Column="1"
+                    Text="Toma/deje" />
+                <Entry
+                    Grid.Column="1"
+                    Text="{Binding Dia.TomaDeje}" />
 
-        <!--  Euros  -->
-        <Label
-            Grid.Row="7"
-            Grid.Column="2"
-            Text="€/Serv." />
-        <Entry
-            Grid.Row="7"
-            Grid.Column="2"
-            Text="{Binding Dia.Euros}" />
+                <!--  Euros  -->
+                <Label
+                    Grid.Column="2"
+                    Text="€/Serv." />
+                <Entry
+                    Grid.Column="2"
+                    Text="{Binding Dia.Euros}" />
+            </Grid>
+        </Border>
 
         <!--  Relevo  -->
         <Label
             Grid.Row="8"
             Grid.Column="0"
+            Grid.ColumnSpan="3"
             Text="Relevo" />
-        <Entry
+        <Border
             Grid.Row="8"
             Grid.Column="0"
-            Text="{Binding Dia.Matricula}">
-            <Entry.Behaviors>
-                <toolkit:EventToCommandBehavior
-                    Command="{Binding BuscarRelevoCommand}"
-                    EventName="Unfocused" />
-            </Entry.Behaviors>
-        </Entry>
-        <Entry
-            Grid.Row="8"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            HorizontalTextAlignment="Start"
-            Text="{Binding Dia.Apellidos}">
-            <Entry.Behaviors>
-                <toolkit:EventToCommandBehavior
-                    Command="{Binding CrearRelevoCommand}"
-                    EventName="Unfocused" />
-            </Entry.Behaviors>
-        </Entry>
+            Grid.ColumnSpan="3"
+            Margin="5,20,5,10"
+            Padding="10"
+            Stroke="{StaticResource Primary}"
+            StrokeShape="RoundRectangle 5"
+            StrokeThickness="1"
+            VerticalOptions="End">
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding EditarRelevoCommand}" />
+            </Border.GestureRecognizers>
+            <Label
+                FontSize="Caption"
+                Text="{Binding Dia.TextoRelevo}"
+                TextColor="Black" />
+        </Border>
 
-        <!--  Horas trabajadas, acumuladas y nocturnas  -->
+        <!--  Horas  -->
         <Label
             Grid.Row="9"
             Grid.Column="0"
-            Margin="5"
-            Padding="0,15,0,10"
-            FontSize="Small"
-            HorizontalOptions="Fill"
-            HorizontalTextAlignment="Center"
-            Text="{Binding Dia.Trabajadas, Converter={StaticResource decimalConverter}}"
-            TextColor="Black"
-            VerticalOptions="Fill">
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer
-                    Command="{Binding EditarHoraCommand}"
-                    CommandParameter="Trabajadas" />
-            </Label.GestureRecognizers>
-        </Label>
-        <Label
+            Grid.ColumnSpan="3"
+            Text="Horas" />
+        <Border
             Grid.Row="9"
             Grid.Column="0"
-            Margin="0"
-            HorizontalOptions="Center"
-            Text="Trabajadas" />
-        <Label
-            Grid.Row="9"
-            Grid.Column="1"
-            Margin="5"
-            Padding="0,15,0,10"
-            FontSize="Small"
-            HorizontalOptions="Fill"
-            HorizontalTextAlignment="Center"
-            Text="{Binding Dia.Acumuladas, Converter={StaticResource decimalConverter}}"
-            TextColor="{Binding Dia.Acumuladas, Converter={StaticResource decimalColorConverter}}"
-            VerticalOptions="Fill">
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer
-                    Command="{Binding EditarHoraCommand}"
-                    CommandParameter="Acumuladas" />
-            </Label.GestureRecognizers>
-        </Label>
-        <Label
-            Grid.Row="9"
-            Grid.Column="1"
-            Margin="0"
-            HorizontalOptions="Center"
-            Text="Acumuladas" />
-        <Label
-            Grid.Row="9"
-            Grid.Column="2"
-            Margin="5"
-            Padding="0,15,0,10"
-            FontSize="Small"
-            HorizontalOptions="Fill"
-            HorizontalTextAlignment="Center"
-            Text="{Binding Dia.Nocturnas, Converter={StaticResource decimalConverter}}"
-            TextColor="Blue"
-            VerticalOptions="Fill">
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer
-                    Command="{Binding EditarHoraCommand}"
-                    CommandParameter="Nocturnas" />
-            </Label.GestureRecognizers>
-        </Label>
-        <Label
-            Grid.Row="9"
-            Grid.Column="2"
-            Margin="0"
-            HorizontalOptions="Center"
-            Text="Nocturnas" />
+            Grid.ColumnSpan="3"
+            Margin="5,20,5,10"
+            Padding="10"
+            Stroke="{StaticResource Primary}"
+            StrokeShape="RoundRectangle 5"
+            StrokeThickness="1"
+            VerticalOptions="End">
+            <Grid ColumnDefinitions="*,*,*">
+                <Label
+                    Grid.Column="0"
+                    Margin="5"
+                    Padding="0,15,0,0"
+                    FontSize="Small"
+                    HorizontalOptions="Fill"
+                    HorizontalTextAlignment="Center"
+                    Text="{Binding Dia.Trabajadas, Converter={StaticResource decimalConverter}}"
+                    TextColor="Black"
+                    VerticalOptions="Fill">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding EditarHoraCommand}"
+                            CommandParameter="Trabajadas" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label
+                    Grid.Column="0"
+                    Margin="0"
+                    HorizontalOptions="Center"
+                    Text="Trabajadas" />
+                <Label
+                    Grid.Column="1"
+                    Margin="5"
+                    Padding="0,15,0,0"
+                    FontSize="Small"
+                    HorizontalOptions="Fill"
+                    HorizontalTextAlignment="Center"
+                    Text="{Binding Dia.Acumuladas, Converter={StaticResource decimalConverter}}"
+                    TextColor="{Binding Dia.Acumuladas, Converter={StaticResource decimalColorConverter}}"
+                    VerticalOptions="Fill">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding EditarHoraCommand}"
+                            CommandParameter="Acumuladas" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label
+                    Grid.Column="1"
+                    Margin="0"
+                    HorizontalOptions="Center"
+                    Text="Acumuladas" />
+                <Label
+                    Grid.Column="2"
+                    Margin="5"
+                    Padding="0,15,0,0"
+                    FontSize="Small"
+                    HorizontalOptions="Fill"
+                    HorizontalTextAlignment="Center"
+                    Text="{Binding Dia.Nocturnas, Converter={StaticResource decimalConverter}}"
+                    TextColor="Blue"
+                    VerticalOptions="Fill">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding EditarHoraCommand}"
+                            CommandParameter="Nocturnas" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label
+                    Grid.Column="2"
+                    Margin="0"
+                    HorizontalOptions="Center"
+                    Text="Nocturnas" />
+            </Grid>
+        </Border>
 
         <!--  Notas  -->
         <Label
@@ -381,9 +355,11 @@
             Grid.Row="10"
             Grid.Column="0"
             Grid.ColumnSpan="3"
-            Margin="5,30,5,5"
-            HorizontalOptions="Fill"
-            StrokeShape="RoundRectangle, 5,5,5,5"
+            Margin="5,30,5,10"
+            Padding="10"
+            Stroke="{StaticResource Primary}"
+            StrokeShape="RoundRectangle 5"
+            StrokeThickness="1"
             VerticalOptions="Fill">
             <Editor
                 Margin="5,0,5,0"

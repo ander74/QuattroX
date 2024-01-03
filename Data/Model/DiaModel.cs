@@ -5,6 +5,7 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
+using QuattroX.Data.Enums;
 using QuattroX.Data.Interfaces;
 
 namespace QuattroX.Data.Model;
@@ -120,6 +121,7 @@ public partial class DiaModel : ModelBase, IServicio {
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(EsHuelgaParcial))]
     bool huelgaParcial;
 
 
@@ -164,16 +166,21 @@ public partial class DiaModel : ModelBase, IServicio {
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TextoSusti))]
     int matriculaSusti;
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TextoSusti))]
     string apellidosSusti;
 
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TextoIncidencia))]
     [NotifyPropertyChangedFor(nameof(HaySusti))]
+    [NotifyPropertyChangedFor(nameof(EsHuelga))]
+    [NotifyPropertyChangedFor(nameof(EsHuelgaParcial))]
+    [NotifyPropertyChangedFor(nameof(TextoHaySusti))]
     IncidenciaModel incidencia;
 
 
@@ -181,6 +188,9 @@ public partial class DiaModel : ModelBase, IServicio {
 
 
     public string TextoRelevo => Matricula > 0 ? $"{Matricula}: {Apellidos}" : string.Empty;
+
+
+    public string TextoSusti => MatriculaSusti > 0 ? $"{MatriculaSusti}: {ApellidosSusti}" : "No hay una persona definida.";
 
 
     public string TextoHoras => Inicio == Final ? string.Empty : $"{Inicio.ToTexto()} - {Final.ToTexto()}";
@@ -235,7 +245,23 @@ public partial class DiaModel : ModelBase, IServicio {
     }
 
 
-    public bool HaySusti => Incidencia?.Codigo == 11 || Incidencia?.Codigo == 12;
+    public bool HaySusti => Incidencia?.Comportamiento == ComportamientoIncidencia.HacemosDia || Incidencia?.Comportamiento == ComportamientoIncidencia.NosHacenDia;
+
+
+    public string TextoHaySusti {
+        get {
+            return Incidencia?.Comportamiento switch {
+                ComportamientoIncidencia.HacemosDia => "Compañer@ al que hacemos el día",
+                ComportamientoIncidencia.NosHacenDia => "Compañer@ que nos hace el día",
+                _ => "Compañer@",
+            };
+        }
+    }
+
+    public bool EsHuelga => Incidencia?.Tipo == TipoIncidencia.Huelga;
+
+
+    public bool EsHuelgaParcial => EsHuelga && HuelgaParcial == true;
 
 
     public decimal DeudaDia {

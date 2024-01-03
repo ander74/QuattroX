@@ -64,6 +64,7 @@ public static class MauiProgram {
 
         // Popups
         builder.Services.AddTransientPopup<ServicioBasePopup, ServicioBasePopupViewModel>();
+        builder.Services.AddTransientPopup<TrabajadorPopup, TrabajadorPopupViewModel>();
 
 
 #if DEBUG

@@ -108,6 +108,20 @@ public partial class ServicioBasePopupViewModel : BaseViewModel {
         Lineas.Insert(0, new LineaModel { Linea = "Nueva" });
     }
 
+    public async Task AceptarAsync() {
+        if (IsNuevoServicio && ServicioSeleccionado.Servicio == "Nuevo") {
+            ServicioSeleccionado = null;
+            return;
+        }
+        if (!(await dbRepository.ExisteServicioLineaAsync(ServicioSeleccionado.Linea, ServicioSeleccionado.Servicio, ServicioSeleccionado.Turno))) {
+            ServicioSeleccionado.LineaId = LineaSeleccionada.Id;
+            ServicioSeleccionado.Linea = LineaSeleccionada.Linea;
+            ServicioSeleccionado.TextoLinea = LineaSeleccionada.Texto;
+            await dbRepository.SaveServicioLineaAsync(ServicioSeleccionado);
+        }
+        Servicio.FromServicioBase(ServicioSeleccionado);
+    }
+
 
     #endregion
     // ====================================================================================================
@@ -142,20 +156,6 @@ public partial class ServicioBasePopupViewModel : BaseViewModel {
     #region Comandos
     // ====================================================================================================
 
-
-    public async Task AceptarAsync() {
-        if (IsNuevoServicio && ServicioSeleccionado.Servicio == "Nuevo") {
-            ServicioSeleccionado = null;
-            return;
-        }
-        if (!(await dbRepository.ExisteServicioLineaAsync(ServicioSeleccionado.Linea, ServicioSeleccionado.Servicio, ServicioSeleccionado.Turno))) {
-            ServicioSeleccionado.LineaId = LineaSeleccionada.Id;
-            ServicioSeleccionado.Linea = LineaSeleccionada.Linea;
-            ServicioSeleccionado.TextoLinea = LineaSeleccionada.Texto;
-            await dbRepository.SaveServicioLineaAsync(ServicioSeleccionado);
-        }
-        Servicio.FromServicioBase(ServicioSeleccionado);
-    }
 
 
 

@@ -67,6 +67,9 @@ public partial class TrabajadorModel : ModelBase {
     public string NombreCompleto => $"{Nombre} {Apellidos}";
 
 
+    public string TextoParaPicker => Matricula > 0 ? $"{Matricula}: {Apellidos}" : "Nuev@";
+
+
     public int RowIndex { get; set; }
 
 

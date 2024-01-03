@@ -21,7 +21,7 @@ public partial class DetalleDiaPage : ContentPage {
 
     private readonly DetalleDiaViewModel viewModel;
 
-    private DiaTabPage2 diaPage;
+    private DiaTabPage diaPage;
     private ServiciosTabPage serviciosPage;
     private Color colorSelected;
     private Color colorNotSelected;
@@ -41,7 +41,7 @@ public partial class DetalleDiaPage : ContentPage {
         colorTextSelected = (Color)((App.Current.Resources.TryGetValue("PrimaryDarkText", out object color3)) ? color3 : Colors.Gray);
         colorTextNotSelected = (Color)((App.Current.Resources.TryGetValue("Secondary", out object color4)) ? color4 : Colors.LightPink);
 
-        diaPage = new DiaTabPage2();
+        diaPage = new DiaTabPage();
         diaPage.BindingContext = this.viewModel;
 
         serviciosPage = new ServiciosTabPage();

@@ -15,6 +15,7 @@ using QuattroX.View.CustomViews;
 using QuattroX.ViewModel.Popups;
 
 
+
 #if IOS
 using UIKit;
 #endif
@@ -80,8 +81,6 @@ public partial class DetalleDiaViewModel : BaseViewModel {
 
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(EsHuelga))]
-    [NotifyPropertyChangedFor(nameof(EsHuelgaParcial))]
     IncidenciaModel incidenciaSeleccionada;
     partial void OnIncidenciaSeleccionadaChanged(IncidenciaModel oldValue, IncidenciaModel newValue) {
         if (IncidenciaSeleccionada.Codigo > 0) {
@@ -92,12 +91,6 @@ public partial class DetalleDiaViewModel : BaseViewModel {
             //TODO: Si la incidencia seleccionada es cero, copiar el día anterior.
         }
     }
-
-
-    public bool EsHuelga => Dia?.Incidencia?.Codigo == 15;
-
-
-    public bool EsHuelgaParcial => Dia?.Incidencia?.Codigo == 15 && Dia?.HuelgaParcial == true;
 
 
     public string[] Turnos => ["Mañana", "Tarde"];
@@ -177,7 +170,6 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     /// Método que se lanza al cambiar una propiedad del Día.
     /// </summary>
     private void Dia_PropertyChanged(object sender, PropertyChangedEventArgs e) {
-        if (e.PropertyName == nameof(DiaModel.HuelgaParcial)) OnPropertyChanged(nameof(EsHuelgaParcial));
         if (e.PropertyName == nameof(DiaModel.Inicio) ||
             e.PropertyName == nameof(DiaModel.Final) ||
             e.PropertyName == nameof(DiaModel.Turno)) {
@@ -383,6 +375,48 @@ public partial class DetalleDiaViewModel : BaseViewModel {
             });
             if (resultado is ServicioBaseModel servicioDia) {
                 Dia.FromServicioBase(servicioDia);
+            }
+        } catch (Exception ex) {
+            await Shell.Current.DisplaySnackbar(ex.Message);
+        } finally {
+            IsBusy = false;
+        }
+    }
+
+
+    [RelayCommand]
+    async Task EditarRelevoAsync() {
+        try {
+            var resultado = await popupService.ShowPopupAsync<TrabajadorPopupViewModel>(async vm => {
+                await vm.InitAsync();
+                vm.Title = "Relevo";
+                vm.TrabajadorSeleccionado = vm.Trabajadores.FirstOrDefault(t => t.Id == Dia.RelevoId);
+            });
+            if (resultado is TrabajadorModel model) {
+                Dia.RelevoId = model.Id;
+                Dia.Matricula = model.Matricula;
+                Dia.Apellidos = model.Apellidos;
+            }
+        } catch (Exception ex) {
+            await Shell.Current.DisplaySnackbar(ex.Message);
+        } finally {
+            IsBusy = false;
+        }
+    }
+
+
+    [RelayCommand]
+    async Task EditarSustiAsync() {
+        try {
+            var resultado = await popupService.ShowPopupAsync<TrabajadorPopupViewModel>(async vm => {
+                await vm.InitAsync();
+                vm.Title = "Compañer@";
+                vm.TrabajadorSeleccionado = vm.Trabajadores.FirstOrDefault(t => t.Id == Dia.SustiId);
+            });
+            if (resultado is TrabajadorModel model) {
+                Dia.SustiId = model.Id;
+                Dia.MatriculaSusti = model.Matricula;
+                Dia.ApellidosSusti = model.Apellidos;
             }
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);

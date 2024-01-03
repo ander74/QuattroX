@@ -81,6 +81,9 @@
 	  <Compile Update="View\Popups\ServicioBasePopup.xaml.cs">
 	    <DependentUpon>ServicioBasePopup.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="View\Templates\DiaTabPage.xaml.cs">
+	    <DependentUpon>DiaTabPage.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -111,13 +114,13 @@
 	  <MauiXaml Update="View\Popups\ServicioBasePopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="View\Popups\TrabajadorPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="View\Templates\CalendarioCell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\Templates\DiaTabPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="View\Templates\DiaTabPage2.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\Templates\LineaCell.xaml">
