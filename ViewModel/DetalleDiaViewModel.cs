@@ -5,13 +5,16 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-using QuattroX.Data.Entities;
+using CommunityToolkit.Maui.Core;
 using QuattroX.Data.Helpers;
 using QuattroX.Data.Messages;
 using QuattroX.Data.Model;
 using QuattroX.Data.Repositories;
 using QuattroX.Services;
 using QuattroX.View.CustomViews;
+using QuattroX.ViewModel.Popups;
+
+
 #if IOS
 using UIKit;
 #endif
@@ -30,10 +33,12 @@ public partial class DetalleDiaViewModel : BaseViewModel {
 
     private readonly DbRepository dbRepository;
     private readonly CalculosService calculosService;
+    private readonly IPopupService popupService;
 
-    public DetalleDiaViewModel(DbRepository dbRepository, CalculosService calculosService) {
+    public DetalleDiaViewModel(DbRepository dbRepository, CalculosService calculosService, IPopupService popupService) {
         this.dbRepository = dbRepository;
         this.calculosService = calculosService;
+        this.popupService = popupService;
 
         ServiciosSeleccionados.CollectionChanged += (sender, e) => {
             var num = ServiciosSeleccionados.Count;
@@ -71,17 +76,17 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     }
 
     [ObservableProperty]
-    List<IncidenciaEntity> incidencias;
+    ObservableCollection<IncidenciaModel> incidencias;
 
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(EsHuelga))]
     [NotifyPropertyChangedFor(nameof(EsHuelgaParcial))]
-    IncidenciaEntity incidenciaSeleccionada;
-    partial void OnIncidenciaSeleccionadaChanged(IncidenciaEntity oldValue, IncidenciaEntity newValue) {
+    IncidenciaModel incidenciaSeleccionada;
+    partial void OnIncidenciaSeleccionadaChanged(IncidenciaModel oldValue, IncidenciaModel newValue) {
         if (IncidenciaSeleccionada.Codigo > 0) {
             Dia.IncidenciaId = IncidenciaSeleccionada.Id;
-            Dia.Incidencia = IncidenciaSeleccionada.ToModel();
+            Dia.Incidencia = IncidenciaSeleccionada;
             Calcular();
         } else {
             //TODO: Si la incidencia seleccionada es cero, copiar el día anterior.
@@ -219,7 +224,7 @@ public partial class DetalleDiaViewModel : BaseViewModel {
 
     [RelayCommand]
     async Task CloseAsync() {
-        await dbRepository.SaveDiaAsync(Dia.ToEntity());
+        await dbRepository.SaveDiaAsync(Dia);
         Messenger.Send(new CalcularResumenRequest());
     }
 
@@ -332,13 +337,13 @@ public partial class DetalleDiaViewModel : BaseViewModel {
             IsBusy = true;
             if (Dia.Matricula <= 0) return;
             if (await dbRepository.ExisteTrabajadorByMatriculaAsync(Dia.Matricula)) return;
-            var trabajador = new TrabajadorEntity {
+            var trabajador = new TrabajadorModel {
                 Matricula = Dia.Matricula,
                 Apellidos = Dia.Apellidos,
             };
             await dbRepository.SaveTrabajadorAsync(trabajador);
             Dia.RelevoId = trabajador.Id;
-            await dbRepository.SaveDiaAsync(Dia.ToEntity());
+            await dbRepository.SaveDiaAsync(Dia);
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
         } finally {
@@ -353,13 +358,32 @@ public partial class DetalleDiaViewModel : BaseViewModel {
             IsBusy = true;
             if (Dia.MatriculaSusti <= 0) return;
             if (await dbRepository.ExisteTrabajadorByMatriculaAsync(Dia.MatriculaSusti)) return;
-            var trabajador = new TrabajadorEntity {
+            var trabajador = new TrabajadorModel {
                 Matricula = Dia.MatriculaSusti,
                 Apellidos = Dia.ApellidosSusti,
             };
             await dbRepository.SaveTrabajadorAsync(trabajador);
             Dia.SustiId = trabajador.Id;
-            await dbRepository.SaveDiaAsync(Dia.ToEntity());
+            await dbRepository.SaveDiaAsync(Dia);
+        } catch (Exception ex) {
+            await Shell.Current.DisplaySnackbar(ex.Message);
+        } finally {
+            IsBusy = false;
+        }
+    }
+
+
+    [RelayCommand]
+    async Task EditarServicioPrincipalAsync() {
+        try {
+            var resultado = await popupService.ShowPopupAsync<ServicioBasePopupViewModel>(async vm => {
+                await vm.InitAsync();
+                vm.Title = "Servicio principal";
+                vm.Servicio = Dia.ToServicioBaseModel();
+            });
+            if (resultado is ServicioBaseModel servicioDia) {
+                Dia.FromServicioBase(servicioDia);
+            }
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
         } finally {
@@ -376,7 +400,24 @@ public partial class DetalleDiaViewModel : BaseViewModel {
 
     [RelayCommand]
     async Task CrearServicioAsync() {
-
+        if (Dia is null) return;
+        if (Dia.Servicios is null) Dia.Servicios = new();
+        var resultado = await popupService.ShowPopupAsync<ServicioBasePopupViewModel>(async (vm) => {
+            await vm.InitAsync();
+            vm.Title = "Nuevo servicio";
+        });
+        if (resultado is ServicioBaseModel model) {
+            //var servicio = (ServicioDiaModel)model.ToServicioBaseModel();
+            var servicio = new ServicioDiaModel();
+            servicio.FromServicioBase(model);
+            servicio.Id = 0;
+            servicio.DiaId = Dia.Id;
+            servicio.RowIndex = Dia.Servicios.Count + 1;
+            var id = await dbRepository.SaveServicioDiaAsync(servicio);
+            //servicio.Id = id; //TODO: Comprobar que ya no es necesario
+            servicio.Modified = false;
+            Dia.Servicios.Add(servicio);
+        }
     }
 
 

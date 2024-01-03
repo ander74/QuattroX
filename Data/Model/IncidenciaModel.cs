@@ -30,6 +30,10 @@ public partial class IncidenciaModel : ModelBase {
     string descripcion;
 
 
+    [ObservableProperty]
+    ComportamientoIncidencia comportamiento;
+
+
     #endregion
     // ====================================================================================================
 

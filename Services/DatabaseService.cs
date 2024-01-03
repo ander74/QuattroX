@@ -112,22 +112,22 @@ public class DatabaseService {
     private List<IncidenciaEntity> GetIncidenciasFijas() {
         return new List<IncidenciaEntity> {
             //new IncidenciaEntity { Codigo = 0, Descripcion = "Repite día anterior", Tipo = TipoIncidencia.Ninguna },
-            new IncidenciaEntity { Codigo = 1, Descripcion = "Trabajo", Tipo = TipoIncidencia.Trabajo },
-            new IncidenciaEntity { Codigo = 2, Descripcion = "Franqueo", Tipo = TipoIncidencia.Franqueo },
-            new IncidenciaEntity { Codigo = 3, Descripcion = "Vacaciones", Tipo = TipoIncidencia.Franqueo },
-            new IncidenciaEntity { Codigo = 4, Descripcion = "F.O.D.", Tipo = TipoIncidencia.FiestaPorOtroDia },
-            new IncidenciaEntity { Codigo = 5, Descripcion = "Franqueo a trabajar", Tipo = TipoIncidencia.FranqueoTrabajado },
-            new IncidenciaEntity { Codigo = 6, Descripcion = "Enferm@", Tipo = TipoIncidencia.Franqueo },
-            new IncidenciaEntity { Codigo = 7, Descripcion = "Accidentad@", Tipo = TipoIncidencia.Franqueo },
-            new IncidenciaEntity { Codigo = 8, Descripcion = "Permiso", Tipo = TipoIncidencia.JornadaMedia },
-            new IncidenciaEntity { Codigo = 9, Descripcion = "F.N.R. año actual", Tipo = TipoIncidencia.Franqueo },
-            new IncidenciaEntity { Codigo = 10, Descripcion = "F.N.R. año anterior", Tipo = TipoIncidencia.Franqueo },
-            new IncidenciaEntity { Codigo = 11, Descripcion = "Nos hacen el día", Tipo = TipoIncidencia.Trabajo },
-            new IncidenciaEntity { Codigo = 12, Descripcion = "Hacemos el día", Tipo = TipoIncidencia.TrabajoSinAcumular },
-            new IncidenciaEntity { Codigo = 13, Descripcion = "Sanción", Tipo = TipoIncidencia.Franqueo },
-            new IncidenciaEntity { Codigo = 14, Descripcion = "En otro destino", Tipo = TipoIncidencia.Franqueo },
-            new IncidenciaEntity { Codigo = 15, Descripcion = "Huelga", Tipo = TipoIncidencia.Trabajo },
-            new IncidenciaEntity { Codigo = 16, Descripcion = "Día por horas acumuladas", Tipo = TipoIncidencia.FiestaPorOtroDia }
+            new IncidenciaEntity { Codigo = 1, Descripcion = "Trabajo", Tipo = TipoIncidencia.Trabajo, Comportamiento = ComportamientoIncidencia.TrabajoYo, },
+            new IncidenciaEntity { Codigo = 2, Descripcion = "Franqueo", Tipo = TipoIncidencia.Franqueo, Comportamiento = ComportamientoIncidencia.TrabajoYo, },
+            new IncidenciaEntity { Codigo = 3, Descripcion = "Vacaciones", Tipo = TipoIncidencia.Franqueo, Comportamiento = ComportamientoIncidencia.TrabajoYo, },
+            new IncidenciaEntity { Codigo = 4, Descripcion = "F.O.D.", Tipo = TipoIncidencia.FiestaPorOtroDia, Comportamiento = ComportamientoIncidencia.TrabajoYo, },
+            new IncidenciaEntity { Codigo = 5, Descripcion = "Franqueo a trabajar", Tipo = TipoIncidencia.FranqueoTrabajado, Comportamiento = ComportamientoIncidencia.TrabajoYo, },
+            new IncidenciaEntity { Codigo = 6, Descripcion = "Enferm@", Tipo = TipoIncidencia.Franqueo, Comportamiento = ComportamientoIncidencia.TrabajoYo, },
+            new IncidenciaEntity { Codigo = 7, Descripcion = "Accidentad@", Tipo = TipoIncidencia.Franqueo, Comportamiento = ComportamientoIncidencia.TrabajoYo, },
+            new IncidenciaEntity { Codigo = 8, Descripcion = "Permiso", Tipo = TipoIncidencia.JornadaMedia, Comportamiento = ComportamientoIncidencia.TrabajoYo, },
+            new IncidenciaEntity { Codigo = 9, Descripcion = "F.N.R. año actual", Tipo = TipoIncidencia.Franqueo, Comportamiento = ComportamientoIncidencia.TrabajoYo, },
+            new IncidenciaEntity { Codigo = 10, Descripcion = "F.N.R. año anterior", Tipo = TipoIncidencia.Franqueo, Comportamiento = ComportamientoIncidencia.TrabajoYo, },
+            new IncidenciaEntity { Codigo = 11, Descripcion = "Nos hacen el día", Tipo = TipoIncidencia.Trabajo, Comportamiento = ComportamientoIncidencia.NosHacenDia, },
+            new IncidenciaEntity { Codigo = 12, Descripcion = "Hacemos el día", Tipo = TipoIncidencia.TrabajoSinAcumular, Comportamiento = ComportamientoIncidencia.HacemosDia, },
+            new IncidenciaEntity { Codigo = 13, Descripcion = "Sanción", Tipo = TipoIncidencia.Franqueo, Comportamiento = ComportamientoIncidencia.TrabajoYo, },
+            new IncidenciaEntity { Codigo = 14, Descripcion = "En otro destino", Tipo = TipoIncidencia.Franqueo, Comportamiento = ComportamientoIncidencia.TrabajoYo, },
+            new IncidenciaEntity { Codigo = 15, Descripcion = "Huelga", Tipo = TipoIncidencia.Huelga, Comportamiento = ComportamientoIncidencia.TrabajoYo, },
+            new IncidenciaEntity { Codigo = 16, Descripcion = "Día por horas acumuladas", Tipo = TipoIncidencia.FiestaPorOtroDia, Comportamiento = ComportamientoIncidencia.TrabajoYo, }
         };
     }
 

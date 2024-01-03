@@ -6,6 +6,8 @@
 // ===============================================
 #endregion
 using QuattroX.Data.Entities;
+using QuattroX.Data.Helpers;
+using QuattroX.Data.Model;
 using QuattroX.Services;
 
 namespace QuattroX.Data.Repositories;
@@ -36,27 +38,35 @@ public class DbRepository {
     // ====================================================================================================
 
 
-    public async Task<List<ServicioSecundarioEntity>> GetServiciosSecundariosAsync(int servicioId) {
-        var servicios = await dbService.Db.Table<ServicioSecundarioEntity>().Where(s => s.ServicioId == servicioId).OrderBy(t => t.Servicio).ToListAsync();
-        if (servicios is null) servicios = new();
+    //public async Task<List<ServicioSecundarioEntity>> GetServiciosSecundariosAsync(int servicioId) {
+    //    var servicios = await dbService.Db.Table<ServicioSecundarioEntity>().Where(s => s.ServicioId == servicioId).OrderBy(t => t.Servicio).ToListAsync();
+    //    if (servicios is null) servicios = new();
+    //    return servicios;
+    //}
+
+
+    public async Task<ObservableCollection<ServicioSecundarioModel>> GetServiciosSecundariosAsync(int servicioId) {
+        var lista = await dbService.Db.Table<ServicioSecundarioEntity>().Where(s => s.ServicioId == servicioId).OrderBy(t => t.Servicio).ToListAsync();
+        if (lista is null) lista = new();
+        var servicios = lista.Select(s => s.ToServicioSecundarioModel()).ToObservableCollection();
         return servicios;
     }
 
 
-    public async Task<int> SaveServicioSecundarioAsync(ServicioSecundarioEntity servicio) {
+    public async Task<int> SaveServicioSecundarioAsync(ServicioSecundarioModel servicio) {
         if (servicio is null) return 0;
         if (servicio.Id == 0) {
-            await dbService.Db.InsertAsync(servicio);
+            await dbService.Db.InsertAsync(servicio.ToServicioSecundarioEntity());
             var id = await dbService.GetLastIdAsync();
             servicio.Id = id;
         } else {
-            await dbService.Db.UpdateAsync(servicio);
+            await dbService.Db.UpdateAsync(servicio.ToServicioSecundarioEntity());
         }
         return servicio.Id;
     }
 
 
-    public async Task SaveServiciosSecundariosAsync(IEnumerable<ServicioSecundarioEntity> lista) {
+    public async Task SaveServiciosSecundariosAsync(IEnumerable<ServicioSecundarioModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await SaveServicioSecundarioAsync(item);
@@ -69,7 +79,7 @@ public class DbRepository {
     }
 
 
-    public async Task DeleteServiciosSecundariosAsync(IEnumerable<ServicioSecundarioEntity> lista) {
+    public async Task DeleteServiciosSecundariosAsync(IEnumerable<ServicioSecundarioModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await DeleteServicioSecundarioAsync(item.Id);
@@ -86,9 +96,10 @@ public class DbRepository {
     // ====================================================================================================
 
 
-    public async Task<List<ServicioLineaEntity>> GetServiciosLineaAsync(int lineaId, bool incluirSecundarios = true) {
-        var servicios = await dbService.Db.Table<ServicioLineaEntity>().Where(s => s.LineaId == lineaId).OrderBy(t => t.Servicio).ToListAsync();
-        if (servicios is null) servicios = new();
+    public async Task<ObservableCollection<ServicioLineaModel>> GetServiciosLineaAsync(int lineaId, bool incluirSecundarios = true) {
+        var lista = await dbService.Db.Table<ServicioLineaEntity>().Where(s => s.LineaId == lineaId).OrderBy(t => t.Servicio).ToListAsync();
+        if (lista is null) lista = new();
+        var servicios = lista.Select(s => s.ToServicioLineaModel()).ToObservableCollection();
         if (incluirSecundarios) {
             foreach (var servicio in servicios) {
                 servicio.Servicios = await GetServiciosSecundariosAsync(servicio.Id);
@@ -99,14 +110,14 @@ public class DbRepository {
     }
 
 
-    public async Task<int> SaveServicioLineaAsync(ServicioLineaEntity servicio) {
+    public async Task<int> SaveServicioLineaAsync(ServicioLineaModel servicio) {
         if (servicio is null) return 0;
         if (servicio.Id == 0) {
-            await dbService.Db.InsertAsync(servicio);
+            await dbService.Db.InsertAsync(servicio.ToServicioLineaEntity());
             var id = await dbService.GetLastIdAsync();
             servicio.Id = id;
         } else {
-            await dbService.Db.UpdateAsync(servicio);
+            await dbService.Db.UpdateAsync(servicio.ToServicioLineaEntity());
         }
         if (servicio.Servicios is not null) {
             foreach (var serv in servicio.Servicios) {
@@ -118,7 +129,7 @@ public class DbRepository {
     }
 
 
-    public async Task SaveServiciosLineaAsync(IEnumerable<ServicioLineaEntity> lista) {
+    public async Task SaveServiciosLineaAsync(IEnumerable<ServicioLineaModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await SaveServicioLineaAsync(item);
@@ -131,11 +142,17 @@ public class DbRepository {
     }
 
 
-    public async Task DeleteServiciosLineaAsync(IEnumerable<ServicioLineaEntity> lista) {
+    public async Task DeleteServiciosLineaAsync(IEnumerable<ServicioLineaModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await DeleteServicioLineaAsync(item.Id);
         }
+    }
+
+
+    public async Task<bool> ExisteServicioLineaAsync(string linea, string servicio, int turno) {
+        return await dbService.Db.Table<ServicioLineaEntity>()
+            .CountAsync(s => s.Linea.ToUpper() == linea.ToUpper() && s.Servicio.ToUpper() == servicio.ToUpper() && s.Turno == turno) > 0;
     }
 
 
@@ -148,9 +165,10 @@ public class DbRepository {
     // ====================================================================================================
 
 
-    public async Task<List<LineaEntity>> GetLineasAsync(bool incluirServicios = true) {
-        var lineas = await dbService.Db.Table<LineaEntity>().OrderBy(t => t.Linea).ToListAsync();
-        if (lineas is null) lineas = new();
+    public async Task<ObservableCollection<LineaModel>> GetLineasAsync(bool incluirServicios = true) {
+        var lista = await dbService.Db.Table<LineaEntity>().OrderBy(t => t.Linea).ToListAsync();
+        if (lista is null) lista = new();
+        var lineas = lista.Select(l => l.ToModel()).ToObservableCollection();
         if (incluirServicios) {
             foreach (var linea in lineas) {
                 linea.Servicios = await GetServiciosLineaAsync(linea.Id, incluirServicios);
@@ -166,14 +184,14 @@ public class DbRepository {
     }
 
 
-    public async Task<int> SaveLineaAsync(LineaEntity linea) {
+    public async Task<int> SaveLineaAsync(LineaModel linea) {
         if (linea is null) return 0;
         if (linea.Id == 0) {
-            await dbService.Db.InsertAsync(linea);
+            await dbService.Db.InsertAsync(linea.ToEntity());
             var id = await dbService.GetLastIdAsync();
             linea.Id = id;
         } else {
-            await dbService.Db.UpdateAsync(linea);
+            await dbService.Db.UpdateAsync(linea.ToEntity());
         }
         if (linea.Servicios is not null) {
             foreach (var servicio in linea.Servicios) {
@@ -185,7 +203,7 @@ public class DbRepository {
     }
 
 
-    public async Task SaveLineasAsync(IEnumerable<LineaEntity> lista) {
+    public async Task SaveLineasAsync(IEnumerable<LineaModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await SaveLineaAsync(item);
@@ -198,7 +216,7 @@ public class DbRepository {
     }
 
 
-    public async Task DeleteLineasAsync(IEnumerable<LineaEntity> lista) {
+    public async Task DeleteLineasAsync(IEnumerable<LineaModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await DeleteLineaAsync(item.Id);
@@ -215,34 +233,35 @@ public class DbRepository {
     // ====================================================================================================
 
 
-    public async Task<List<IncidenciaEntity>> GetIncidenciasAsync() {
-        var incidencias = await dbService.Db.Table<IncidenciaEntity>().OrderBy(t => t.Codigo).ToListAsync();
-        if (incidencias is null) incidencias = new();
+    public async Task<ObservableCollection<IncidenciaModel>> GetIncidenciasAsync() {
+        var lista = await dbService.Db.Table<IncidenciaEntity>().OrderBy(t => t.Codigo).ToListAsync();
+        if (lista is null) lista = new();
+        var incidencias = lista.Select(i => i.ToModel()).ToObservableCollection();
         return incidencias;
     }
 
 
-    public async Task<IncidenciaEntity> GetIncidenciaByIdAsync(int incidenciaId) {
+    public async Task<IncidenciaModel> GetIncidenciaByIdAsync(int incidenciaId) {
         var incidencia = await dbService.Db.Table<IncidenciaEntity>().Where(i => i.Id == incidenciaId).FirstOrDefaultAsync();
         if (incidencia is null) incidencia = new();
-        return incidencia;
+        return incidencia.ToModel();
     }
 
 
-    public async Task<int> SaveIncidenciaAsync(IncidenciaEntity incidencia) {
+    public async Task<int> SaveIncidenciaAsync(IncidenciaModel incidencia) {
         if (incidencia is null) return 0;
         if (incidencia.Id == 0) {
-            await dbService.Db.InsertAsync(incidencia);
+            await dbService.Db.InsertAsync(incidencia.ToEntity());
             var id = await dbService.GetLastIdAsync();
             incidencia.Id = id;
         } else {
-            await dbService.Db.UpdateAsync(incidencia);
+            await dbService.Db.UpdateAsync(incidencia.ToEntity());
         }
         return incidencia.Id;
     }
 
 
-    public async Task SaveIncidenciasAsync(IEnumerable<IncidenciaEntity> lista) {
+    public async Task SaveIncidenciasAsync(IEnumerable<IncidenciaModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await SaveIncidenciaAsync(item);
@@ -255,7 +274,7 @@ public class DbRepository {
     }
 
 
-    public async Task DeleteIncidenciasAsync(IEnumerable<IncidenciaEntity> lista) {
+    public async Task DeleteIncidenciasAsync(IEnumerable<IncidenciaModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await DeleteIncidenciaAsync(item.Id);
@@ -272,24 +291,25 @@ public class DbRepository {
     // ====================================================================================================
 
 
-    public async Task<List<TrabajadorEntity>> GetTrabajadoresAsync() {
-        var trabajadores = await dbService.Db.Table<TrabajadorEntity>().OrderBy(t => t.Matricula).ToListAsync();
-        if (trabajadores is null) trabajadores = new();
+    public async Task<ObservableCollection<TrabajadorModel>> GetTrabajadoresAsync() {
+        var lista = await dbService.Db.Table<TrabajadorEntity>().OrderBy(t => t.Matricula).ToListAsync();
+        if (lista is null) lista = new();
+        var trabajadores = lista.Select(t => t.ToModel()).ToObservableCollection();
         return trabajadores;
     }
 
 
-    public async Task<TrabajadorEntity> GetTrabajadorByIdAsync(int relevoId) {
+    public async Task<TrabajadorModel> GetTrabajadorByIdAsync(int relevoId) {
         var trabajador = await dbService.Db.Table<TrabajadorEntity>().Where(t => t.Id == relevoId).FirstOrDefaultAsync();
         if (trabajador is null) trabajador = new();
-        return trabajador;
+        return trabajador.ToModel();
     }
 
 
-    public async Task<TrabajadorEntity> GetTrabajadorByMatriculaAsync(int matricula) {
+    public async Task<TrabajadorModel> GetTrabajadorByMatriculaAsync(int matricula) {
         var trabajador = await dbService.Db.Table<TrabajadorEntity>().Where(t => t.Matricula == matricula).FirstOrDefaultAsync();
         if (trabajador is null) trabajador = new();
-        return trabajador;
+        return trabajador.ToModel();
     }
 
 
@@ -317,20 +337,20 @@ public class DbRepository {
     }
 
 
-    public async Task<int> SaveTrabajadorAsync(TrabajadorEntity trabajador) {
+    public async Task<int> SaveTrabajadorAsync(TrabajadorModel trabajador) {
         if (trabajador is null) return 0;
         if (trabajador.Id == 0) {
-            await dbService.Db.InsertAsync(trabajador);
+            await dbService.Db.InsertAsync(trabajador.ToEntity());
             var id = await dbService.GetLastIdAsync();
             trabajador.Id = id;
         } else {
-            await dbService.Db.UpdateAsync(trabajador);
+            await dbService.Db.UpdateAsync(trabajador.ToEntity());
         }
         return trabajador.Id;
     }
 
 
-    public async Task SaveTrabajadoresAsync(IEnumerable<TrabajadorEntity> lista) {
+    public async Task SaveTrabajadoresAsync(IEnumerable<TrabajadorModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await SaveTrabajadorAsync(item);
@@ -343,7 +363,7 @@ public class DbRepository {
     }
 
 
-    public async Task DeleteTrabajadoresAsync(IEnumerable<TrabajadorEntity> lista) {
+    public async Task DeleteTrabajadoresAsync(IEnumerable<TrabajadorModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await DeleteTrabajadorAsync(item.Id);
@@ -360,27 +380,28 @@ public class DbRepository {
     // ====================================================================================================
 
 
-    public async Task<List<ServicioDiaEntity>> GetServiciosDiaAsync(int diaId) {
-        var servicios = await dbService.Db.Table<ServicioDiaEntity>().Where(s => s.DiaId == diaId).OrderBy(t => t.Servicio).ToListAsync();
-        if (servicios is null) servicios = new();
+    public async Task<ObservableCollection<ServicioDiaModel>> GetServiciosDiaAsync(int diaId) {
+        var lista = await dbService.Db.Table<ServicioDiaEntity>().Where(s => s.DiaId == diaId).OrderBy(t => t.Servicio).ToListAsync();
+        if (lista is null) lista = new();
+        var servicios = lista.Select(s => s.ToServicioDiaModel()).ToObservableCollection();
         return servicios;
     }
 
 
-    public async Task<int> SaveServicioDiaAsync(ServicioDiaEntity servicio) {
+    public async Task<int> SaveServicioDiaAsync(ServicioDiaModel servicio) {
         if (servicio is null) return 0;
         if (servicio.Id == 0) {
-            await dbService.Db.InsertAsync(servicio);
+            await dbService.Db.InsertAsync(servicio.ToServicioDiaEntity());
             var id = await dbService.GetLastIdAsync();
             servicio.Id = id;
         } else {
-            await dbService.Db.UpdateAsync(servicio);
+            await dbService.Db.UpdateAsync(servicio.ToServicioDiaEntity());
         }
         return servicio.Id;
     }
 
 
-    public async Task SaveServiciosDiaAsync(IEnumerable<ServicioDiaEntity> lista) {
+    public async Task SaveServiciosDiaAsync(IEnumerable<ServicioDiaModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await SaveServicioDiaAsync(item);
@@ -393,7 +414,7 @@ public class DbRepository {
     }
 
 
-    public async Task DeleteServiciosDiaAsync(IEnumerable<ServicioDiaEntity> lista) {
+    public async Task DeleteServiciosDiaAsync(IEnumerable<ServicioDiaModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await DeleteServicioDiaAsync(item.Id);
@@ -410,11 +431,12 @@ public class DbRepository {
     // ====================================================================================================
 
 
-    public async Task<List<DiaEntity>> GetDiasAsync(DateTime fecha, bool incluirServicios = true) {
+    public async Task<ObservableCollection<DiaModel>> GetDiasAsync(DateTime fecha, bool incluirServicios = true) {
         var fechaAnterior = new DateTime(fecha.Year, fecha.Month, 1);
         var fechaPosterior = fecha.AddMonths(1);
-        var dias = await dbService.Db.Table<DiaEntity>().Where(d => d.Fecha >= fechaAnterior && d.Fecha < fechaPosterior).OrderBy(t => t.Fecha).ToListAsync();
-        if (dias is null) dias = new();
+        var lista = await dbService.Db.Table<DiaEntity>().Where(d => d.Fecha >= fechaAnterior && d.Fecha < fechaPosterior).OrderBy(t => t.Fecha).ToListAsync();
+        if (lista is null) lista = new();
+        var dias = lista.Select(d => d.ToModel()).ToObservableCollection();
         if (incluirServicios) {
             foreach (var dia in dias) {
                 dia.Servicios = await GetServiciosDiaAsync(dia.Id);
@@ -425,25 +447,26 @@ public class DbRepository {
     }
 
 
-    public async Task<DiaEntity> GetDiaByIdAsync(int diaId, bool incluirServicios = true) {
+    public async Task<DiaModel> GetDiaByIdAsync(int diaId, bool incluirServicios = true) {
         var dia = await dbService.Db.Table<DiaEntity>().Where(d => d.Id == diaId).OrderBy(t => t.Fecha).FirstOrDefaultAsync();
         if (dia is null) dia = new();
+        var diaModel = dia.ToModel();
         if (incluirServicios) {
-            dia.Servicios = await GetServiciosDiaAsync(dia.Id);
-            if (dia.Servicios is null) dia.Servicios = new();
+            diaModel.Servicios = await GetServiciosDiaAsync(dia.Id);
+            if (diaModel.Servicios is null) diaModel.Servicios = new();
         }
-        return dia;
+        return diaModel;
     }
 
 
-    public async Task<int> SaveDiaAsync(DiaEntity dia) {
+    public async Task<int> SaveDiaAsync(DiaModel dia) {
         if (dia is null) return 0;
         if (dia.Id == 0) {
-            await dbService.Db.InsertAsync(dia);
+            await dbService.Db.InsertAsync(dia.ToEntity());
             var id = await dbService.GetLastIdAsync();
             dia.Id = id;
         } else {
-            await dbService.Db.UpdateAsync(dia);
+            await dbService.Db.UpdateAsync(dia.ToEntity());
         }
         if (dia.Servicios is not null) {
             foreach (var servicio in dia.Servicios) {
@@ -455,7 +478,7 @@ public class DbRepository {
     }
 
 
-    public async Task SaveDiasAsync(IEnumerable<DiaEntity> lista) {
+    public async Task SaveDiasAsync(IEnumerable<DiaModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await SaveDiaAsync(item);
@@ -468,7 +491,7 @@ public class DbRepository {
     }
 
 
-    public async Task DeleteDiasAsync(IEnumerable<DiaEntity> lista) {
+    public async Task DeleteDiasAsync(IEnumerable<DiaModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await DeleteDiaAsync(item.Id);
@@ -485,36 +508,38 @@ public class DbRepository {
     // ====================================================================================================
 
 
-    public async Task<List<RegulacionEntity>> GetRegulacionesByDiaAsync(DateTime fecha) {
-        var regulaciones = await dbService.Db.Table<RegulacionEntity>().Where(s => s.Fecha == fecha).ToListAsync();
-        if (regulaciones is null) regulaciones = new();
+    public async Task<ObservableCollection<RegulacionModel>> GetRegulacionesByDiaAsync(DateTime fecha) {
+        var lista = await dbService.Db.Table<RegulacionEntity>().Where(s => s.Fecha == fecha).ToListAsync();
+        if (lista is null) lista = new();
+        var regulaciones = lista.Select(r => r.ToModel()).ToObservableCollection();
         return regulaciones;
     }
 
 
-    public async Task<List<RegulacionEntity>> GetRegulacionesByMesAsync(DateTime fecha) {
+    public async Task<ObservableCollection<RegulacionModel>> GetRegulacionesByMesAsync(DateTime fecha) {
         var fechaInicio = new DateTime(fecha.Year, fecha.Month, 1);
         var fechaFinal = fechaInicio.AddMonths(1);
-        var regulaciones = await dbService.Db.Table<RegulacionEntity>().Where(s => s.Fecha >= fechaInicio && s.Fecha < fechaFinal).ToListAsync();
-        if (regulaciones is null) regulaciones = new();
+        var lista = await dbService.Db.Table<RegulacionEntity>().Where(s => s.Fecha >= fechaInicio && s.Fecha < fechaFinal).ToListAsync();
+        if (lista is null) lista = new();
+        var regulaciones = lista.Select(r => r.ToModel()).ToObservableCollection();
         return regulaciones;
     }
 
 
-    public async Task<int> SaveRegulacionAsync(RegulacionEntity regulacion) {
+    public async Task<int> SaveRegulacionAsync(RegulacionModel regulacion) {
         if (regulacion is null) return 0;
         if (regulacion.Id == 0) {
-            await dbService.Db.InsertAsync(regulacion);
+            await dbService.Db.InsertAsync(regulacion.ToEntity());
             var id = await dbService.GetLastIdAsync();
             regulacion.Id = id;
         } else {
-            await dbService.Db.UpdateAsync(regulacion);
+            await dbService.Db.UpdateAsync(regulacion.ToEntity());
         }
         return regulacion.Id;
     }
 
 
-    public async Task SaveRegulacionesAsync(IEnumerable<RegulacionEntity> lista) {
+    public async Task SaveRegulacionesAsync(IEnumerable<RegulacionModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await SaveRegulacionAsync(item);
@@ -527,7 +552,7 @@ public class DbRepository {
     }
 
 
-    public async Task DeleteRegulacionesAsync(IEnumerable<RegulacionEntity> lista) {
+    public async Task DeleteRegulacionesAsync(IEnumerable<RegulacionModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await DeleteRegulacionAsync(item.Id);
@@ -544,16 +569,16 @@ public class DbRepository {
     // ====================================================================================================
 
 
-    public async Task<ResumenEntity> GetResumenAsync(DateTime fecha) {
+    public async Task<ResumenModel> GetResumenAsync(DateTime fecha) {
         var fechaAjustada = new DateTime(fecha.Year, fecha.Month, 1);
         var resumen = await dbService.Db.Table<ResumenEntity>().Where(s => s.Fecha == fechaAjustada).FirstOrDefaultAsync();
-        return resumen;
+        return resumen.ToModel();
     }
 
 
-    public async Task<ResumenEntity> GetResumenHastaFechaAsync(DateTime fecha) {
+    public async Task<ResumenModel> GetResumenHastaFechaAsync(DateTime fecha) {
         var resumenes = await dbService.Db.Table<ResumenEntity>().Where(r => r.Fecha <= fecha).ToListAsync();
-        return new ResumenEntity {
+        return new ResumenModel {
             Trabajadas = resumenes.Sum(r => r.Trabajadas),
             TrabajadasConvenio = resumenes.Sum(r => r.TrabajadasConvenio),
             Acumuladas = resumenes.Sum(r => r.Acumuladas),
@@ -565,20 +590,20 @@ public class DbRepository {
     }
 
 
-    public async Task<int> SaveResumenAsync(ResumenEntity resumen) {
+    public async Task<int> SaveResumenAsync(ResumenModel resumen) {
         if (resumen is null) return 0;
         if (resumen.Id == 0) {
-            await dbService.Db.InsertAsync(resumen);
+            await dbService.Db.InsertAsync(resumen.ToEntity());
             var id = await dbService.GetLastIdAsync();
             resumen.Id = id;
         } else {
-            await dbService.Db.UpdateAsync(resumen);
+            await dbService.Db.UpdateAsync(resumen.ToEntity());
         }
         return resumen.Id;
     }
 
 
-    public async Task SaveResumenesAsync(IEnumerable<ResumenEntity> lista) {
+    public async Task SaveResumenesAsync(IEnumerable<ResumenModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await SaveResumenAsync(item);
@@ -591,7 +616,7 @@ public class DbRepository {
     }
 
 
-    public async Task DeleteResumenesAsync(IEnumerable<ResumenEntity> lista) {
+    public async Task DeleteResumenesAsync(IEnumerable<ResumenModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await DeleteResumenAsync(item.Id);
@@ -608,27 +633,27 @@ public class DbRepository {
     // ====================================================================================================
 
 
-    public async Task<OpcionesEntity> GetOpcionesAsync() {
+    public async Task<OpcionesModel> GetOpcionesAsync() {
         var opciones = await dbService.Db.Table<OpcionesEntity>().FirstOrDefaultAsync();
         if (opciones is null) opciones = new();
-        return opciones;
+        return opciones.ToModel();
     }
 
 
-    public async Task<int> SaveOpcionesAsync(OpcionesEntity opciones) {
+    public async Task<int> SaveOpcionesAsync(OpcionesModel opciones) {
         if (opciones is null) return 0;
         if (opciones.Id == 0) {
-            await dbService.Db.InsertAsync(opciones);
+            await dbService.Db.InsertAsync(opciones.ToEntity());
             var id = await dbService.GetLastIdAsync();
             opciones.Id = id;
         } else {
-            await dbService.Db.UpdateAsync(opciones);
+            await dbService.Db.UpdateAsync(opciones.ToEntity());
         }
         return opciones.Id;
     }
 
 
-    public async Task SaveOpcionesAsync(IEnumerable<OpcionesEntity> lista) {
+    public async Task SaveOpcionesAsync(IEnumerable<OpcionesModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await SaveOpcionesAsync(item);
@@ -641,7 +666,7 @@ public class DbRepository {
     }
 
 
-    public async Task DeleteOpcionesAsync(IEnumerable<OpcionesEntity> lista) {
+    public async Task DeleteOpcionesAsync(IEnumerable<OpcionesModel> lista) {
         if (lista is null) return;
         foreach (var item in lista) {
             await DeleteOpcionesAsync(item.Id);

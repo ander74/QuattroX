@@ -15,5 +15,6 @@ public partial class AppShell : Shell {
         Routing.RegisterRoute(nameof(DetalleLineaPage), typeof(DetalleLineaPage));
         Routing.RegisterRoute(nameof(OpcionesConvenioPage), typeof(OpcionesConvenioPage));
         Routing.RegisterRoute(nameof(OpcionesGeneralesPage), typeof(OpcionesGeneralesPage));
+        //Routing.RegisterRoute(nameof(LineasPopup), typeof(LineasPopup));
     }
 }

@@ -3,7 +3,7 @@
 <!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
 <!--  ===========================================================================================  -->
 <ContentView
-    x:Class="QuattroX.View.Templates.DiaTabPage"
+    x:Class="QuattroX.View.Templates.DiaTabPage2"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:cnv="clr-namespace:QuattroX.View.Converters"
@@ -48,6 +48,11 @@
         RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
 
         <!--  Incidencia  -->
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Text="Incidencia" />
         <Picker
             Title="Seleccione una incidencia"
             Grid.Row="0"
@@ -139,108 +144,49 @@
             </Entry.Behaviors>
         </Entry>
 
-        <!--  Línea  -->
+        <!--  Servicio completo  -->
         <Label
             Grid.Row="3"
-            Grid.Column="0"
-            Text="Línea" />
-        <Entry
-            Grid.Row="3"
-            Grid.Column="0"
-            Text="{Binding Dia.Linea}">
-            <Entry.Behaviors>
-                <toolkit:EventToCommandBehavior
-                    Command="{Binding CalcularCommand}"
-                    EventName="Unfocused" />
-            </Entry.Behaviors>
-        </Entry>
-
-        <!--  Servicio  -->
-        <Label
-            Grid.Row="3"
-            Grid.Column="1"
-            Text="Servicio" />
-        <Entry
-            Grid.Row="3"
-            Grid.Column="1"
-            Text="{Binding Dia.Servicio}">
-            <Entry.Behaviors>
-                <toolkit:EventToCommandBehavior
-                    Command="{Binding CalcularCommand}"
-                    EventName="Unfocused" />
-            </Entry.Behaviors>
-        </Entry>
-
-        <!--  Turno  -->
-        <Label
-            Grid.Row="3"
-            Grid.Column="2"
-            Text="Turno" />
-        <!--<Entry
-            Grid.Row="2"
-            Grid.Column="2"
-            Text="{Binding Dia.Turno}" />-->
-        <Picker
-            Title="Turno"
-            Grid.Row="3"
-            Grid.Column="2"
-            ItemsSource="{Binding Turnos}"
-            SelectedItem="{Binding TurnoSeleccionado}" />
-        <!--  Texto Línea  -->
-        <Entry
-            Grid.Row="4"
             Grid.Column="0"
             Grid.ColumnSpan="3"
-            Margin="5,0,5,5"
-            HorizontalTextAlignment="Start"
-            Text="{Binding Dia.TextoLinea}" />
-
-        <!--  Inicio  -->
-        <Label
-            Grid.Row="5"
+            Text="Servicio" />
+        <Border
+            Grid.Row="3"
             Grid.Column="0"
-            HorizontalOptions="FillAndExpand"
-            Text="Inicio" />
-        <TimePicker
-            Grid.Row="5"
-            Grid.Column="0"
-            Time="{Binding Dia.Inicio}" />
+            Grid.ColumnSpan="3"
+            Margin="5,20,5,10"
+            Padding="10"
+            Stroke="{StaticResource Primary}"
+            StrokeShape="RoundRectangle 5"
+            StrokeThickness="1"
+            VerticalOptions="End">
 
-        <!--  Lugar inicio  -->
-        <Label
-            Grid.Row="5"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            Text="Lugar inicio" />
-        <Entry
-            Grid.Row="5"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            HorizontalTextAlignment="Start"
-            Text="{Binding Dia.LugarInicio}" />
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding EditarServicioPrincipalCommand}" />
+            </Border.GestureRecognizers>
 
-        <!--  Final  -->
-        <Label
-            Grid.Row="6"
-            Grid.Column="0"
-            Text="Final" />
-        <TimePicker
-            Grid.Row="6"
-            Grid.Column="0"
-            Time="{Binding Dia.Final}" />
+            <Grid RowDefinitions="*,*,*">
+                <Label
+                    Grid.Row="0"
+                    FontAttributes="Bold"
+                    FontSize="Caption"
+                    Text="{Binding Dia.TextoServicio}"
+                    TextColor="Black" />
+                <Label
+                    Grid.Row="1"
+                    Margin="15,0,0,0"
+                    FontSize="Caption"
+                    Text="{Binding Dia.TextoInicio}"
+                    TextColor="Black" />
+                <Label
+                    Grid.Row="2"
+                    Margin="15,0,0,0"
+                    FontSize="Caption"
+                    Text="{Binding Dia.TextoFinal}"
+                    TextColor="Black" />
+            </Grid>
+        </Border>
 
-        <!--  Lugar final  -->
-        <Label
-            Grid.Row="6"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            Text="Lugar final" />
-        <Entry
-            Grid.Row="6"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            HorizontalTextAlignment="Start"
-            Text="{Binding Dia.LugarFinal}" />
 
         <!--  Bus  -->
         <Label

@@ -5,10 +5,12 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
+using QuattroX.Data.Interfaces;
+
 namespace QuattroX.Data.Model;
 
 
-public partial class DiaModel : ModelBase {
+public partial class DiaModel : ModelBase, IServicio {
 
 
     // ====================================================================================================
@@ -35,39 +37,47 @@ public partial class DiaModel : ModelBase {
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TextoIncidencia))]
+    [NotifyPropertyChangedFor(nameof(TextoServicio))]
     string linea;
 
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TextoIncidencia))]
+    [NotifyPropertyChangedFor(nameof(TextoServicio))]
     string textoLinea;
 
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TextoIncidencia))]
+    [NotifyPropertyChangedFor(nameof(TextoServicio))]
     string servicio;
 
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TextoIncidencia))]
+    [NotifyPropertyChangedFor(nameof(TextoServicio))]
     int turno;
 
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TextoHoras))]
+    [NotifyPropertyChangedFor(nameof(TextoInicio))]
     TimeSpan inicio;
 
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TextoHoras))]
+    [NotifyPropertyChangedFor(nameof(TextoFinal))]
     TimeSpan final;
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TextoInicio))]
     string lugarInicio;
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TextoFinal))]
     string lugarFinal;
 
 
@@ -182,12 +192,45 @@ public partial class DiaModel : ModelBase {
     public bool HayHoras => Acumuladas != 0 || Nocturnas > 0;
 
 
+    public string TextoServicio {
+        get {
+            if (string.IsNullOrEmpty(Linea) || string.IsNullOrEmpty(Servicio) || Turno == 0) {
+                return "No hay servicio";
+            } else {
+                return $"{Servicio} / {Turno} - {Linea} : {TextoLinea}";
+            }
+        }
+    }
+
+
+    public string TextoInicio {
+        get {
+            if (string.IsNullOrEmpty(Linea) || string.IsNullOrEmpty(Servicio) || Turno == 0) {
+                return string.Empty;
+            } else {
+                return $"{Inicio.ToTexto()} - {LugarInicio}";
+            }
+        }
+    }
+
+
+    public string TextoFinal {
+        get {
+            if (string.IsNullOrEmpty(Linea) || string.IsNullOrEmpty(Servicio) || Turno == 0) {
+                return string.Empty;
+            } else {
+                return $"{Final.ToTexto()} - {LugarFinal}";
+            }
+        }
+    }
+
+
     public string TextoIncidencia {
         get {
             if (string.IsNullOrEmpty(Linea) || string.IsNullOrEmpty(Servicio) || Turno == 0) {
                 return Incidencia.Descripcion;
             }
-            return $"{Servicio} / {Turno} - {Linea} : {TextoLinea}";
+            return TextoServicio;
         }
     }
 

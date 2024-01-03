@@ -5,7 +5,6 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-using QuattroX.Data.Helpers;
 using QuattroX.Data.Model;
 using QuattroX.Data.Repositories;
 
@@ -36,7 +35,7 @@ public class ConfigService {
     // ====================================================================================================
 
 
-    public OpcionesModel Opciones { get; private set; }
+    public OpcionesModel Opciones { get; private set; } = new();
 
 
     #endregion
@@ -49,16 +48,12 @@ public class ConfigService {
 
 
     public async Task InitAsync() {
-        var options = await dbRepository.GetOpcionesAsync();
-        options ??= new();
-        Opciones = options.ToModel();
+        Opciones = await dbRepository.GetOpcionesAsync();
     }
 
 
     public async Task SaveAsync() {
-        if (Opciones is null) return;
-        var options = Opciones.ToEntity();
-        await dbRepository.SaveOpcionesAsync(options);
+        await dbRepository.SaveOpcionesAsync(Opciones);
     }
 
 

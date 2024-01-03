@@ -6,7 +6,6 @@
 // ===============================================
 #endregion
 
-using QuattroX.Data.Helpers;
 using QuattroX.Data.Model;
 
 #if IOS
@@ -151,7 +150,7 @@ public partial class DetalleLineaViewModel : BaseViewModel {
 
     [RelayCommand]
     async Task CloseAsync() {
-        await dbRepository.SaveLineaAsync(Linea.ToEntity());
+        await dbRepository.SaveLineaAsync(Linea);
     }
 
 

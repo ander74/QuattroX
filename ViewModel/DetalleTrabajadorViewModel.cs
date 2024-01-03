@@ -7,7 +7,6 @@
 #endregion
 
 using QuattroX.Data.Enums;
-using QuattroX.Data.Helpers;
 using QuattroX.Data.Model;
 using QuattroX.Data.Repositories;
 namespace QuattroX.ViewModel;
@@ -81,7 +80,7 @@ public partial class DetalleTrabajadorViewModel : BaseViewModel {
 
     [RelayCommand]
     async Task CloseAsync() {
-        await dbRepository.SaveTrabajadorAsync(Trabajador.ToEntity());
+        await dbRepository.SaveTrabajadorAsync(Trabajador);
     }
 
 

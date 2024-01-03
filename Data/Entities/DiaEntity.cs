@@ -6,6 +6,7 @@
 // ===============================================
 #endregion
 
+using QuattroX.Data.Interfaces;
 using SQLite;
 
 namespace QuattroX.Data.Entities;
@@ -15,7 +16,7 @@ namespace QuattroX.Data.Entities;
 /// Representa a un día en el calendario
 /// </summary>
 [Table(name: "Calendario")]
-public class DiaEntity : EntityBase {
+public class DiaEntity : EntityBase, IServicio {
 
 
     public DateTime Fecha { get; set; }

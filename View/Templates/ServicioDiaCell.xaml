@@ -157,17 +157,26 @@
                     IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleDiaViewModel}}, Path=IsNotSelectionMode}" />
 
                 <!--  Servicio  -->
-                <Label
+                <VerticalStackLayout
                     Grid.Row="0"
                     Grid.RowSpan="2"
                     Grid.Column="0"
-                    Margin="5,0,15,0"
-                    Padding="5"
-                    FontFamily="Consolas"
-                    FontSize="Title"
-                    HorizontalOptions="Center"
-                    Text="{Binding TextoServicio}"
-                    VerticalOptions="Center" />
+                    Margin="5,0,15,0">
+                    <Label
+                        Padding="5"
+                        FontFamily="Consolas"
+                        FontSize="Small"
+                        HorizontalOptions="Center"
+                        Text="{Binding TextoServicio}"
+                        VerticalOptions="Center" />
+                    <Label
+                        Padding="5,0,5,5"
+                        FontFamily="Consolas"
+                        FontSize="Micro"
+                        HorizontalOptions="Center"
+                        Text="{Binding Linea}"
+                        VerticalOptions="Center" />
+                </VerticalStackLayout>
 
                 <!--  Inicio y lugar inicio  -->
                 <HorizontalStackLayout

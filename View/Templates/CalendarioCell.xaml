@@ -27,7 +27,7 @@
 
         </SwipeView.Resources>
 
-        <SwipeView.LeftItems>
+        <SwipeView.RightItems>
             <SwipeItems Mode="Execute">
                 <SwipeItemView
                     Padding="0,15,0,15"
@@ -45,22 +45,6 @@
                         VerticalOptions="Center"
                         WidthRequest="125" />
                 </SwipeItemView>
-            </SwipeItems>
-        </SwipeView.LeftItems>
-
-        <SwipeView.RightItems>
-            <SwipeItems Mode="Execute">
-                <SwipeItem
-                    BackgroundColor="DarkRed"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalendarioViewModel}}, Path=ActivarFranqueoFestivoCommand}"
-                    CommandParameter="{Binding .}"
-                    Text="Borrar">
-                    <SwipeItem.IconImageSource>
-                        <FontImageSource
-                            FontFamily="Material"
-                            Glyph="&#x39d;" />
-                    </SwipeItem.IconImageSource>
-                </SwipeItem>
             </SwipeItems>
         </SwipeView.RightItems>
 
@@ -349,6 +333,5 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
     </SwipeView>
-
 
 </DataTemplate>

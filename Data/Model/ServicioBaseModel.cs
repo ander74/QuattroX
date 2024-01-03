@@ -5,10 +5,12 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
+using QuattroX.Data.Interfaces;
+
 namespace QuattroX.Data.Model;
 
 
-public partial class ServicioBaseModel : ModelBase {
+public partial class ServicioBaseModel : ModelBase, IServicio {
 
 
     // ====================================================================================================
@@ -56,7 +58,8 @@ public partial class ServicioBaseModel : ModelBase {
     #region Propiedades no enlazadas
     // ====================================================================================================
 
-    public string TextoServicio => $"{Servicio}/{Turno}";
+    public string TextoServicio => Turno > 0 ? $"{Servicio}/{Turno}" : Servicio;
+
 
     #endregion
     // ====================================================================================================

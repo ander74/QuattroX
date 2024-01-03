@@ -5,7 +5,6 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-using QuattroX.Data.Helpers;
 using QuattroX.Data.Messages;
 using QuattroX.Data.Model;
 #if IOS
@@ -144,16 +143,13 @@ public partial class TrabajadoresViewModel : BaseViewModel {
     private async Task CargarTrabajadores() {
         try {
             IsBusy = true;
-            var lista = await dbRepository.GetTrabajadoresAsync();
+            Trabajadores = await dbRepository.GetTrabajadoresAsync();
             var index = 1;
-            Trabajadores = new();
-            foreach (var trabajador in lista) {
-                var model = trabajador.ToModel();
-                model.RowIndex = index++;
-                model.DiasLeHago = await dbRepository.GetDiasHagoATrabajadorAsync(trabajador.Id);
-                model.DiasMeHace = await dbRepository.GetDiasMeHaceTrabajadorAsync(trabajador.Id);
-                model.Modified = false;
-                Trabajadores.Add(model);
+            foreach (var trabajador in Trabajadores) {
+                trabajador.RowIndex = index++;
+                trabajador.DiasLeHago = await dbRepository.GetDiasHagoATrabajadorAsync(trabajador.Id);
+                trabajador.DiasMeHace = await dbRepository.GetDiasMeHaceTrabajadorAsync(trabajador.Id);
+                trabajador.Modified = false;
             }
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
@@ -226,7 +222,7 @@ public partial class TrabajadoresViewModel : BaseViewModel {
                 return;
             }
             var newTrabajador = new TrabajadorModel { Matricula = matricula };
-            var id = await dbRepository.SaveTrabajadorAsync(newTrabajador.ToEntity());
+            var id = await dbRepository.SaveTrabajadorAsync(newTrabajador);
             newTrabajador.Id = id;
             Trabajadores.Add(newTrabajador);
             await AbrirTrabajadorAsync(newTrabajador);

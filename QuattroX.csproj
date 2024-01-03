@@ -78,6 +78,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="View\Popups\ServicioBasePopup.xaml.cs">
+	    <DependentUpon>ServicioBasePopup.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiXaml Update="View\CalendarioPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -102,10 +108,16 @@
 	  <MauiXaml Update="View\OpcionesGeneralesPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="View\Popups\ServicioBasePopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="View\Templates\CalendarioCell.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\Templates\DiaTabPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="View\Templates\DiaTabPage2.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\Templates\LineaCell.xaml">

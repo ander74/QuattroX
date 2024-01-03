@@ -7,6 +7,7 @@
 #endregion
 using QuattroX.Data.Entities;
 using QuattroX.Data.Enums;
+using QuattroX.Data.Model;
 using QuattroX.Data.Repositories;
 using QuattroX.Services;
 using QuattroX.View.Helpers;
@@ -57,25 +58,25 @@ public partial class MainViewModel : BaseViewModel {
     // ====================================================================================================
 
 
-    private List<TrabajadorEntity> GetTrabajadoresPruebas() {
-        List<TrabajadorEntity> lista = new();
-        lista.Add(new TrabajadorEntity { Matricula = 5060, Nombre = "Andrés", Apellidos = "Herrero Módenes", Calificacion = CalificacionTrabajador.Normal });
-        lista.Add(new TrabajadorEntity { Matricula = 4935, Nombre = "Joseba", Apellidos = "Moyano Reyero", Calificacion = CalificacionTrabajador.Buena });
-        lista.Add(new TrabajadorEntity { Matricula = 5190, Nombre = "Arturo", Apellidos = "Gómez Torres", Calificacion = CalificacionTrabajador.Mala });
-        lista.Add(new TrabajadorEntity { Matricula = 8008, Nombre = "Erika", Apellidos = "Carrillo Luengas", Calificacion = CalificacionTrabajador.Buena });
+    private List<TrabajadorModel> GetTrabajadoresPruebas() {
+        List<TrabajadorModel> lista = new();
+        lista.Add(new TrabajadorModel { Matricula = 5060, Nombre = "Andrés", Apellidos = "Herrero Módenes", Calificacion = CalificacionTrabajador.Normal });
+        lista.Add(new TrabajadorModel { Matricula = 4935, Nombre = "Joseba", Apellidos = "Moyano Reyero", Calificacion = CalificacionTrabajador.Buena });
+        lista.Add(new TrabajadorModel { Matricula = 5190, Nombre = "Arturo", Apellidos = "Gómez Torres", Calificacion = CalificacionTrabajador.Mala });
+        lista.Add(new TrabajadorModel { Matricula = 8008, Nombre = "Erika", Apellidos = "Carrillo Luengas", Calificacion = CalificacionTrabajador.Buena });
         return lista;
     }
 
 
-    private List<LineaEntity> GetLineasPruebas() {
-        List<LineaEntity> lista = new();
+    private List<LineaModel> GetLineasPruebas() {
+        List<LineaModel> lista = new();
 
         // 2314
-        lista.Add(new LineaEntity {
+        lista.Add(new LineaModel {
             Linea = "2314",
             Texto = "Plaza Cirular - UPV",
             Servicios = new() {
-                new ServicioLineaEntity {
+                new ServicioLineaModel {
                     Inicio = new TimeSpan(6,15,0),
                     Final = new TimeSpan(14,15,0),
                     LugarInicio = "Aparcabisa",
@@ -85,7 +86,7 @@ public partial class MainViewModel : BaseViewModel {
                     Turno = 1,
                     TextoLinea = "Plaza Cirular - UPV",
                 },
-                new ServicioLineaEntity {
+                new ServicioLineaModel {
                     Inicio = new TimeSpan(14,15,0),
                     Final = new TimeSpan(21,45,0),
                     LugarInicio = "Plaza Circular",
@@ -95,7 +96,7 @@ public partial class MainViewModel : BaseViewModel {
                     Turno = 2,
                     TextoLinea = "Plaza Cirular - UPV",
                 },
-                new ServicioLineaEntity {
+                new ServicioLineaModel {
                     Inicio = new TimeSpan(6,45,0),
                     Final = new TimeSpan(14,45,0),
                     LugarInicio = "Aparcabisa",
@@ -105,7 +106,7 @@ public partial class MainViewModel : BaseViewModel {
                     Turno = 1,
                     TextoLinea = "Plaza Cirular - UPV",
                 },
-                new ServicioLineaEntity {
+                new ServicioLineaModel {
                     Inicio = new TimeSpan(14,45,0),
                     Final = new TimeSpan(22,15,0),
                     LugarInicio = "Plaza Circular",
@@ -119,11 +120,11 @@ public partial class MainViewModel : BaseViewModel {
         });
 
         // 2318
-        lista.Add(new LineaEntity {
+        lista.Add(new LineaModel {
             Linea = "2318",
             Texto = "Termibus - UPV",
             Servicios = new() {
-                new ServicioLineaEntity {
+                new ServicioLineaModel {
                     Inicio = new TimeSpan(6,30,0),
                     Final = new TimeSpan(14,10,0),
                     LugarInicio = "Aparcabisa",
@@ -133,7 +134,7 @@ public partial class MainViewModel : BaseViewModel {
                     Turno = 1,
                     TextoLinea = "Termibus - UPV",
                 },
-                new ServicioLineaEntity {
+                new ServicioLineaModel {
                     Inicio = new TimeSpan(14,10,0),
                     Final = new TimeSpan(21,35,0),
                     LugarInicio = "Termibus",
@@ -143,7 +144,7 @@ public partial class MainViewModel : BaseViewModel {
                     Turno = 2,
                     TextoLinea = "Termibus - UPV",
                 },
-                new ServicioLineaEntity {
+                new ServicioLineaModel {
                     Inicio = new TimeSpan(7,05,0),
                     Final = new TimeSpan(14,25,0),
                     LugarInicio = "Aparcabisa",
@@ -153,7 +154,7 @@ public partial class MainViewModel : BaseViewModel {
                     Turno = 1,
                     TextoLinea = "Termibus - UPV",
                 },
-                new ServicioLineaEntity {
+                new ServicioLineaModel {
                     Inicio = new TimeSpan(14,25,0),
                     Final = new TimeSpan(22,00,0),
                     LugarInicio = "Termibus",
@@ -167,11 +168,11 @@ public partial class MainViewModel : BaseViewModel {
         });
 
         // 2321
-        lista.Add(new LineaEntity {
+        lista.Add(new LineaModel {
             Linea = "2321",
             Texto = "Santutxu - UPV",
             Servicios = new() {
-                new ServicioLineaEntity {
+                new ServicioLineaModel {
                     Inicio = new TimeSpan(6,40,0),
                     Final = new TimeSpan(14,35,0),
                     LugarInicio = "Aparcabisa",
@@ -181,7 +182,7 @@ public partial class MainViewModel : BaseViewModel {
                     Turno = 1,
                     TextoLinea = "Santutxu - UPV",
                 },
-                new ServicioLineaEntity {
+                new ServicioLineaModel {
                     Inicio = new TimeSpan(14,35,0),
                     Final = new TimeSpan(21,20,0),
                     LugarInicio = "Santutxu",
@@ -191,7 +192,7 @@ public partial class MainViewModel : BaseViewModel {
                     Turno = 2,
                     TextoLinea = "Santutxu - UPV",
                 },
-                new ServicioLineaEntity {
+                new ServicioLineaModel {
                     Inicio = new TimeSpan(7,10,0),
                     Final = new TimeSpan(15,05,0),
                     LugarInicio = "Aparcabisa",
@@ -201,7 +202,7 @@ public partial class MainViewModel : BaseViewModel {
                     Turno = 1,
                     TextoLinea = "Santutxu - UPV",
                 },
-                new ServicioLineaEntity {
+                new ServicioLineaModel {
                     Inicio = new TimeSpan(15,05,0),
                     Final = new TimeSpan(22,10,0),
                     LugarInicio = "Santutxu",

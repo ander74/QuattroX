@@ -29,4 +29,8 @@ public class IncidenciaEntity : EntityBase {
     public string Descripcion { get; set; }
 
 
+    [EnumDataType(typeof(ComportamientoIncidencia))]
+    public ComportamientoIncidencia Comportamiento { get; set; }
+
+
 }

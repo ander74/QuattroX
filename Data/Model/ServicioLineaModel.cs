@@ -21,7 +21,7 @@ public partial class ServicioLineaModel : ServicioBaseModel {
 
 
     [ObservableProperty]
-    ObservableCollection<ServicioSecundarioModel> servicios;
+    ObservableCollection<ServicioSecundarioModel> servicios = new();
 
 
     #endregion

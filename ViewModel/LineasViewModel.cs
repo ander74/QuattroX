@@ -5,7 +5,6 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-using QuattroX.Data.Helpers;
 using QuattroX.Data.Model;
 using QuattroX.Data.Repositories;
 using QuattroX.Services;
@@ -130,14 +129,11 @@ public partial class LineasViewModel : BaseViewModel {
     // ====================================================================================================
 
     private async Task CargarLineas() {
-        var lista = await dbRepository.GetLineasAsync();
-        Lineas = new();
+        Lineas = await dbRepository.GetLineasAsync();
         var index = 1;
-        foreach (var linea in lista) {
-            var model = linea.ToModel();
-            model.RowIndex = index++;
-            model.Modified = false;
-            Lineas.Add(model);
+        foreach (var linea in Lineas) {
+            linea.RowIndex = index++;
+            linea.Modified = false;
         }
     }
 
@@ -220,7 +216,7 @@ public partial class LineasViewModel : BaseViewModel {
         var descripcion = await Shell.Current.DisplayPromptAsync("Nueva línea", "Introduce la descripción", "Crear", "Cancelar");
         if (descripcion is null) return;
         var newLinea = new LineaModel { Linea = resultado, Texto = descripcion };
-        var id = await dbRepository.SaveLineaAsync(newLinea.ToEntity());
+        var id = await dbRepository.SaveLineaAsync(newLinea);
         newLinea.Id = id;
         newLinea.RowIndex = Lineas.Count + 1;
         Lineas.Add(newLinea);

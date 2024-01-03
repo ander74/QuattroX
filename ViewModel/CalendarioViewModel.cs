@@ -5,7 +5,6 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-using QuattroX.Data.Entities;
 using QuattroX.Data.Enums;
 using QuattroX.Data.Helpers;
 using QuattroX.Data.Messages;
@@ -100,12 +99,12 @@ public partial class CalendarioViewModel : BaseViewModel {
 
 
     [ObservableProperty]
-    List<IncidenciaModel> incidencias;
+    ObservableCollection<IncidenciaModel> incidencias;
 
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(AcumuladasHastaMes))]
-    List<RegulacionModel> regulaciones;
+    ObservableCollection<RegulacionModel> regulaciones;
 
 
     // Propiedades que gestionan la selección
@@ -215,9 +214,9 @@ public partial class CalendarioViewModel : BaseViewModel {
 
 
     private async Task CrearMesAsync(DateTime fecha) {
-        var dias = new List<DiaEntity>();
+        var dias = new List<DiaModel>();
         for (int dia = 1; dia <= DateTime.DaysInMonth(fecha.Year, fecha.Month); dia++) {
-            dias.Add(new DiaEntity {
+            dias.Add(new DiaModel {
                 Fecha = new DateTime(fecha.Year, fecha.Month, dia),
             });
         }
@@ -226,12 +225,11 @@ public partial class CalendarioViewModel : BaseViewModel {
 
 
     private async Task CargarMes() {
-        var dias = await dbRepository.GetDiasAsync(FechaActual, false);
-        if (!dias.Any()) {
+        Dias = await dbRepository.GetDiasAsync(FechaActual, true);
+        if (!Dias.Any()) {
             await CrearMesAsync(FechaActual);
-            dias = await dbRepository.GetDiasAsync(FechaActual, false);
+            Dias = await dbRepository.GetDiasAsync(FechaActual, true);
         }
-        Dias = dias.ToModelObservable();
         foreach (var dia in Dias) {
             if (dia.Incidencia == null) dia.Incidencia = new();
             dia.Incidencia.FromModel(Incidencias.FirstOrDefault(i => i.Id == dia.IncidenciaId));
@@ -249,6 +247,12 @@ public partial class CalendarioViewModel : BaseViewModel {
                     dia.ApellidosSusti = susti.Apellidos;
                 }
             }
+            if (dia.Servicios is not null) {
+                var index = 1;
+                foreach (var serv in dia.Servicios) {
+                    serv.RowIndex = index++;
+                }
+            }
             if (configService.Opciones.InferirTurnos) {
                 if (dia.Turno == 0) dia.Turno = calculosService.InferirTurno(dia.Fecha, configService.Opciones.FechaReferenciaTurnos, 1);
             }
@@ -258,31 +262,24 @@ public partial class CalendarioViewModel : BaseViewModel {
 
     private async Task CargarIncidencias() {
         if (Incidencias is null || Incidencias.Count == 0) {
-            var incid = await dbRepository.GetIncidenciasAsync();
-            if (incid.Any()) {
-                Incidencias = incid.ToModel();
-            }
+            Incidencias = await dbRepository.GetIncidenciasAsync();
         }
     }
 
 
     private async Task CargarResumenes() {
-        var resumen = await dbRepository.GetResumenAsync(FechaActual);
-        if (resumen is null) {
+        ResumenMes = await dbRepository.GetResumenAsync(FechaActual);
+        if (ResumenMes is null) {
             ResumenMes = new() { Fecha = FechaActual };
             await CalcularResumen();
-        } else {
-            ResumenMes = resumen.ToModel();
         }
         var fechaHasta = FechaActual.AddDays(-1);
-        var resumen2 = await dbRepository.GetResumenHastaFechaAsync(fechaHasta);
-        ResumenHastaMes = resumen2 is null ? new() : resumen2.ToModel();
+        ResumenHastaMes = await dbRepository.GetResumenHastaFechaAsync(fechaHasta);
     }
 
 
     private async Task CargarRegulaciones() {
-        var regul = await dbRepository.GetRegulacionesByMesAsync(FechaActual);
-        Regulaciones = regul.ToModel();
+        Regulaciones = await dbRepository.GetRegulacionesByMesAsync(FechaActual);
     }
 
 
@@ -296,7 +293,7 @@ public partial class CalendarioViewModel : BaseViewModel {
         ResumenMes.Euros = Dias.Sum(d => Math.Round(d.Euros, 2));
         ResumenMes.TomaDeje = Dias.Sum(d => Math.Round(d.TomaDeje, 2));
         ResumenMes.Regulaciones = Regulaciones.Sum(r => Math.Round(r.Horas, 2));
-        var id = await dbRepository.SaveResumenAsync(ResumenMes.ToEntity());
+        var id = await dbRepository.SaveResumenAsync(ResumenMes);
         ResumenMes.Id = id;
         OnPropertyChanged(nameof(ResumenMes));
         OnPropertyChanged(nameof(AcumuladasHastaMes));
@@ -419,7 +416,7 @@ public partial class CalendarioViewModel : BaseViewModel {
                 dia.Incidencia = new();
                 dia.IncidenciaId = 0;
             }
-            if (dia.Modified) await dbRepository.SaveDiaAsync(dia.ToEntity());
+            if (dia.Modified) await dbRepository.SaveDiaAsync(dia);
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
         } finally {
@@ -470,7 +467,7 @@ public partial class CalendarioViewModel : BaseViewModel {
                 dia.FromModel(diaCopiado);
                 dia.Id = id;
                 dia.Fecha = fecha;
-                await dbRepository.SaveDiaAsync(dia.ToEntity());
+                await dbRepository.SaveDiaAsync(dia);
             }
             await CalcularResumen();
         } catch (Exception ex) {
@@ -520,7 +517,7 @@ public partial class CalendarioViewModel : BaseViewModel {
                 Motivo = motivo,
                 Tipo = TipoRegulacion.Manual,
             };
-            await dbRepository.SaveRegulacionAsync(regulacion.ToEntity());
+            await dbRepository.SaveRegulacionAsync(regulacion);
             await CargarRegulaciones();
             await CalcularResumen();
             DiasSeleccionados.Clear();
@@ -545,7 +542,7 @@ public partial class CalendarioViewModel : BaseViewModel {
                 if (configService.Opciones.InferirTurnos) {
                     dia.Turno = calculosService.InferirTurno(dia.Fecha, configService.Opciones.FechaReferenciaTurnos, 1);
                 }
-                await dbRepository.SaveDiaAsync(dia.ToEntity());
+                await dbRepository.SaveDiaAsync(dia);
             }
             await CalcularResumen();
         } catch (Exception ex) {

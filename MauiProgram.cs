@@ -3,7 +3,9 @@ using Microsoft.Extensions.Logging;
 using QuattroX.Data.Repositories;
 using QuattroX.Services;
 using QuattroX.View;
+using QuattroX.View.Popups;
 using QuattroX.ViewModel;
+using QuattroX.ViewModel.Popups;
 
 namespace QuattroX;
 
@@ -59,6 +61,9 @@ public static class MauiProgram {
         builder.Services.AddTransient<DetalleDiaViewModel>();
         builder.Services.AddTransient<DetalleTrabajadorViewModel>();
         builder.Services.AddTransient<DetalleLineaViewModel>();
+
+        // Popups
+        builder.Services.AddTransientPopup<ServicioBasePopup, ServicioBasePopupViewModel>();
 
 
 #if DEBUG
