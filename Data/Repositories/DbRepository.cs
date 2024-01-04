@@ -110,6 +110,17 @@ public class DbRepository {
     }
 
 
+    public async Task<ServicioLineaModel> GetServicioLineaAsync(string linea, string servicio, int turno) {
+        var servicioLinea = await dbService.Db.Table<ServicioLineaEntity>()
+            .FirstOrDefaultAsync(s => s.Linea == linea && s.Servicio.ToUpper() == servicio.ToUpper() && s.Turno == turno);
+        if (servicioLinea is null) return new ServicioLineaModel();
+        var model = servicioLinea.ToServicioLineaModel();
+        model.Servicios = await GetServiciosSecundariosAsync(servicioLinea.Id);
+        if (model.Servicios is null) model.Servicios = new();
+        return model;
+    }
+
+
     public async Task<int> SaveServicioLineaAsync(ServicioLineaModel servicio) {
         if (servicio is null) return 0;
         if (servicio.Id == 0) {

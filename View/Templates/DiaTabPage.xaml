@@ -88,8 +88,17 @@
             </Border.GestureRecognizers>
             <Label
                 FontSize="Caption"
-                Text="{Binding Dia.TextoSusti}"
-                TextColor="Black" />
+                TextColor="Black">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span
+                            FontAttributes="Bold"
+                            Text="{Binding Dia.MatriculaSusti}" />
+                        <Span Text=": " />
+                        <Span Text="{Binding Dia.ApellidosSusti}" />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
         </Border>
 
         <!--  Parámetros de huelga  -->
@@ -258,8 +267,17 @@
             </Border.GestureRecognizers>
             <Label
                 FontSize="Caption"
-                Text="{Binding Dia.TextoRelevo}"
-                TextColor="Black" />
+                TextColor="Black">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span
+                            FontAttributes="Bold"
+                            Text="{Binding Dia.Matricula}" />
+                        <Span Text=": " />
+                        <Span Text="{Binding Dia.Apellidos}" />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
         </Border>
 
         <!--  Horas  -->

@@ -223,7 +223,6 @@ public partial class TrabajadoresViewModel : BaseViewModel {
             }
             var newTrabajador = new TrabajadorModel { Matricula = matricula };
             var id = await dbRepository.SaveTrabajadorAsync(newTrabajador);
-            newTrabajador.Id = id;
             Trabajadores.Add(newTrabajador);
             await AbrirTrabajadorAsync(newTrabajador);
         }

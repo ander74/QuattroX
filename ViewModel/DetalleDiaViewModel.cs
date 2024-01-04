@@ -13,9 +13,6 @@ using QuattroX.Data.Repositories;
 using QuattroX.Services;
 using QuattroX.View.CustomViews;
 using QuattroX.ViewModel.Popups;
-
-
-
 #if IOS
 using UIKit;
 #endif
@@ -50,6 +47,8 @@ public partial class DetalleDiaViewModel : BaseViewModel {
                 Title = $"{Dia.Fecha.Day:00} - {Textos.MesesAbr[Dia.Fecha.Month]} - {Dia.Fecha.Year}";
             }
         };
+
+        HandlerLongPress();
     }
 
     #endregion
@@ -129,7 +128,7 @@ public partial class DetalleDiaViewModel : BaseViewModel {
 
     private void HandlerLongPress() {
 
-        Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping("BotonLongPress", (handler, view) => {
+        Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping("BotonServicioDiaLongPress", (handler, view) => {
 #if ANDROID
 
             if (view is ServicioDiaButton) {
@@ -139,7 +138,6 @@ public partial class DetalleDiaViewModel : BaseViewModel {
                     }
                     handler.PlatformView.CancelLongPress();
                 };
-                //handler.PlatformView.Click += Border_Click;
             }
 #endif
 #if IOS
@@ -292,80 +290,6 @@ public partial class DetalleDiaViewModel : BaseViewModel {
 
 
     [RelayCommand]
-    async Task BuscarRelevoAsync() {
-        try {
-            IsBusy = true;
-            var relevo = await dbRepository.GetTrabajadorByMatriculaAsync(Dia.Matricula);
-            if (relevo is null) return;
-            Dia.RelevoId = relevo.Id;
-            Dia.Apellidos = relevo.Apellidos;
-        } catch (Exception ex) {
-            await Shell.Current.DisplaySnackbar(ex.Message);
-        } finally {
-            IsBusy = false;
-        }
-    }
-
-
-    [RelayCommand]
-    async Task BuscarSustiAsync() {
-        try {
-            IsBusy = true;
-            var susti = await dbRepository.GetTrabajadorByMatriculaAsync(Dia.MatriculaSusti);
-            if (susti is null) return;
-            Dia.SustiId = susti.Id;
-            Dia.ApellidosSusti = susti.Apellidos;
-        } catch (Exception ex) {
-            await Shell.Current.DisplaySnackbar(ex.Message);
-        } finally {
-            IsBusy = false;
-        }
-    }
-
-
-    [RelayCommand]
-    async Task CrearRelevoAsync() {
-        try {
-            IsBusy = true;
-            if (Dia.Matricula <= 0) return;
-            if (await dbRepository.ExisteTrabajadorByMatriculaAsync(Dia.Matricula)) return;
-            var trabajador = new TrabajadorModel {
-                Matricula = Dia.Matricula,
-                Apellidos = Dia.Apellidos,
-            };
-            await dbRepository.SaveTrabajadorAsync(trabajador);
-            Dia.RelevoId = trabajador.Id;
-            await dbRepository.SaveDiaAsync(Dia);
-        } catch (Exception ex) {
-            await Shell.Current.DisplaySnackbar(ex.Message);
-        } finally {
-            IsBusy = false;
-        }
-    }
-
-
-    [RelayCommand]
-    async Task CrearSustiAsync() {
-        try {
-            IsBusy = true;
-            if (Dia.MatriculaSusti <= 0) return;
-            if (await dbRepository.ExisteTrabajadorByMatriculaAsync(Dia.MatriculaSusti)) return;
-            var trabajador = new TrabajadorModel {
-                Matricula = Dia.MatriculaSusti,
-                Apellidos = Dia.ApellidosSusti,
-            };
-            await dbRepository.SaveTrabajadorAsync(trabajador);
-            Dia.SustiId = trabajador.Id;
-            await dbRepository.SaveDiaAsync(Dia);
-        } catch (Exception ex) {
-            await Shell.Current.DisplaySnackbar(ex.Message);
-        } finally {
-            IsBusy = false;
-        }
-    }
-
-
-    [RelayCommand]
     async Task EditarServicioPrincipalAsync() {
         try {
             var resultado = await popupService.ShowPopupAsync<ServicioBasePopupViewModel>(async vm => {
@@ -374,7 +298,27 @@ public partial class DetalleDiaViewModel : BaseViewModel {
                 vm.Servicio = Dia.ToServicioBaseModel();
             });
             if (resultado is ServicioBaseModel servicioDia) {
+                var servicio = await dbRepository.GetServicioLineaAsync(servicioDia.Linea, servicioDia.Servicio, servicioDia.Turno);
+                if (string.IsNullOrWhiteSpace(servicio.Linea)) return;
                 Dia.FromServicioBase(servicioDia);
+                if (Dia.Servicios?.Any() == true) {
+                    foreach (var sDia in Dia.Servicios) {
+                        await dbRepository.DeleteServicioDiaAsync(sDia.Id);
+                    }
+                    Dia.Servicios.Clear();
+                }
+                if (servicio.Servicios?.Any() == true) {
+                    var index = 1;
+                    foreach (var servS in servicio.Servicios) {
+                        var serv = new ServicioDiaModel();
+                        serv.FromServicioBase(servS);
+                        serv.DiaId = Dia.Id;
+                        serv.RowIndex = index++;
+                        await dbRepository.SaveServicioDiaAsync(serv);
+                        Dia.Servicios.Add(serv);
+                    }
+                }
+                Calcular();
             }
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
@@ -428,36 +372,70 @@ public partial class DetalleDiaViewModel : BaseViewModel {
 
     [RelayCommand]
     async Task AbrirServicioAsync(ServicioDiaModel servicio) {
-
+        var model = servicio.ToServicioBaseModel();
+        var resultado = await popupService.ShowPopupAsync<ServicioBasePopupViewModel>(async vm => {
+            await vm.InitAsync();
+            vm.Title = "Editar servicio";
+            vm.Servicio = model;
+        });
+        if (resultado is ServicioBaseModel servicioDia) {
+            var pos = Dia.Servicios.IndexOf(servicio);
+            Dia.Servicios.Remove(servicio);
+            servicio.FromServicioBase(servicioDia);
+            Dia.Servicios.Insert(pos, servicio);
+        }
     }
 
 
     [RelayCommand]
     async Task CrearServicioAsync() {
-        if (Dia is null) return;
-        if (Dia.Servicios is null) Dia.Servicios = new();
-        var resultado = await popupService.ShowPopupAsync<ServicioBasePopupViewModel>(async (vm) => {
-            await vm.InitAsync();
-            vm.Title = "Nuevo servicio";
-        });
-        if (resultado is ServicioBaseModel model) {
-            //var servicio = (ServicioDiaModel)model.ToServicioBaseModel();
-            var servicio = new ServicioDiaModel();
-            servicio.FromServicioBase(model);
-            servicio.Id = 0;
-            servicio.DiaId = Dia.Id;
-            servicio.RowIndex = Dia.Servicios.Count + 1;
-            var id = await dbRepository.SaveServicioDiaAsync(servicio);
-            //servicio.Id = id; //TODO: Comprobar que ya no es necesario
-            servicio.Modified = false;
-            Dia.Servicios.Add(servicio);
+        try {
+            if (Dia is null) return;
+            if (Dia.Servicios is null)
+                Dia.Servicios = new();
+            var resultado = await popupService.ShowPopupAsync<ServicioBasePopupViewModel>(async (vm) => {
+                await vm.InitAsync();
+                vm.Title = "Nuevo servicio";
+            });
+            if (resultado is ServicioBaseModel model) {
+                if (string.IsNullOrWhiteSpace(model.Linea) || string.IsNullOrWhiteSpace(model.Servicio) || model.Turno == 0) return;
+                var servicio = new ServicioDiaModel();
+                servicio.FromServicioBase(model);
+                servicio.Id = 0;
+                servicio.DiaId = Dia.Id;
+                servicio.RowIndex = Dia.Servicios.Count + 1;
+                var id = await dbRepository.SaveServicioDiaAsync(servicio);
+                servicio.Modified = false;
+                Dia.Servicios.Add(servicio);
+            }
+        } catch (Exception ex) {
+            await Shell.Current.DisplaySnackbar(ex.Message);
+        } finally {
+            IsBusy = false;
         }
     }
 
 
     [RelayCommand]
     async Task BorrarServiciosAsync() {
-
+        if (ServiciosSeleccionados is null || ServiciosSeleccionados.Count == 0) return;
+        var mensaje = ServiciosSeleccionados.Count > 1 ?
+            $"Vas a borrar {ServiciosSeleccionados.Count} servicios.\n\n¿Estás segur@?\n\nEsta acción no se puede deshacer." :
+            $"Vas a borrar un servicio.\n\n¿Estás segur@?\n\nEsta acción no se puede deshacer.";
+        var resultado = await Shell.Current.DisplayAlert("Borrar servicio", mensaje, "Borrar", "Cancelar");
+        if (!resultado) return;
+        try {
+            IsBusy = true;
+            foreach (ServicioDiaModel servicio in ServiciosSeleccionados) {
+                await dbRepository.DeleteServicioDiaAsync(servicio.Id);
+                Dia.Servicios.Remove(servicio);
+            }
+            ServiciosSeleccionados.Clear();
+        } catch (Exception ex) {
+            await Shell.Current.DisplaySnackbar(ex.Message);
+        } finally {
+            IsBusy = false;
+        }
     }
 
 

@@ -3,18 +3,18 @@
 <!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
 <!--  ===========================================================================================  -->
 <toolkit:Popup
-    x:Class="QuattroX.View.Popups.ServicioBasePopup"
+    x:Class="QuattroX.View.Popups.ServicioLineaPopup"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:model="clr-namespace:QuattroX.Data.Model"
     xmlns:popups="clr-namespace:QuattroX.View.Popups"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:QuattroX.ViewModel.Popups"
-    x:DataType="vm:ServicioBasePopupViewModel">
+    x:DataType="vm:ServicioLineaPopupViewModel">
 
     <toolkit:Popup.Resources>
 
-        <Style TargetType="{x:Type popups:ServicioBasePopup}">
+        <Style TargetType="{x:Type popups:ServicioLineaPopup}">
             <Setter Property="Size" Value="300,450" />
             <Setter Property="Color" Value="GhostWhite" />
             <Setter Property="HorizontalOptions" Value="Center" />
@@ -84,111 +84,65 @@
                     Grid.Row="0"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
-                    Text="Linea" />
-                <Picker
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    IsVisible="{Binding NotBloquearLinea}"
-                    ItemDisplayBinding="{Binding TextoParaPickr}"
-                    ItemsSource="{Binding Lineas}"
-                    SelectedItem="{Binding LineaSeleccionada}" />
-                <Entry
-                    Grid.Row="0"
-                    Grid.ColumnSpan="2"
-                    IsReadOnly="True"
-                    IsVisible="{Binding BloquearLinea}"
-                    Text="{Binding LineaSeleccionada.Linea}" />
-
-                <Label
-                    Grid.Row="0"
-                    Grid.Column="2"
-                    Grid.ColumnSpan="2"
-                    Text="Servicio" />
-                <Picker
-                    Grid.Row="0"
-                    Grid.Column="2"
-                    Grid.ColumnSpan="2"
-                    ItemDisplayBinding="{Binding TextoParaPickr}"
-                    ItemsSource="{Binding Servicios}"
-                    SelectedItem="{Binding ServicioSeleccionado}" />
-
-                <Entry
-                    Grid.Row="1"
-                    Grid.ColumnSpan="4"
-                    Margin="5,0,5,5"
-                    HorizontalOptions="Fill"
-                    HorizontalTextAlignment="Start"
-                    IsReadOnly="True"
-                    Text="{Binding LineaSeleccionada.Texto}" />
-
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    IsVisible="{Binding IsNuevoServicio}"
                     Text="Servicio" />
                 <Entry
-                    Grid.Row="2"
+                    Grid.Row="0"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
-                    IsVisible="{Binding IsNuevoServicio}"
-                    Text="{Binding ServicioSeleccionado.Servicio}" />
+                    Text="{Binding Servicio.Servicio}" />
 
                 <Label
-                    Grid.Row="2"
+                    Grid.Row="0"
                     Grid.Column="2"
                     Grid.ColumnSpan="2"
-                    IsVisible="{Binding IsNuevoServicio}"
                     Text="Turno" />
                 <Entry
-                    Grid.Row="2"
+                    Grid.Row="0"
                     Grid.Column="2"
                     Grid.ColumnSpan="2"
-                    IsVisible="{Binding IsNuevoServicio}"
-                    Text="{Binding ServicioSeleccionado.Turno}" />
+                    Text="{Binding Servicio.Turno}" />
 
                 <Label
-                    Grid.Row="3"
+                    Grid.Row="1"
                     Grid.Column="0"
                     Text="Inicio" />
                 <TimePicker
-                    Grid.Row="3"
+                    Grid.Row="1"
                     Grid.Column="0"
-                    Time="{Binding ServicioSeleccionado.Inicio}" />
+                    Time="{Binding Servicio.Inicio}" />
 
                 <Label
-                    Grid.Row="3"
+                    Grid.Row="1"
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
                     Text="Lugar inicio" />
                 <Entry
-                    Grid.Row="3"
+                    Grid.Row="1"
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
                     HorizontalTextAlignment="Start"
-                    Text="{Binding ServicioSeleccionado.LugarInicio}" />
+                    Text="{Binding Servicio.LugarInicio}" />
 
                 <Label
-                    Grid.Row="4"
+                    Grid.Row="2"
                     Grid.Column="0"
                     Text="Final" />
                 <TimePicker
-                    Grid.Row="4"
+                    Grid.Row="2"
                     Grid.Column="0"
-                    Time="{Binding ServicioSeleccionado.Final}" />
+                    Time="{Binding Servicio.Final}" />
 
                 <Label
-                    Grid.Row="4"
+                    Grid.Row="2"
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
                     Text="Lugar inicio" />
                 <Entry
-                    Grid.Row="4"
+                    Grid.Row="2"
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
                     HorizontalTextAlignment="Start"
-                    Text="{Binding ServicioSeleccionado.LugarFinal}" />
+                    Text="{Binding Servicio.LugarFinal}" />
 
             </Grid>
 

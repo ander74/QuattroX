@@ -48,6 +48,7 @@ public static class MauiProgram {
         builder.Services.AddTransient<DetalleDiaPage>();
         builder.Services.AddTransient<DetalleTrabajadorPage>();
         builder.Services.AddTransient<DetalleLineaPage>();
+        builder.Services.AddTransient<DetalleServicioLineaPage>();
 
 
         // ViewModels generales
@@ -61,10 +62,12 @@ public static class MauiProgram {
         builder.Services.AddTransient<DetalleDiaViewModel>();
         builder.Services.AddTransient<DetalleTrabajadorViewModel>();
         builder.Services.AddTransient<DetalleLineaViewModel>();
+        builder.Services.AddTransient<DetalleServicioLineaViewModel>();
 
         // Popups
         builder.Services.AddTransientPopup<ServicioBasePopup, ServicioBasePopupViewModel>();
         builder.Services.AddTransientPopup<TrabajadorPopup, TrabajadorPopupViewModel>();
+        builder.Services.AddTransientPopup<ServicioLineaPopup, ServicioLineaPopupViewModel>();
 
 
 #if DEBUG

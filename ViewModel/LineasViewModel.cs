@@ -83,6 +83,12 @@ public partial class LineasViewModel : BaseViewModel {
     // ====================================================================================================
 
 
+    public async Task InitAsync() {
+        if (Lineas is null || Lineas.Count == 0) {
+            await CargarLineas();
+        }
+    }
+
     #endregion
     // ====================================================================================================
 

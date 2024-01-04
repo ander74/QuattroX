@@ -5,32 +5,33 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-
 using CommunityToolkit.Maui.Core;
+using QuattroX.Data.Helpers;
 using QuattroX.Data.Model;
 
 #if IOS
 using UIKit;
 #endif
 using QuattroX.Data.Repositories;
-using QuattroX.View.CustomViews;
 using QuattroX.ViewModel.Popups;
-using QuattroX.View;
+using QuattroX.View.CustomViews;
 
 namespace QuattroX.ViewModel;
 
 
-[QueryProperty(nameof(Linea), "Linea")]
-public partial class DetalleLineaViewModel : BaseViewModel {
+[QueryProperty(nameof(ServicioLinea), "ServicioLinea")]
+public partial class DetalleServicioLineaViewModel : BaseViewModel {
+
 
     // ====================================================================================================
     #region Campos privados y constructor
     // ====================================================================================================
 
+
     private readonly DbRepository dbRepository;
     private readonly IPopupService popupService;
 
-    public DetalleLineaViewModel(DbRepository dbRepository, IPopupService popupService) {
+    public DetalleServicioLineaViewModel(DbRepository dbRepository, IPopupService popupService) {
         this.dbRepository = dbRepository;
         this.popupService = popupService;
 
@@ -40,12 +41,13 @@ public partial class DetalleLineaViewModel : BaseViewModel {
             if (num > 0) {
                 Title = num == 1 ? "1 servicio sel." : $"{num} servicios sel.";
             } else {
-                Title = "Líneas";
+                Title = $"{ServicioLinea.Linea}: {ServicioLinea.Servicio}/{ServicioLinea.Turno}";
             }
         };
 
         HandlerLongPress();
     }
+
 
     #endregion
     // ====================================================================================================
@@ -57,13 +59,17 @@ public partial class DetalleLineaViewModel : BaseViewModel {
 
 
     [ObservableProperty]
-    LineaModel linea;
-    partial void OnLineaChanged(LineaModel oldValue, LineaModel newValue) {
-        if (Linea is null) return;
-        Title = Linea.Linea;
+    ServicioLineaModel servicioLinea;
+
+    partial void OnServicioLineaChanged(ServicioLineaModel value) {
+        if (ServicioLinea is null) return;
+        Title = $"{ServicioLinea.Linea}: {ServicioLinea.Servicio}/{ServicioLinea.Turno}";
+        if (ServicioLinea.Servicios is null) {
+            ServicioLinea.Servicios = new();
+        }
         var index = 1;
-        if (Linea.Servicios is not null) {
-            foreach (var servicio in Linea.Servicios) servicio.RowIndex = index++;
+        if (ServicioLinea.Servicios is not null) {
+            foreach (var servicio in ServicioLinea.Servicios) servicio.RowIndex = index++;
         }
     }
 
@@ -78,9 +84,7 @@ public partial class DetalleLineaViewModel : BaseViewModel {
     [NotifyPropertyChangedFor(nameof(IsNotSelectionMode))]
     bool isSelectionMode;
 
-
     public bool IsNotSelectionMode => !IsSelectionMode;
-
 
     #endregion
     // ====================================================================================================
@@ -104,7 +108,7 @@ public partial class DetalleLineaViewModel : BaseViewModel {
         Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping("BotonLongPress", (handler, view) => {
 #if ANDROID
 
-            if (view is ServicioLineaButton) {
+            if (view is ServicioSecundarioButton) {
                 handler.PlatformView.LongClick += (sender, e) => {
                     if (!IsSelectionMode) {
                         IsSelectionMode = true;
@@ -114,7 +118,7 @@ public partial class DetalleLineaViewModel : BaseViewModel {
             }
 #endif
 #if IOS
-            if (view is ServicioLineaButton) {
+            if (view is ServicioSecundarioButton) {
                 handler.PlatformView.UserInteractionEnabled = true;
                 handler.PlatformView.AddGestureRecognizer(new UILongPressGestureRecognizer((s) => {
                     if (!IsSelectionMode) {
@@ -154,7 +158,7 @@ public partial class DetalleLineaViewModel : BaseViewModel {
 
     [RelayCommand]
     async Task CloseAsync() {
-        await dbRepository.SaveLineaAsync(Linea);
+        await dbRepository.SaveServicioLineaAsync(ServicioLinea);
     }
 
 
@@ -180,27 +184,23 @@ public partial class DetalleLineaViewModel : BaseViewModel {
 
 
     [RelayCommand]
-    async Task AbrirServicioAsync(ServicioLineaModel servicio) {
-        if (IsSelectionMode || servicio is null) return;
-        await Shell.Current.GoToAsync(nameof(DetalleServicioLineaPage), true, new Dictionary<string, object> { { "ServicioLinea", servicio } });
-    }
-
-
-    [RelayCommand]
     async Task CrearServicioAsync() {
         try {
-            if (Linea is null) return;
-            if (Linea.Servicios is null) Linea.Servicios = new();
-            var resultado = await popupService.ShowPopupAsync<ServicioLineaPopupViewModel>(async (vm) => {
-                vm.Title = $"Nuevo servicio {Linea.Linea}";
-                vm.Servicio = new ServicioLineaModel { Linea = Linea.Linea, TextoLinea = Linea.Texto, LineaId = Linea.Id, };
+            if (ServicioLinea is null) return;
+            if (ServicioLinea.Servicios is null) ServicioLinea.Servicios = new();
+            var resultado = await popupService.ShowPopupAsync<ServicioBasePopupViewModel>(async (vm) => {
+                await vm.InitAsync();
+                vm.Title = $"Nuevo servicio";
             });
-            if (resultado is ServicioLineaModel model) {
+            if (resultado is ServicioBaseModel model) {
                 if (string.IsNullOrWhiteSpace(model.Linea) || string.IsNullOrWhiteSpace(model.Servicio) || model.Turno == 0) return;
-                model.RowIndex = Linea.Servicios.Count + 1;
-                var id = await dbRepository.SaveServicioLineaAsync(model);
-                model.Modified = false;
-                Linea.Servicios.Add(model);
+                var servicio = new ServicioSecundarioModel();
+                servicio.FromServicioBase(model);
+                servicio.ServicioId = ServicioLinea.Id;
+                //servicio.RowIndex = ServicioLinea.Servicios.Count + 1;
+                var id = await dbRepository.SaveServicioSecundarioAsync(servicio);
+                servicio.Modified = false;
+                ServicioLinea.Servicios.Add(servicio);
             }
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
@@ -220,9 +220,9 @@ public partial class DetalleLineaViewModel : BaseViewModel {
         if (!resultado) return;
         try {
             IsBusy = true;
-            foreach (ServicioLineaModel servicio in ServiciosSeleccionados) {
-                await dbRepository.DeleteServicioLineaAsync(servicio.Id);
-                Linea.Servicios.Remove(servicio);
+            foreach (ServicioSecundarioModel servicio in ServiciosSeleccionados) {
+                await dbRepository.DeleteServicioSecundarioAsync(servicio.Id);
+                ServicioLinea.Servicios.Remove(servicio);
             }
             ServiciosSeleccionados.Clear();
         } catch (Exception ex) {

@@ -5,26 +5,26 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
+
 using CommunityToolkit.Maui.Views;
 using QuattroX.ViewModel.Popups;
 
 namespace QuattroX.View.Popups;
 
+public partial class ServicioLineaPopup : Popup {
 
-public partial class ServicioBasePopup : Popup {
 
+    private readonly ServicioLineaPopupViewModel viewModel;
 
-    private readonly ServicioBasePopupViewModel viewModel;
-
-    public ServicioBasePopup(ServicioBasePopupViewModel vm) {
-        this.viewModel = vm;
+    public ServicioLineaPopup(ServicioLineaPopupViewModel viewModel) {
+        this.viewModel = viewModel;
         BindingContext = viewModel;
         InitializeComponent();
     }
 
     private async void Aceptar_Clicked(object sender, EventArgs e) {
         if (viewModel.Servicio is null) viewModel.Servicio = new();
-        await viewModel.AceptarAsync();
+        //await viewModel.AceptarAsync();
         await CloseAsync(viewModel.Servicio);
     }
 
@@ -32,4 +32,6 @@ public partial class ServicioBasePopup : Popup {
     private async void Cancelar_Clicked(object sender, EventArgs e) {
         await CloseAsync();
     }
+
+
 }

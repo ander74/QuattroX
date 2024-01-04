@@ -48,7 +48,11 @@ public partial class ServicioBasePopupViewModel : BaseViewModel {
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NotBloquearLinea))]
     bool bloquearLinea;
+
+
+    public bool NotBloquearLinea => !BloquearLinea;
 
 
     [ObservableProperty]
@@ -60,13 +64,13 @@ public partial class ServicioBasePopupViewModel : BaseViewModel {
 
     async partial void OnLineaSeleccionadaChanged(LineaModel value) {
         if (value is null) return;
-        if (value.Linea == "Nueva") {
+        if (string.IsNullOrWhiteSpace(value.Linea)) {
             var id = await CrearNuevaLineaAsync();
             LineaSeleccionada = Lineas.FirstOrDefault(l => l.Id == id);
         } else {
             Servicios = LineaSeleccionada.Servicios;
             if (Servicios is null) Servicios = new();
-            Servicios.Insert(0, new ServicioLineaModel { Servicio = "Nuevo" });
+            Servicios.Insert(0, new ServicioLineaModel { Servicio = "" });
         }
     }
 
@@ -83,7 +87,7 @@ public partial class ServicioBasePopupViewModel : BaseViewModel {
             IsNuevoServicio = false;
             return;
         }
-        if (value.Servicio == "Nuevo") {
+        if (string.IsNullOrWhiteSpace(value.Servicio)) {
             IsNuevoServicio = true;
         } else {
             IsNuevoServicio = false;
@@ -105,11 +109,12 @@ public partial class ServicioBasePopupViewModel : BaseViewModel {
 
     public async Task InitAsync() {
         Lineas = await dbRepository.GetLineasAsync();
-        Lineas.Insert(0, new LineaModel { Linea = "Nueva" });
+        Lineas.Insert(0, new LineaModel { Linea = "" });
     }
 
     public async Task AceptarAsync() {
-        if (IsNuevoServicio && ServicioSeleccionado.Servicio == "Nuevo") {
+        if (ServicioSeleccionado is null) return;
+        if (IsNuevoServicio && string.IsNullOrWhiteSpace(ServicioSeleccionado.Servicio)) {
             ServicioSeleccionado = null;
             return;
         }

@@ -27,6 +27,7 @@ public partial class ServicioBaseModel : ModelBase, IServicio {
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TextoParaPickr))]
     string servicio;
 
 
@@ -59,6 +60,9 @@ public partial class ServicioBaseModel : ModelBase, IServicio {
     // ====================================================================================================
 
     public string TextoServicio => Turno > 0 ? $"{Servicio}/{Turno}" : Servicio;
+
+
+    public string TextoParaPickr => string.IsNullOrWhiteSpace(Servicio) ? $"Nuevo" : Turno > 0 ? $"{Servicio}/{Turno}" : Servicio;
 
 
     #endregion

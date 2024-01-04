@@ -17,6 +17,7 @@ public partial class LineaModel : ModelBase {
 
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TextoParaPickr))]
     string linea;
 
 
@@ -43,6 +44,9 @@ public partial class LineaModel : ModelBase {
 
 
     public int RowIndex { get; set; }
+
+
+    public string TextoParaPickr => string.IsNullOrWhiteSpace(Linea) ? $"Nueva línea" : Linea;
 
 
     public string TextoServicios {

@@ -3,7 +3,7 @@
 <!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
 <!--  ===========================================================================================  -->
 <ContentPage
-    x:Class="QuattroX.View.DetalleLineaPage"
+    x:Class="QuattroX.View.DetalleServicioLineaPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:cnv="clr-namespace:QuattroX.View.Converters"
@@ -11,7 +11,7 @@
     xmlns:templates="clr-namespace:QuattroX.View.Templates"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:QuattroX.ViewModel"
-    x:DataType="{x:Type vm:DetalleLineaViewModel}"
+    x:DataType="{x:Type vm:DetalleServicioLineaViewModel}"
     Shell.BackgroundColor="{StaticResource Primary}"
     Shell.ForegroundColor="{StaticResource Secondary}"
     Shell.TitleColor="{StaticResource Secondary}">
@@ -38,6 +38,12 @@
             <Setter Property="VerticalOptions" Value="Start" />
             <Setter Property="FontSize" Value="Micro" />
             <Setter Property="TextColor" Value="{StaticResource Primary}" />
+        </Style>
+        <Style TargetType="TimePicker">
+            <Setter Property="HorizontalOptions" Value="Fill" />
+            <Setter Property="Margin" Value="5,15,5,5" />
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="Format" Value="HH:mm" />
         </Style>
     </ContentPage.Resources>
 
@@ -95,22 +101,84 @@
             EventName="Disappearing" />
     </ContentPage.Behaviors>
 
-    <Grid RowDefinitions="Auto,Auto,*">
+    <Grid
+        Margin="0,10,0,0"
+        RowDefinitions="Auto,Auto,*">
 
-        <!--  Descripcion  -->
-        <Label Text="Descripción" />
-        <Entry
-            HorizontalTextAlignment="Start"
-            Text="{Binding Linea.Texto}" />
+        <!--  Servicio  -->
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            Text="Datos del servicio" />
+        <Border
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="5,20,5,10"
+            Stroke="{StaticResource Primary}"
+            StrokeShape="RoundRectangle 5"
+            StrokeThickness="1"
+            VerticalOptions="End">
+
+            <Grid
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                Margin="10"
+                ColumnDefinitions="*,*,*,*"
+                RowDefinitions="Auto,Auto">
+
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Text="Inicio" />
+                <TimePicker
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Time="{Binding ServicioLinea.Inicio}" />
+
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="3"
+                    Text="Lugar inicio" />
+                <Entry
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="3"
+                    HorizontalTextAlignment="Start"
+                    Text="{Binding ServicioLinea.LugarInicio}" />
+
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Text="Final" />
+                <TimePicker
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Time="{Binding ServicioLinea.Final}" />
+
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="3"
+                    Text="Lugar inicio" />
+                <Entry
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="3"
+                    HorizontalTextAlignment="Start"
+                    Text="{Binding ServicioLinea.LugarFinal}" />
+
+            </Grid>
+        </Border>
 
         <!--  Servicios  -->
         <Label
             Grid.Row="1"
             Margin="5,5,0,5"
-            Text="Servicios" />
+            Text="Servicios secundarios" />
         <CollectionView
             Grid.Row="2"
-            ItemsSource="{Binding Linea.Servicios}"
+            ItemsSource="{Binding ServicioLinea.Servicios}"
             SelectedItems="{Binding ServiciosSeleccionados, Mode=TwoWay}"
             VerticalOptions="Fill">
 
@@ -130,7 +198,7 @@
             </CollectionView.Triggers>
 
             <CollectionView.ItemTemplate>
-                <templates:ServicioLineaCell />
+                <templates:ServicioSecundarioCell />
             </CollectionView.ItemTemplate>
 
             <CollectionView.EmptyView>

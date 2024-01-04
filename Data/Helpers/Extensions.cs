@@ -173,6 +173,23 @@ public static class Extensions {
     }
 
 
+    public static ServicioDiaModel ToServicioDiaModel(this ServicioDiaModel model, int diaId = 0) {
+        if (model is null) return null;
+        var newModel = new ServicioDiaModel();
+        newModel.Linea = model.Linea;
+        newModel.TextoLinea = model.TextoLinea;
+        newModel.Servicio = model.Servicio;
+        newModel.Turno = model.Turno;
+        newModel.Inicio = model.Inicio;
+        newModel.Final = model.Final;
+        newModel.LugarInicio = model.LugarInicio;
+        newModel.LugarFinal = model.LugarFinal;
+        newModel.DiaId = diaId;
+        newModel.Modified = false;
+        return newModel;
+    }
+
+
     public static ServicioDiaEntity ToServicioDiaEntity(this ServicioDiaModel model) {
         if (model is null) return null;
         var entity = new ServicioDiaEntity();
@@ -430,7 +447,6 @@ public static class Extensions {
 
     public static void FromModel(this DiaModel model, DiaModel newModel) {
         if (model is null || newModel is null) return;
-        model.Id = newModel.Id;
         model.Fecha = newModel.Fecha;
         model.EsFranqueo = newModel.EsFranqueo;
         model.EsFestivo = newModel.EsFestivo;
@@ -443,7 +459,7 @@ public static class Extensions {
         model.Final = newModel.Final;
         model.LugarInicio = newModel.LugarInicio;
         model.LugarFinal = newModel.LugarFinal;
-        model.Servicios = newModel.Servicios is null ? new() : newModel.Servicios.ToObservableCollection();
+        model.Servicios = newModel.Servicios is null ? new() : newModel.Servicios.Select(s => s.ToServicioDiaModel(model.Id)).ToObservableCollection();
         model.Trabajadas = newModel.Trabajadas;
         model.Acumuladas = newModel.Acumuladas;
         model.Nocturnas = newModel.Nocturnas;

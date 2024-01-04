@@ -9,11 +9,34 @@
     xmlns:templates="clr-namespace:QuattroX.View.Templates"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:QuattroX.ViewModel"
-    Title="{Binding Title}"
     x:DataType="{x:Type vm:DetalleDiaViewModel}"
     Shell.BackgroundColor="{StaticResource Primary}"
     Shell.ForegroundColor="{StaticResource Secondary}"
     Shell.TitleColor="{StaticResource Secondary}">
+
+
+    <Shell.TitleView>
+        <HorizontalStackLayout>
+            <Label
+                Margin="10,0,20,0"
+                FontFamily="Material"
+                FontSize="Medium"
+                IsVisible="{Binding IsSelectionMode}"
+                Text="&#xe999;"
+                TextColor="{StaticResource Secondary}"
+                VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding DesactivarSeleccionCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+            <Label
+                Margin="0"
+                FontSize="Medium"
+                Text="{Binding Title}"
+                TextColor="{StaticResource Secondary}"
+                VerticalOptions="Center" />
+        </HorizontalStackLayout>
+    </Shell.TitleView>
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
@@ -30,12 +53,22 @@
             TargetType="ContentPage"
             Value="True">
             <Setter Property="Shell.FlyoutBehavior" Value="Disabled" />
+            <Setter Property="Shell.BackButtonBehavior">
+                <Setter.Value>
+                    <BackButtonBehavior IsVisible="False" />
+                </Setter.Value>
+            </Setter>
         </DataTrigger>
         <DataTrigger
             Binding="{Binding IsSelectionMode}"
             TargetType="ContentPage"
             Value="False">
             <Setter Property="Shell.FlyoutBehavior" Value="Flyout" />
+            <Setter Property="Shell.BackButtonBehavior">
+                <Setter.Value>
+                    <BackButtonBehavior IsVisible="True" />
+                </Setter.Value>
+            </Setter>
         </DataTrigger>
     </ContentPage.Triggers>
 

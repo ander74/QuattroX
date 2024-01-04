@@ -3,7 +3,7 @@
 <!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
 <!--  ===========================================================================================  -->
 <DataTemplate
-    x:Class="QuattroX.View.Templates.ServicioDiaCell"
+    x:Class="QuattroX.View.Templates.ServicioSecundarioCell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
@@ -13,7 +13,7 @@
     xmlns:model="clr-namespace:QuattroX.Data.Model"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:QuattroX.ViewModel"
-    x:DataType="model:ServicioDiaModel">
+    x:DataType="model:ServicioSecundarioModel">
 
     <SwipeView android:SwipeView.SwipeTransitionMode="Reveal">
         <SwipeView.Resources>
@@ -57,7 +57,7 @@
                 SwipeBehaviorOnInvoked="Close">
                 <SwipeItemView
                     Background="{StaticResource colorLlamada}"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleDiaViewModel}}, Path=LlamarCommand}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleServicioLineaViewModel}}, Path=LlamarCommand}"
                     CommandParameter="{Binding .}">
                     <Label
                         Margin="10,0"
@@ -72,7 +72,7 @@
                 </SwipeItemView>
                 <SwipeItemView
                     Background="{StaticResource colorEmail}"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleDiaViewModel}}, Path=MandarEmailCommand}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleServicioLineaViewModel}}, Path=MandarEmailCommand}"
                     CommandParameter="{Binding .}">
                     <Label
                         Margin="10,0"
@@ -95,7 +95,7 @@
                 SwipeBehaviorOnInvoked="Close">
                 <SwipeItemView
                     Background="{StaticResource colorLlamada}"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleDiaViewModel}}, Path=LlamarCommand}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleServicioLineaViewModel}}, Path=LlamarCommand}"
                     CommandParameter="{Binding .}">
                     <Label
                         Margin="10,0"
@@ -110,7 +110,7 @@
                 </SwipeItemView>
                 <SwipeItemView
                     Background="{StaticResource colorEmail}"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleDiaViewModel}}, Path=MandarEmailCommand}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleServicioLineaViewModel}}, Path=MandarEmailCommand}"
                     CommandParameter="{Binding .}">
                     <Label
                         Margin="10,0"
@@ -126,19 +126,19 @@
             </SwipeItems>
         </SwipeView.RightItems>
 
-        <customView:ServicioDiaCellBorder
+        <customView:ServicioSecundarioCellBorder
             x:Name="Marco"
             Margin="2,0,4,5"
             BackgroundColor="{Binding RowIndex, Converter={StaticResource indexToColorConverter}}"
             StrokeShape="RoundRectangle, 5,5,5,5">
 
-            <customView:ServicioDiaCellBorder.Shadow>
+            <customView:ServicioSecundarioCellBorder.Shadow>
                 <Shadow
                     Brush="DimGray"
                     Opacity="0.5"
                     Radius="12"
                     Offset="2,2" />
-            </customView:ServicioDiaCellBorder.Shadow>
+            </customView:ServicioSecundarioCellBorder.Shadow>
 
             <Grid
                 ColumnDefinitions="Auto,*"
@@ -218,17 +218,17 @@
                 <!--  ==================  -->
                 <!--  Este botón está encima de todos los controles para gestionar el evento Click a través del comando del propio botón  -->
                 <!--  y para gestionar el evento LongClick a través del Handler que se modifica en el viewmodel.  -->
-                <customView:ServicioDiaButton
+                <customView:ServicioSecundarioButton
                     Grid.RowSpan="2"
                     Grid.ColumnSpan="2"
                     Background="Transparent"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleDiaViewModel}}, Path=AbrirServicioCommand}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleServicioLineaViewModel}}, Path=AbrirServicioCommand}"
                     CommandParameter="{Binding .}"
-                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleDiaViewModel}}, Path=IsNotSelectionMode}" />
+                    IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type vm:DetalleServicioLineaViewModel}}, Path=IsNotSelectionMode}" />
 
             </Grid>
 
-        </customView:ServicioDiaCellBorder>
+        </customView:ServicioSecundarioCellBorder>
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup Name="CommonStates">

@@ -25,13 +25,16 @@ public partial class MainViewModel : BaseViewModel {
     private readonly DatabaseService dbService;
     private readonly ConfigService configService;
     private readonly DbRepository dbRepository;
+    private readonly LineasViewModel lineasViewModel;
     private readonly TrabajadoresViewModel trabajadoresViewModel;
     private readonly DropboxService dropboxService;
 
-    public MainViewModel(DatabaseService dbService, ConfigService configService, DbRepository dbRepository, TrabajadoresViewModel trabajadoresViewModel, DropboxService dropboxService) {
+    public MainViewModel(DatabaseService dbService, ConfigService configService, DbRepository dbRepository, LineasViewModel lineasViewModel,
+        TrabajadoresViewModel trabajadoresViewModel, DropboxService dropboxService) {
         this.dbService = dbService;
         this.configService = configService;
         this.dbRepository = dbRepository;
+        this.lineasViewModel = lineasViewModel;
         this.trabajadoresViewModel = trabajadoresViewModel;
         this.dropboxService = dropboxService;
         Title = "Cargando";
@@ -239,6 +242,7 @@ public partial class MainViewModel : BaseViewModel {
         await dbService.InitAsync();
         await configService.InitAsync();
         await trabajadoresViewModel.InitAsync();
+        await lineasViewModel.InitAsync();
 
         //TODO: Autenticación de Dropbox.
 
