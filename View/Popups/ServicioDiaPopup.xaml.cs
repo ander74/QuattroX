@@ -11,26 +11,26 @@ using QuattroX.ViewModel.Popups;
 namespace QuattroX.View.Popups;
 
 
-public partial class TrabajadorPopup : Popup {
+public partial class ServicioDiaPopup : Popup {
 
 
-    private readonly TrabajadorPopupViewModel viewModel;
+    private readonly ServicioDiaPopupViewModel viewModel;
 
-
-    public TrabajadorPopup(TrabajadorPopupViewModel vm) {
-        this.viewModel = vm;
-        InitializeComponent();
+    public ServicioDiaPopup(ServicioDiaPopupViewModel viewModel) {
+        this.viewModel = viewModel;
         BindingContext = viewModel;
+        InitializeComponent();
     }
 
     private async void Aceptar_Clicked(object sender, EventArgs e) {
-        if (viewModel.Trabajador is null) viewModel.Trabajador = new();
+        if (viewModel.Servicio is null) viewModel.Servicio = new();
         viewModel.OnClose();
-        await CloseAsync(viewModel.Trabajador);
+        await CloseAsync(viewModel.Servicio);
     }
 
 
     private async void Cancelar_Clicked(object sender, EventArgs e) {
         await CloseAsync();
     }
+
 }

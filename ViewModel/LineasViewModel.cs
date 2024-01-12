@@ -9,6 +9,8 @@ using QuattroX.Data.Model;
 using QuattroX.Data.Repositories;
 using QuattroX.Services;
 using QuattroX.View;
+using QuattroX.Data.Messages;
+
 
 #if IOS
 using UIKit;
@@ -44,6 +46,29 @@ public partial class LineasViewModel : BaseViewModel {
                 Title = "Líneas";
             }
         };
+
+        // Responde a la petición de las líneas.
+        Messenger.Register<LineasRequest>(this, (r, m) => {
+            if (m.IncluirServicios) {
+                m.Reply(Lineas);
+                return;
+            }
+            m.Reply(Lineas.Select(l => new LineaModel { Id = l.Id, Linea = l.Linea, Texto = l.Texto }).ToObservableCollection());
+        });
+
+        // Responde a la petición de una línea.
+        Messenger.Register<LineaRequest>(this, (r, m) => {
+            var linea = Lineas.FirstOrDefault(l => l.Linea.ToUpper() == m.Linea.ToUpper());
+            m.Reply(linea);
+        });
+
+        // Responde a la petición de añadir una línea.
+        Messenger.Register<AddLineaRequest>(this, async (r, m) => {
+            if (m.Linea is null) return;
+            await dbRepository.SaveLineaAsync(m.Linea);
+            m.Linea.RowIndex = Lineas.Count + 1;
+            if (!Lineas.Contains(m.Linea)) Lineas.Add(m.Linea);
+        });
 
         HandlerLongPress();
     }

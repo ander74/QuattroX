@@ -54,6 +54,17 @@ public partial class CalendarioViewModel : BaseViewModel {
         // Responde a la petición de recalcular el resumen.
         Messenger.Register<CalcularResumenRequest>(this, async (r, m) => await CalcularResumen());
 
+        // Responde a la petición de vaciar los servicios de un día.
+        Messenger.Register<VaciarServiciosDiaRequest>(this, async (r, m) => {
+            var dia = Dias.FirstOrDefault(d => d.Id == m.DiaId);
+            if (dia is null || dia.Servicios is null) return;
+            foreach (var servicio in dia.Servicios) {
+                await dbRepository.DeleteServicioDiaAsync(servicio.Id);
+            }
+            dia.Servicios.Clear();
+        });
+
+
         HandlerLongPress();
 
     }

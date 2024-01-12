@@ -124,45 +124,57 @@
                 Grid.ColumnSpan="2"
                 Margin="10"
                 ColumnDefinitions="*,*,*,*"
-                RowDefinitions="Auto,Auto">
+                RowDefinitions="Auto,Auto,Auto">
 
                 <Label
                     Grid.Row="0"
                     Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    Text="Descripción de la línea" />
+                <Entry
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    HorizontalTextAlignment="Start"
+                    Text="{Binding ServicioLinea.TextoLinea}" />
+
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="0"
                     Text="Inicio" />
                 <TimePicker
-                    Grid.Row="0"
+                    Grid.Row="1"
                     Grid.Column="0"
                     Time="{Binding ServicioLinea.Inicio}" />
 
                 <Label
-                    Grid.Row="0"
+                    Grid.Row="1"
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
                     Text="Lugar inicio" />
                 <Entry
-                    Grid.Row="0"
+                    Grid.Row="1"
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
                     HorizontalTextAlignment="Start"
                     Text="{Binding ServicioLinea.LugarInicio}" />
 
                 <Label
-                    Grid.Row="1"
+                    Grid.Row="2"
                     Grid.Column="0"
                     Text="Final" />
                 <TimePicker
-                    Grid.Row="1"
+                    Grid.Row="2"
                     Grid.Column="0"
                     Time="{Binding ServicioLinea.Final}" />
 
                 <Label
-                    Grid.Row="1"
+                    Grid.Row="2"
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
                     Text="Lugar inicio" />
                 <Entry
-                    Grid.Row="1"
+                    Grid.Row="2"
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
                     HorizontalTextAlignment="Start"

@@ -23,6 +23,7 @@ namespace QuattroX.ViewModel;
 [QueryProperty(nameof(Linea), "Linea")]
 public partial class DetalleLineaViewModel : BaseViewModel {
 
+
     // ====================================================================================================
     #region Campos privados y constructor
     // ====================================================================================================

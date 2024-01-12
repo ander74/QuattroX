@@ -5,9 +5,8 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-
+using QuattroX.Data.Messages;
 using QuattroX.Data.Model;
-using QuattroX.Data.Repositories;
 
 namespace QuattroX.ViewModel.Popups;
 public partial class TrabajadorPopupViewModel : BaseViewModel {
@@ -18,12 +17,9 @@ public partial class TrabajadorPopupViewModel : BaseViewModel {
     // ====================================================================================================
 
 
-    private readonly DbRepository dbRepository;
-
-
-    public TrabajadorPopupViewModel(DbRepository dbRepository) {
+    public TrabajadorPopupViewModel() {
         Title = "Nuevo trabajador";
-        this.dbRepository = dbRepository;
+        Trabajadores = Messenger.Send(new TrabajadoresRequest());
     }
 
     #endregion
@@ -38,6 +34,22 @@ public partial class TrabajadorPopupViewModel : BaseViewModel {
     [ObservableProperty]
     TrabajadorModel trabajador = new();
 
+    partial void OnTrabajadorChanged(TrabajadorModel value) {
+        if (Trabajador is null) return;
+        Trabajador.PropertyChanged += (s, e) => {
+            if (TrabajadorModificado) return;
+            if (e.PropertyName == nameof(TrabajadorModel.Matricula)) {
+                Trabajador.Nombre = string.Empty;
+                Trabajador.Apellidos = string.Empty;
+                TrabajadorSeleccionado = null;
+                TrabajadorModificado = true;
+            }
+            // De esta manera (los parciales de linea y servicio seleccionados) sólo cuando se edita manualmente el servicio
+            // se produce el cambio en esta propiedad.
+            // Usemoslo para determinar si un servicio es editado o cogido de la base de datos.
+
+        };
+    }
 
     [ObservableProperty]
     ObservableCollection<TrabajadorModel> trabajadores;
@@ -47,24 +59,22 @@ public partial class TrabajadorPopupViewModel : BaseViewModel {
     TrabajadorModel trabajadorSeleccionado;
 
     partial void OnTrabajadorSeleccionadoChanged(TrabajadorModel value) {
-        if (value is null) {
-            IsNuevoTrabajador = false;
-            return;
-        }
-        if (value.Matricula == 0) {
-            IsNuevoTrabajador = true;
-        } else {
-            IsNuevoTrabajador = false;
-        }
+        if (value is null) return;
+        Trabajador = new TrabajadorModel {
+            Matricula = TrabajadorSeleccionado.Matricula,
+            Nombre = TrabajadorSeleccionado.Nombre,
+            Apellidos = TrabajadorSeleccionado.Apellidos,
+        };
+        TrabajadorModificado = false;
     }
 
+
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsNotNuevoTrabajador))]
-    bool isNuevoTrabajador;
+    [NotifyPropertyChangedFor(nameof(NotTrabajadorModificado))]
+    bool trabajadorModificado;
 
 
-    public bool IsNotNuevoTrabajador => !IsNuevoTrabajador;
-
+    public bool NotTrabajadorModificado => !TrabajadorModificado;
 
     #endregion
     // ====================================================================================================
@@ -74,20 +84,19 @@ public partial class TrabajadorPopupViewModel : BaseViewModel {
     #region Métodos públicos
     // ====================================================================================================
 
-    public async Task InitAsync() {
-        Trabajadores = await dbRepository.GetTrabajadoresAsync();
-        Trabajadores.Insert(0, new TrabajadorModel { Matricula = 0 });
-    }
 
-    public async Task AceptarAsync() {
-        if (IsNuevoTrabajador && TrabajadorSeleccionado.Matricula == 0) {
-            TrabajadorSeleccionado = null;
-            return;
+    public void OnClose() {
+        if (TrabajadorModificado) {
+            TrabajadorModel trabajador = Trabajadores.FirstOrDefault(t => t.Matricula == Trabajador.Matricula);
+            if (trabajador is null) {
+                var newtrabajador = new TrabajadorModel {
+                    Matricula = Trabajador.Matricula,
+                    Nombre = Trabajador.Nombre,
+                    Apellidos = Trabajador.Apellidos,
+                };
+                Messenger.Send(new AddTrabajadorRequest(newtrabajador));
+            }
         }
-        if (!(await dbRepository.ExisteTrabajadorByMatriculaAsync(TrabajadorSeleccionado.Matricula))) {
-            await dbRepository.SaveTrabajadorAsync(TrabajadorSeleccionado);
-        }
-        Trabajador = TrabajadorSeleccionado;
     }
 
     #endregion

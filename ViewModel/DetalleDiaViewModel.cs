@@ -292,31 +292,15 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     [RelayCommand]
     async Task EditarServicioPrincipalAsync() {
         try {
-            var resultado = await popupService.ShowPopupAsync<ServicioBasePopupViewModel>(async vm => {
-                await vm.InitAsync();
+            var resultado = await popupService.ShowPopupAsync<ServicioDiaPopupViewModel>(vm => {
                 vm.Title = "Servicio principal";
-                vm.Servicio = Dia.ToServicioBaseModel();
+                vm.Servicio = Dia.ToServicioLineaModel();
             });
-            if (resultado is ServicioBaseModel servicioDia) {
-                var servicio = await dbRepository.GetServicioLineaAsync(servicioDia.Linea, servicioDia.Servicio, servicioDia.Turno);
-                if (string.IsNullOrWhiteSpace(servicio.Linea)) return;
-                Dia.FromServicioBase(servicioDia);
-                if (Dia.Servicios?.Any() == true) {
-                    foreach (var sDia in Dia.Servicios) {
-                        await dbRepository.DeleteServicioDiaAsync(sDia.Id);
-                    }
-                    Dia.Servicios.Clear();
-                }
-                if (servicio.Servicios?.Any() == true) {
-                    var index = 1;
-                    foreach (var servS in servicio.Servicios) {
-                        var serv = new ServicioDiaModel();
-                        serv.FromServicioBase(servS);
-                        serv.DiaId = Dia.Id;
-                        serv.RowIndex = index++;
-                        await dbRepository.SaveServicioDiaAsync(serv);
-                        Dia.Servicios.Add(serv);
-                    }
+            if (resultado is ServicioLineaModel servicioDia) {
+                Messenger.Send(new VaciarServiciosDiaRequest(Dia.Id));
+                Dia.FromServicioLineaModel(servicioDia);
+                foreach (var serv in Dia.Servicios) {
+                    await dbRepository.SaveServicioDiaAsync(serv);
                 }
                 Calcular();
             }
@@ -332,9 +316,10 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     async Task EditarRelevoAsync() {
         try {
             var resultado = await popupService.ShowPopupAsync<TrabajadorPopupViewModel>(async vm => {
-                await vm.InitAsync();
                 vm.Title = "Relevo";
-                vm.TrabajadorSeleccionado = vm.Trabajadores.FirstOrDefault(t => t.Id == Dia.RelevoId);
+                TrabajadorModel trab = vm.Trabajadores.FirstOrDefault(t => t.Id == Dia.RelevoId);
+                if (trab is null) trab = new();
+                vm.TrabajadorSeleccionado = trab;
             });
             if (resultado is TrabajadorModel model) {
                 Dia.RelevoId = model.Id;
@@ -353,7 +338,6 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     async Task EditarSustiAsync() {
         try {
             var resultado = await popupService.ShowPopupAsync<TrabajadorPopupViewModel>(async vm => {
-                await vm.InitAsync();
                 vm.Title = "Compañer@";
                 vm.TrabajadorSeleccionado = vm.Trabajadores.FirstOrDefault(t => t.Id == Dia.SustiId);
             });
@@ -374,7 +358,6 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     async Task AbrirServicioAsync(ServicioDiaModel servicio) {
         var model = servicio.ToServicioBaseModel();
         var resultado = await popupService.ShowPopupAsync<ServicioBasePopupViewModel>(async vm => {
-            await vm.InitAsync();
             vm.Title = "Editar servicio";
             vm.Servicio = model;
         });
@@ -391,10 +374,8 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     async Task CrearServicioAsync() {
         try {
             if (Dia is null) return;
-            if (Dia.Servicios is null)
-                Dia.Servicios = new();
-            var resultado = await popupService.ShowPopupAsync<ServicioBasePopupViewModel>(async (vm) => {
-                await vm.InitAsync();
+            if (Dia.Servicios is null) Dia.Servicios = new();
+            var resultado = await popupService.ShowPopupAsync<ServicioBasePopupViewModel>((vm) => {
                 vm.Title = "Nuevo servicio";
             });
             if (resultado is ServicioBaseModel model) {

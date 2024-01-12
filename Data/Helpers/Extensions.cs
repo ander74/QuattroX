@@ -146,6 +146,25 @@ public static class Extensions {
     }
 
 
+    public static ServicioLineaModel ToServicioLineaModel(this ServicioLineaModel servicioModel) {
+        if (servicioModel is null) return null;
+        var model = new ServicioLineaModel();
+        model.Linea = servicioModel.Linea;
+        model.TextoLinea = servicioModel.TextoLinea;
+        model.Servicio = servicioModel.Servicio;
+        model.Turno = servicioModel.Turno;
+        model.Inicio = servicioModel.Inicio;
+        model.Final = servicioModel.Final;
+        model.LugarInicio = servicioModel.LugarInicio;
+        model.LugarFinal = servicioModel.LugarFinal;
+        model.Id = servicioModel.Id;
+        model.LineaId = servicioModel.LineaId;
+        model.Servicios = servicioModel.Servicios == null ? new() : servicioModel.Servicios.Select(s => s.ToServicioSecundarioModel()).ToObservableCollection();
+        model.Modified = false;
+        return model;
+    }
+
+
     #endregion
     // ====================================================================================================
 
@@ -207,6 +226,23 @@ public static class Extensions {
     }
 
 
+    public static ServicioSecundarioModel ToServicioSecundarioModel(this ServicioDiaModel servicioModel) {
+        if (servicioModel is null) return null;
+        var model = new ServicioSecundarioModel();
+        model.Linea = servicioModel.Linea;
+        model.TextoLinea = servicioModel.TextoLinea;
+        model.Servicio = servicioModel.Servicio;
+        model.Turno = servicioModel.Turno;
+        model.Inicio = servicioModel.Inicio;
+        model.Final = servicioModel.Final;
+        model.LugarInicio = servicioModel.LugarInicio;
+        model.LugarFinal = servicioModel.LugarFinal;
+        model.Id = servicioModel.Id;
+        model.Modified = false;
+        return model;
+    }
+
+
     #endregion
     // ====================================================================================================
 
@@ -248,6 +284,44 @@ public static class Extensions {
         entity.Id = model.Id;
         entity.ServicioId = model.ServicioId;
         return entity;
+    }
+
+
+    public static ServicioSecundarioModel ToServicioSecundarioModel(this ServicioSecundarioModel servicioModel) {
+        if (servicioModel is null) return null;
+        var model = new ServicioSecundarioModel();
+        model.Linea = servicioModel.Linea;
+        model.TextoLinea = servicioModel.TextoLinea;
+        model.Servicio = servicioModel.Servicio;
+        model.Turno = servicioModel.Turno;
+        model.Inicio = servicioModel.Inicio;
+        model.Final = servicioModel.Final;
+        model.LugarInicio = servicioModel.LugarInicio;
+        model.LugarFinal = servicioModel.LugarFinal;
+        model.Id = servicioModel.Id;
+        model.ServicioId = servicioModel.ServicioId;
+        //model.Modified = false;
+        return model;
+    }
+
+
+    /// <summary>
+    /// Devuelve un nuevo <see cref="ServicioDiaModel"/> con los datos del <see cref="ServicioSecundarioModel"/>, SIN INCLUIR Id e INCUYENDO el DiaId proporcionado.
+    /// </summary>
+    public static ServicioDiaModel ToServicioDiaModel(this ServicioSecundarioModel secundarioModel, int diaId = 0) {
+        if (secundarioModel is null) return null;
+        var diaModel = new ServicioDiaModel();
+        diaModel.DiaId = diaId;
+        diaModel.Linea = secundarioModel.Linea;
+        diaModel.TextoLinea = secundarioModel.TextoLinea;
+        diaModel.Servicio = secundarioModel.Servicio;
+        diaModel.Turno = secundarioModel.Turno;
+        diaModel.Inicio = secundarioModel.Inicio;
+        diaModel.Final = secundarioModel.Final;
+        diaModel.LugarInicio = secundarioModel.LugarInicio;
+        diaModel.LugarFinal = secundarioModel.LugarFinal;
+        //diaModel.Modified = false;
+        return diaModel;
     }
 
 
@@ -340,6 +414,9 @@ public static class Extensions {
     // ====================================================================================================
 
 
+    /// <summary>
+    /// Hace una copia exacta de <see cref="DiaEntity"/> en un <see cref="DiaModel"/> INCLUYENDO el Id.
+    /// </summary>
     public static DiaModel ToModel(this DiaEntity entity) {
         if (entity is null) return null;
         var model = new DiaModel {
@@ -377,6 +454,9 @@ public static class Extensions {
     }
 
 
+    /// <summary>
+    /// Hace una copia exacta de <see cref="DiaModel"/> en un <see cref="DiaEntity"/> INCUYENDO el Id.
+    /// </summary>
     public static DiaEntity ToEntity(this DiaModel model) {
         if (model is null) return null;
         return new DiaEntity {
@@ -412,9 +492,11 @@ public static class Extensions {
     }
 
 
+    /// <summary>
+    /// Copia todos los valores del <see cref="DiaEntity"/> en el <see cref="DiaModel"/> que lo llama, SIN INCLUIR el Id.
+    /// </summary>
     public static void FromEntity(this DiaModel model, DiaEntity entity) {
         if (model is null || entity is null) return;
-        model.Id = entity.Id;
         model.Fecha = entity.Fecha;
         model.EsFranqueo = entity.EsFranqueo;
         model.EsFestivo = entity.EsFestivo;
@@ -445,6 +527,9 @@ public static class Extensions {
     }
 
 
+    /// <summary>
+    /// Copia todos los valores del <see cref="DiaModel"/> en el <see cref="DiaEntity"/> que lo llama, SIN INCLUIR el Id.
+    /// </summary>
     public static void FromModel(this DiaModel model, DiaModel newModel) {
         if (model is null || newModel is null) return;
         model.Fecha = newModel.Fecha;
@@ -479,6 +564,9 @@ public static class Extensions {
     }
 
 
+    /// <summary>
+    /// Copia SÓLO LOS DATOS DE SERVICIO del <see cref="ServicioBaseEntity"/> en el <see cref="DiaModel"/> que lo llama.
+    /// </summary>
     public static void FromServicioEntity(this DiaModel model, ServicioBaseEntity entity) {
         if (model is null || entity is null) return;
         model.Linea = entity.Linea;
@@ -492,6 +580,9 @@ public static class Extensions {
     }
 
 
+    /// <summary>
+    /// Copia SÓLO LOS DATOS DE SERVICIO del <see cref="ServicioBaseModel"/> en el <see cref="DiaEntity"/> que lo llama.
+    /// </summary>
     public static void FromServicioModel(this DiaEntity entity, ServicioBaseModel model) {
         if (entity is null || model is null) return;
         entity.Linea = model.Linea;
@@ -506,7 +597,50 @@ public static class Extensions {
 
 
     /// <summary>
-    /// Pone a cero todos los valores del día, manteniendo Id y Fecha intactas.
+    /// Copia SÓLO LOS DATOS DE SERVICIO (incluyendo los servicios secundarios) del <see cref="ServicioLineaModel"/> en el <see cref="DiaEntity"/> que lo llama.
+    /// </summary>
+    public static void FromServicioLineaModel(this DiaModel diaModel, ServicioLineaModel servicioModel) {
+        if (diaModel is null || servicioModel is null) return;
+        diaModel.Linea = servicioModel.Linea;
+        diaModel.TextoLinea = servicioModel.TextoLinea;
+        diaModel.Servicio = servicioModel.Servicio;
+        diaModel.Turno = servicioModel.Turno;
+        diaModel.Inicio = servicioModel.Inicio;
+        diaModel.Final = servicioModel.Final;
+        diaModel.LugarInicio = servicioModel.LugarInicio;
+        diaModel.LugarFinal = servicioModel.LugarFinal;
+        diaModel.Servicios = new();
+        if (servicioModel.Servicios is not null && servicioModel.Servicios.Count > 0) {
+            diaModel.Servicios = servicioModel.Servicios.Select(s => s.ToServicioDiaModel(diaModel.Id)).ToObservableCollection();
+        }
+    }
+
+
+    /// <summary>
+    /// Copia SÓLO LOS DATOS DE SERVICIO (incluyendo los servicios secundarios) del <see cref="ServicioLineaModel"/> en el <see cref="DiaEntity"/> que lo llama.
+    /// </summary>
+    public static ServicioLineaModel ToServicioLineaModel(this DiaModel diaModel) {
+        if (diaModel is null) return null;
+        var servicioModel = new ServicioLineaModel() {
+            Linea = diaModel.Linea,
+            TextoLinea = diaModel.TextoLinea,
+            Servicio = diaModel.Servicio,
+            Turno = diaModel.Turno,
+            Inicio = diaModel.Inicio,
+            Final = diaModel.Final,
+            LugarInicio = diaModel.LugarInicio,
+            LugarFinal = diaModel.LugarFinal,
+        };
+        servicioModel.Servicios = new();
+        if (diaModel.Servicios is not null && diaModel.Servicios.Count > 0) {
+            servicioModel.Servicios = diaModel.Servicios.Select(s => s.ToServicioSecundarioModel()).ToObservableCollection();
+        }
+        return servicioModel;
+    }
+
+
+    /// <summary>
+    /// Pone a cero todos los valores del día, MANTENIENDO INTACTOS Id y Fecha.
     /// </summary>
     public static void Vaciar(this DiaModel model) {
         if (model is null) return;

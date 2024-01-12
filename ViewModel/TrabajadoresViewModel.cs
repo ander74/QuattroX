@@ -47,6 +47,19 @@ public partial class TrabajadoresViewModel : BaseViewModel {
             m.Reply(trabajador);
         });
 
+        // Responde a la petición de los trabajadores.
+        Messenger.Register<TrabajadoresRequest>(this, (r, m) => {
+            m.Reply(Trabajadores);
+        });
+
+        // Responde a la petición de añadir un trabajador.
+        Messenger.Register<AddTrabajadorRequest>(this, async (r, m) => {
+            if (m.Trabajador is null || m.Trabajador.Matricula == 0) return;
+            await dbRepository.SaveTrabajadorAsync(m.Trabajador);
+            m.Trabajador.RowIndex = Trabajadores.Count + 1;
+            if (!Trabajadores.Contains(m.Trabajador)) Trabajadores.Add(m.Trabajador);
+        });
+
         HandlerLongPress();
 
     }

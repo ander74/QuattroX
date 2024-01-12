@@ -12,7 +12,7 @@ using QuattroX.Data.Model;
 namespace QuattroX.ViewModel.Popups;
 
 
-public partial class ServicioBasePopupViewModel : BaseViewModel {
+public partial class ServicioDiaPopupViewModel : BaseViewModel {
 
 
     // ====================================================================================================
@@ -21,10 +21,11 @@ public partial class ServicioBasePopupViewModel : BaseViewModel {
 
     private bool servicioModificado;
 
-    public ServicioBasePopupViewModel() {
+    public ServicioDiaPopupViewModel() {
         Title = "Nuevo servicio";
         Lineas = Messenger.Send(new LineasRequest(true));
     }
+
 
     #endregion
     // ====================================================================================================
@@ -36,24 +37,30 @@ public partial class ServicioBasePopupViewModel : BaseViewModel {
 
 
     [ObservableProperty]
-    ServicioBaseModel servicio = new();
+    [NotifyPropertyChangedFor(nameof(HayServiciosLinea))]
+    ServicioLineaModel servicio = new();
 
-    partial void OnServicioChanged(ServicioBaseModel value) {
+    partial void OnServicioChanged(ServicioLineaModel oldValue, ServicioLineaModel newValue) {
         if (Servicio is null) return;
         Servicio.PropertyChanged += (s, e) => {
             if (servicioModificado) return;
-            if (e.PropertyName == nameof(ServicioBaseModel.Modified)) return;
-            if (e.PropertyName == nameof(ServicioBaseModel.Linea)) {
+            if (e.PropertyName == nameof(ServicioLineaModel.Modified)) return;
+            if (e.PropertyName == nameof(ServicioLineaModel.Linea)) {
                 Servicio.TextoLinea = string.Empty;
             }
+            Servicio.Servicios.Clear();
             ServicioSeleccionado = null;
             LineaSeleccionada = null;
+            OnPropertyChanged(nameof(HayServiciosLinea));
             servicioModificado = true;
             // De esta manera (los parciales de linea y servicio seleccionados) sólo cuando se edita manualmente el servicio
             // se produce el cambio en esta propiedad.
             // Usemoslo para determinar si un servicio es editado o cogido de la base de datos.
         };
     }
+
+
+    public bool HayServiciosLinea => Servicio.Servicios.Count > 0;
 
 
     [ObservableProperty]
@@ -65,7 +72,8 @@ public partial class ServicioBasePopupViewModel : BaseViewModel {
 
     partial void OnLineaSeleccionadaChanged(LineaModel value) {
         if (value is null) return;
-        Servicio = new ServicioBaseModel {
+        Servicio = new ServicioLineaModel {
+            LineaId = LineaSeleccionada.Id,
             Linea = LineaSeleccionada.Linea,
             TextoLinea = LineaSeleccionada.Texto,
         };
@@ -74,19 +82,11 @@ public partial class ServicioBasePopupViewModel : BaseViewModel {
 
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(NotBloquearLinea))]
-    bool bloquearLinea;
-
-
-    public bool NotBloquearLinea => !BloquearLinea;
-
-
-    [ObservableProperty]
     ServicioLineaModel servicioSeleccionado;
 
     partial void OnServicioSeleccionadoChanged(ServicioLineaModel value) {
         if (value is null) return;
-        Servicio = ServicioSeleccionado.ToServicioBaseModel();
+        Servicio = ServicioSeleccionado.ToServicioLineaModel();
         servicioModificado = false;
     }
 
@@ -102,23 +102,21 @@ public partial class ServicioBasePopupViewModel : BaseViewModel {
 
     public void OnClose() {
         if (servicioModificado) {
-            var servicioLinea = new ServicioLineaModel();
-            servicioLinea.FromServicioBase(Servicio);
-            LineaModel linea = Messenger.Send(new LineaRequest(servicioLinea.Linea));
+            LineaModel linea = Messenger.Send(new LineaRequest(Servicio.Linea));
             if (linea is null) {
                 var newLinea = new LineaModel {
-                    Linea = servicioLinea.Linea,
-                    Texto = servicioLinea.TextoLinea
+                    Linea = Servicio.Linea,
+                    Texto = Servicio.TextoLinea
                 };
-                newLinea.Servicios.Add(servicioLinea);
+                newLinea.Servicios.Add(Servicio);
                 Messenger.Send(new AddLineaRequest(newLinea));
                 return;
             }
-            servicioLinea.LineaId = linea.Id;
-            if (string.IsNullOrWhiteSpace(servicioLinea.TextoLinea)) servicioLinea.TextoLinea = linea.Texto;
-            var serv = linea.Servicios.FirstOrDefault(s => s.Servicio.ToUpper() == servicioLinea.Servicio.ToUpper() && s.Turno == servicioLinea.Turno);
+            Servicio.LineaId = linea.Id;
+            if (string.IsNullOrWhiteSpace(Servicio.TextoLinea)) Servicio.TextoLinea = linea.Texto;
+            var serv = linea.Servicios.FirstOrDefault(s => s.Servicio.ToUpper() == Servicio.Servicio.ToUpper() && s.Turno == Servicio.Turno);
             if (serv is null) {
-                linea.Servicios.Add(servicioLinea);
+                linea.Servicios.Add(Servicio);
                 Messenger.Send(new AddLineaRequest(linea));
                 return;
             }
@@ -135,8 +133,6 @@ public partial class ServicioBasePopupViewModel : BaseViewModel {
     // ====================================================================================================
 
 
-
-
     #endregion
     // ====================================================================================================
 
@@ -144,8 +140,6 @@ public partial class ServicioBasePopupViewModel : BaseViewModel {
     // ====================================================================================================
     #region Comandos
     // ====================================================================================================
-
-
 
 
     #endregion

@@ -27,7 +27,7 @@ public partial class LineaModel : ModelBase {
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TextoServicios))]
-    ObservableCollection<ServicioLineaModel> servicios;
+    ObservableCollection<ServicioLineaModel> servicios = new();
 
     partial void OnServiciosChanged(ObservableCollection<ServicioLineaModel> value) {
         Servicios.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TextoServicios));

@@ -97,7 +97,6 @@
                 <Label
                     Grid.Row="1"
                     Grid.ColumnSpan="2"
-                    IsVisible="{Binding IsNuevoTrabajador}"
                     Text="Matrícula" />
 
                 <Entry
@@ -105,8 +104,7 @@
                     Grid.ColumnSpan="2"
                     HorizontalOptions="Fill"
                     HorizontalTextAlignment="Center"
-                    IsVisible="{Binding IsNuevoTrabajador}"
-                    Text="{Binding TrabajadorSeleccionado.Matricula}" />
+                    Text="{Binding Trabajador.Matricula}" />
 
                 <Label
                     Grid.Row="2"
@@ -118,8 +116,8 @@
                     Grid.ColumnSpan="4"
                     HorizontalOptions="Fill"
                     HorizontalTextAlignment="Start"
-                    IsReadOnly="{Binding IsNotNuevoTrabajador}"
-                    Text="{Binding TrabajadorSeleccionado.Nombre}" />
+                    IsReadOnly="{Binding NotTrabajadorModificado}"
+                    Text="{Binding Trabajador.Nombre}" />
 
                 <Label
                     Grid.Row="3"
@@ -131,8 +129,8 @@
                     Grid.ColumnSpan="4"
                     HorizontalOptions="Fill"
                     HorizontalTextAlignment="Start"
-                    IsReadOnly="{Binding IsNotNuevoTrabajador}"
-                    Text="{Binding TrabajadorSeleccionado.Apellidos}" />
+                    IsReadOnly="{Binding NotTrabajadorModificado}"
+                    Text="{Binding Trabajador.Apellidos}" />
 
             </Grid>
 

@@ -188,8 +188,7 @@ public partial class DetalleServicioLineaViewModel : BaseViewModel {
         try {
             if (ServicioLinea is null) return;
             if (ServicioLinea.Servicios is null) ServicioLinea.Servicios = new();
-            var resultado = await popupService.ShowPopupAsync<ServicioBasePopupViewModel>(async (vm) => {
-                await vm.InitAsync();
+            var resultado = await popupService.ShowPopupAsync<ServicioBasePopupViewModel>((vm) => {
                 vm.Title = $"Nuevo servicio";
             });
             if (resultado is ServicioBaseModel model) {
@@ -197,7 +196,7 @@ public partial class DetalleServicioLineaViewModel : BaseViewModel {
                 var servicio = new ServicioSecundarioModel();
                 servicio.FromServicioBase(model);
                 servicio.ServicioId = ServicioLinea.Id;
-                //servicio.RowIndex = ServicioLinea.Servicios.Count + 1;
+                servicio.RowIndex = ServicioLinea.Servicios.Count + 1;
                 var id = await dbRepository.SaveServicioSecundarioAsync(servicio);
                 servicio.Modified = false;
                 ServicioLinea.Servicios.Add(servicio);

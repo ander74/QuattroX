@@ -24,7 +24,7 @@ public partial class ServicioBasePopup : Popup {
 
     private async void Aceptar_Clicked(object sender, EventArgs e) {
         if (viewModel.Servicio is null) viewModel.Servicio = new();
-        await viewModel.AceptarAsync();
+        viewModel.OnClose();
         await CloseAsync(viewModel.Servicio);
     }
 

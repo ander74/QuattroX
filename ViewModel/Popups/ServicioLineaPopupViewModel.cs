@@ -5,7 +5,6 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-
 using QuattroX.Data.Model;
 using QuattroX.Data.Repositories;
 
