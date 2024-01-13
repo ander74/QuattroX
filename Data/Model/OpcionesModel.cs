@@ -42,6 +42,13 @@ public partial class OpcionesModel : ModelBase {
 
 
     /// <summary>
+    /// Si es true, se incluirá el sábado al rellenar la semana automáticamente.
+    /// </summary>
+    [ObservableProperty]
+    bool incluirSabadoAlRellenar;
+
+
+    /// <summary>
     /// Jornada media en horas decimales.
     /// </summary>
     [ObservableProperty]

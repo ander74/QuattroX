@@ -65,6 +65,12 @@ public partial class CalendarioViewModel : BaseViewModel {
         });
 
 
+        // Responde a la petición de rellenar semana.
+        Messenger.Register<RellenarSemanaRequest>(this, async (r, m) => {
+            await RellenarSemanaAsync(m.FechaModificada);
+        });
+
+
         HandlerLongPress();
 
     }
@@ -312,6 +318,32 @@ public partial class CalendarioViewModel : BaseViewModel {
     }
 
 
+    private async Task RellenarSemanaAsync(DateTime fechaModificada) {
+        int diasAQuitar = fechaModificada.DayOfWeek == DayOfWeek.Sunday ? 6 : ((int)fechaModificada.DayOfWeek) - 1;
+        var fechaInicio = fechaModificada.AddDays(-diasAQuitar);
+        var diasASumar = configService.Opciones.IncluirSabadoAlRellenar ? 5 : 4;
+        var fechaFinal = fechaInicio.AddDays(diasASumar);
+        var dias = await dbRepository.GetDiasAsync(fechaInicio, fechaFinal, true);
+        var diaReferencia = dias.FirstOrDefault(d => d.Fecha == fechaModificada);
+        foreach (var dia in dias) {
+            if (dia.Fecha == fechaModificada) continue;
+            if (dia.IncidenciaId > 0) continue;
+            var fecha = dia.Fecha;
+            var esFranqueo = dia.EsFranqueo;
+            var esFestivo = dia.EsFestivo;
+            dia.FromModel(diaReferencia);
+            dia.Fecha = fecha;
+            dia.EsFranqueo = esFranqueo;
+            dia.EsFestivo = esFestivo;
+            await dbRepository.SaveDiaAsync(dia);
+            if (dia.Fecha.Month == FechaActual.Month) {
+                var diaActual = Dias.FirstOrDefault(d => d.Fecha == dia.Fecha);
+                diaActual.FromModel(dia);
+            }
+        }
+    }
+
+
     #endregion
     // ====================================================================================================
 
@@ -337,6 +369,7 @@ public partial class CalendarioViewModel : BaseViewModel {
                 await CargarResumenes();
                 await CargarRegulaciones();
             }
+            OnPropertyChanged(nameof(AcumuladasHastaMes));
         } catch (Exception ex) {
             await Shell.Current.DisplaySnackbar(ex.Message);
         } finally {

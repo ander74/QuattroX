@@ -27,6 +27,9 @@ public class OpcionesEntity : EntityBase {
     public bool RellenarSemanaAutomaticamente { get; set; }
 
 
+    public bool IncluirSabadoAlRellenar { get; set; }
+
+
     public decimal JornadaMedia { get; set; }
 
 

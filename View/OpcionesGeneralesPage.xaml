@@ -39,10 +39,33 @@
 
         <VerticalStackLayout>
 
+            <nely:LabelValue
+                Command="{Binding CambiarAcumuladasAnterioresCommand}"
+                Detail="Horas que tienes antes del primer día visible."
+                Text="Horas acumuladas anteriores"
+                Value="{Binding ConfigService.Opciones.AcumuladasAnteriores, Converter={StaticResource decimalConverter}}" />
+
             <nely:LabelDateValue
                 Detail="Primer mes que va a contener datos. No se podrá ir a meses anteriores."
                 Text="Primer mes mostrado"
                 Value="{Binding ConfigService.Opciones.PrimerMesMostrado}" />
+
+            <nely:LabelValue
+                Command="{Binding CambiarRelevoFijoCommand}"
+                Detail="Compañer@ que se pondrá por defecto al añadir un servicio."
+                Text="Relevo fijo"
+                Value="{Binding ConfigService.Opciones.RelevoFijo}" />
+
+            <nely:LabelSwitch
+                Detail="Si está activado, al introducir un día, se rellena el resto de semana con el mismo servicio."
+                IsToggled="{Binding ConfigService.Opciones.RellenarSemanaAutomaticamente}"
+                Text="Autorellenar semana" />
+
+            <nely:LabelSwitch
+                Detail="Incluir el sábado al rellenar la semana automáticamente."
+                IsEnabled="{Binding ConfigService.Opciones.RellenarSemanaAutomaticamente}"
+                IsToggled="{Binding ConfigService.Opciones.IncluirSabadoAlRellenar}"
+                Text="Incluir sábado" />
 
         </VerticalStackLayout>
 

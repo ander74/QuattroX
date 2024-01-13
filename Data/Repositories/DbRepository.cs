@@ -458,6 +458,24 @@ public class DbRepository {
     }
 
 
+
+    /// <summary>
+    /// Devuelve los días que hay entre las fechas de inicio y final, ambas incluidas.
+    /// </summary>
+    public async Task<ObservableCollection<DiaModel>> GetDiasAsync(DateTime fechaInicio, DateTime fechaFinal, bool incluirServicios = true) {
+        var lista = await dbService.Db.Table<DiaEntity>().Where(d => d.Fecha >= fechaInicio && d.Fecha <= fechaFinal).OrderBy(t => t.Fecha).ToListAsync();
+        if (lista is null) lista = new();
+        var dias = lista.Select(d => d.ToModel()).ToObservableCollection();
+        if (incluirServicios) {
+            foreach (var dia in dias) {
+                dia.Servicios = await GetServiciosDiaAsync(dia.Id);
+                if (dia.Servicios is null) dia.Servicios = new();
+            }
+        }
+        return dias;
+    }
+
+
     public async Task<DiaModel> GetDiaByIdAsync(int diaId, bool incluirServicios = true) {
         var dia = await dbService.Db.Table<DiaEntity>().Where(d => d.Id == diaId).OrderBy(t => t.Fecha).FirstOrDefaultAsync();
         if (dia is null) dia = new();

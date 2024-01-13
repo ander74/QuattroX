@@ -32,11 +32,15 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     private readonly DbRepository dbRepository;
     private readonly CalculosService calculosService;
     private readonly IPopupService popupService;
+    private readonly ConfigService configService;
 
-    public DetalleDiaViewModel(DbRepository dbRepository, CalculosService calculosService, IPopupService popupService) {
+    private bool sinIncidencia;
+
+    public DetalleDiaViewModel(DbRepository dbRepository, CalculosService calculosService, IPopupService popupService, ConfigService configService) {
         this.dbRepository = dbRepository;
         this.calculosService = calculosService;
         this.popupService = popupService;
+        this.configService = configService;
 
         ServiciosSeleccionados.CollectionChanged += (sender, e) => {
             var num = ServiciosSeleccionados.Count;
@@ -176,6 +180,14 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     }
 
 
+    private bool HayServicio() {
+        if (string.IsNullOrWhiteSpace(Dia.Servicio)) return false;
+        if (string.IsNullOrWhiteSpace(Dia.Linea)) return false;
+        if (Dia.Turno == 0) return false;
+        return true;
+    }
+
+
 
     #endregion
     // ====================================================================================================
@@ -198,7 +210,10 @@ public partial class DetalleDiaViewModel : BaseViewModel {
                 // se dispare el método parcial OnIncidenciaChanged inicialmente.
                 incidenciaSeleccionada = Incidencias.Where(i => i.Id == Dia.IncidenciaId).FirstOrDefault();
             } else {
-                IncidenciaSeleccionada = Incidencias.Where(i => i.Codigo == 1).FirstOrDefault();
+                Dia.Incidencia = Incidencias.Where(i => i.Codigo == 1).FirstOrDefault();
+                Dia.IncidenciaId = Dia.Incidencia.Id;
+                incidenciaSeleccionada = Incidencias.Where(i => i.Codigo == 1).FirstOrDefault();
+                sinIncidencia = true;
             }
             OnPropertyChanged(nameof(IncidenciaSeleccionada));
 #pragma warning restore MVVMTK0034
@@ -214,7 +229,14 @@ public partial class DetalleDiaViewModel : BaseViewModel {
 
     [RelayCommand]
     async Task CloseAsync() {
+        if (sinIncidencia && !HayServicio()) {
+            Dia.IncidenciaId = 0;
+            Dia.Incidencia = new();
+        }
         await dbRepository.SaveDiaAsync(Dia);
+        if (configService.Opciones.RellenarSemanaAutomaticamente && HayServicio()) {
+            Messenger.Send(new RellenarSemanaRequest(Dia.Fecha));
+        }
         Messenger.Send(new CalcularResumenRequest());
     }
 
@@ -315,7 +337,7 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     [RelayCommand]
     async Task EditarRelevoAsync() {
         try {
-            var resultado = await popupService.ShowPopupAsync<TrabajadorPopupViewModel>(async vm => {
+            var resultado = await popupService.ShowPopupAsync<TrabajadorPopupViewModel>(vm => {
                 vm.Title = "Relevo";
                 TrabajadorModel trab = vm.Trabajadores.FirstOrDefault(t => t.Id == Dia.RelevoId);
                 if (trab is null) trab = new();

@@ -5,7 +5,10 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
+using CommunityToolkit.Maui.Core;
+using QuattroX.Data.Model;
 using QuattroX.Services;
+using QuattroX.ViewModel.Popups;
 
 namespace QuattroX.ViewModel;
 
@@ -18,12 +21,14 @@ public partial class ConfigViewModel : BaseViewModel {
     // ====================================================================================================
 
 
+    private readonly IPopupService popupService;
 
-    public ConfigViewModel(ConfigService configService) {
+
+    public ConfigViewModel(ConfigService configService, IPopupService popupService) {
 
         Title = "Configuración";
         ConfigService = configService;
-
+        this.popupService = popupService;
     }
 
 
@@ -125,6 +130,36 @@ public partial class ConfigViewModel : BaseViewModel {
         if (resultado is null) return;
         if (int.TryParse(resultado, out int valor)) {
             ConfigService.Opciones.LimiteEntreServicios = valor;
+        }
+    }
+
+
+    [RelayCommand]
+    async Task CambiarAcumuladasAnterioresAsync() {
+        var resultado = await Shell.Current.DisplayPromptAsync("Acumuladas anteriores",
+            "Introduce las horas acumuladas anteriores en decimal.", "Aceptar", "Cancelar",
+            null, -1, Keyboard.Numeric, ConfigService.Opciones.AcumuladasAnteriores.ToTexto());
+        if (resultado is null) return;
+        ConfigService.Opciones.AcumuladasAnteriores = resultado.ToDecimal();
+    }
+
+
+    [RelayCommand]
+    async Task CambiarRelevoFijoAsync() {
+        try {
+            var resultado = await popupService.ShowPopupAsync<TrabajadorPopupViewModel>(async vm => {
+                vm.Title = "Relevo fijo";
+                TrabajadorModel trab = vm.Trabajadores.FirstOrDefault(t => t.Matricula == ConfigService.Opciones.RelevoFijo);
+                if (trab is null) trab = new();
+                vm.TrabajadorSeleccionado = trab;
+            });
+            if (resultado is TrabajadorModel model) {
+                ConfigService.Opciones.RelevoFijo = model.Matricula;
+            }
+        } catch (Exception ex) {
+            await Shell.Current.DisplaySnackbar(ex.Message);
+        } finally {
+            IsBusy = false;
         }
     }
 
