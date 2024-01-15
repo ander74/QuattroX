@@ -10,23 +10,13 @@ using QuattroX.ViewModel;
 
 namespace QuattroX.View;
 
+public partial class LicenciaPage : ContentPage {
 
-public partial class ConfigPage : ContentPage {
+    private readonly LicenciaViewModel viewModel;
 
-    private readonly ConfigViewModel viewModel;
-
-    public ConfigPage(ConfigViewModel viewModel) {
-        InitializeComponent();
+    public LicenciaPage(LicenciaViewModel viewModel) {
         BindingContext = viewModel;
         this.viewModel = viewModel;
-    }
-
-
-    protected override bool OnBackButtonPressed() {
-        base.OnBackButtonPressed();
-        if (viewModel.BackCommand.CanExecute(null)) {
-            viewModel.BackCommand.Execute(null);
-        }
-        return true;
+        InitializeComponent();
     }
 }

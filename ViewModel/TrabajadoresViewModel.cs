@@ -47,6 +47,12 @@ public partial class TrabajadoresViewModel : BaseViewModel {
             m.Reply(trabajador);
         });
 
+        // Responde a la petición de un trabajador por su matrícula.
+        Messenger.Register<TrabajadorByMatriculaRequest>(this, (r, m) => {
+            var trabajador = Trabajadores?.FirstOrDefault(t => t.Matricula == m.Matricula);
+            m.Reply(trabajador);
+        });
+
         // Responde a la petición de los trabajadores.
         Messenger.Register<TrabajadoresRequest>(this, (r, m) => {
             m.Reply(Trabajadores);
@@ -197,9 +203,11 @@ public partial class TrabajadoresViewModel : BaseViewModel {
 
 
     [RelayCommand]
-    void Back() {
+    async Task BackAsync() {
         if (IsSelectionMode) {
             TrabajadoresSeleccionados.Clear();
+        } else {
+            await Shell.Current.GoToAsync("///CalendarioPage");
         }
     }
 
@@ -227,7 +235,8 @@ public partial class TrabajadoresViewModel : BaseViewModel {
     [RelayCommand]
     async Task CrearTrabajadorAsync() {
         if (Trabajadores is null) return;
-        var resultado = await Shell.Current.DisplayPromptAsync("Nuevo trabajador/a", "Introduce la matrícula", "Crear", "Cancelar");
+        var resultado = await Shell.Current.DisplayPromptAsync("Nuevo trabajador/a",
+            "Introduce la matrícula", "Crear", "Cancelar", null, -1, Keyboard.Numeric);
         if (resultado is null) return;
         if (int.TryParse(resultado, out int matricula)) {
             if (await dbRepository.ExisteTrabajadorByMatriculaAsync(matricula)) {

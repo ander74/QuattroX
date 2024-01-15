@@ -543,7 +543,7 @@ public partial class CalendarioViewModel : BaseViewModel {
         if (DiasSeleccionados is null || DiasSeleccionados.Count == 0) return;
         var dia = (DiaModel)DiasSeleccionados.FirstOrDefault();
         var horas = await Shell.Current.DisplayPromptAsync(
-            "Nueva regulación", "Introduce las horas a regular.", "Siguiente", "Cancelar");
+            "Nueva regulación", "Introduce las horas a regular.", "Siguiente", "Cancelar", null, -1, Keyboard.Numeric);
         if (horas is null) return;
         var horasDecimal = horas.ToDecimal();
         if (horasDecimal == 0) {
@@ -551,7 +551,7 @@ public partial class CalendarioViewModel : BaseViewModel {
             return;
         }
         var motivo = await Shell.Current.DisplayPromptAsync(
-           "Nueva regulación", "Introduce el motivo de la regulación.", "Crear", "Cancelar");
+           "Nueva regulación", "Introduce el motivo de la regulación.", "Crear", "Cancelar", null, -1, Keyboard.Chat);
         try {
             IsBusy = true;
             if (motivo is null) return;

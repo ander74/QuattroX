@@ -89,6 +89,7 @@
                     Grid.Row="0"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
+                    Keyboard="Text"
                     Text="{Binding Servicio.Servicio}" />
 
                 <Label
@@ -100,6 +101,7 @@
                     Grid.Row="0"
                     Grid.Column="2"
                     Grid.ColumnSpan="2"
+                    Keyboard="Numeric"
                     Text="{Binding Servicio.Turno}" />
 
                 <Label
@@ -121,6 +123,7 @@
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
                     HorizontalTextAlignment="Start"
+                    Keyboard="Chat"
                     Text="{Binding Servicio.LugarInicio}" />
 
                 <Label
@@ -142,6 +145,7 @@
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
                     HorizontalTextAlignment="Start"
+                    Keyboard="Chat"
                     Text="{Binding Servicio.LugarFinal}" />
 
             </Grid>

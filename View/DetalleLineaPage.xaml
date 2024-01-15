@@ -101,6 +101,7 @@
         <Label Text="Descripción" />
         <Entry
             HorizontalTextAlignment="Start"
+            Keyboard="Chat"
             Text="{Binding Linea.Texto}" />
 
         <!--  Servicios  -->

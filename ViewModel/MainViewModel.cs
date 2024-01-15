@@ -5,8 +5,8 @@
 //  Vea el archivo Licencia.txt para más detalles 
 // ===============================================
 #endregion
-using QuattroX.Data.Entities;
 using QuattroX.Data.Enums;
+using QuattroX.Data.Helpers;
 using QuattroX.Data.Model;
 using QuattroX.Data.Repositories;
 using QuattroX.Services;
@@ -249,18 +249,22 @@ public partial class MainViewModel : BaseViewModel {
 
 
         //TODO: Quitar los mocks en producción.
-        var trabajadores = await dbService.Db.Table<TrabajadorEntity>().CountAsync();
-        if (trabajadores == 0) {
-            await dbRepository.SaveTrabajadoresAsync(GetTrabajadoresPruebas());
-        }
+        //var trabajadores = await dbService.Db.Table<TrabajadorEntity>().CountAsync();
+        //if (trabajadores == 0) {
+        //    await dbRepository.SaveTrabajadoresAsync(GetTrabajadoresPruebas());
+        //}
 
-        var lineas = await dbService.Db.Table<LineaEntity>().CountAsync();
-        if (lineas == 0) {
-            await dbRepository.SaveLineasAsync(GetLineasPruebas());
-        }
+        //var lineas = await dbService.Db.Table<LineaEntity>().CountAsync();
+        //if (lineas == 0) {
+        //    await dbRepository.SaveLineasAsync(GetLineasPruebas());
+        //}
 
-        // Vamos a la página del calendario
-        await Shell.Current.GoToAsync("///CalendarioPage");
+        // Si no se ha aceptado la licencia vamos a la página de licencia, si no, a la de calendario.
+        if (Preferences.Default.Get(SettingsNames.LICENCIA_ACEPTADA, false)) {
+            await Shell.Current.GoToAsync("///CalendarioPage");
+        } else {
+            await Shell.Current.GoToAsync("LicenciaPage");
+        }
     }
 
 

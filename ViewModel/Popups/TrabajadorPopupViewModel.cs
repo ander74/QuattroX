@@ -61,6 +61,7 @@ public partial class TrabajadorPopupViewModel : BaseViewModel {
     partial void OnTrabajadorSeleccionadoChanged(TrabajadorModel value) {
         if (value is null) return;
         Trabajador = new TrabajadorModel {
+            Id = TrabajadorSeleccionado.Id,
             Matricula = TrabajadorSeleccionado.Matricula,
             Nombre = TrabajadorSeleccionado.Nombre,
             Apellidos = TrabajadorSeleccionado.Apellidos,

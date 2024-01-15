@@ -140,6 +140,7 @@
                         <Entry
                             Grid.Row="0"
                             Grid.Column="0"
+                            Keyboard="Text"
                             Text="{Binding Servicio.Linea}" />
 
                         <Label
@@ -149,6 +150,7 @@
                         <Entry
                             Grid.Row="0"
                             Grid.Column="1"
+                            Keyboard="Text"
                             Text="{Binding Servicio.Servicio}" />
 
                         <Label
@@ -158,6 +160,7 @@
                         <Entry
                             Grid.Row="0"
                             Grid.Column="2"
+                            Keyboard="Numeric"
                             Text="{Binding Servicio.Turno}" />
 
                         <Entry
@@ -166,6 +169,7 @@
                             Margin="5,0,5,5"
                             HorizontalOptions="Fill"
                             HorizontalTextAlignment="Start"
+                            Keyboard="Chat"
                             Text="{Binding Servicio.TextoLinea}" />
 
                         <Label
@@ -187,6 +191,7 @@
                             Grid.Column="1"
                             Grid.ColumnSpan="2"
                             HorizontalTextAlignment="Start"
+                            Keyboard="Chat"
                             Text="{Binding Servicio.LugarInicio}" />
 
                         <Label
@@ -208,6 +213,7 @@
                             Grid.Column="1"
                             Grid.ColumnSpan="2"
                             HorizontalTextAlignment="Start"
+                            Keyboard="Chat"
                             Text="{Binding Servicio.LugarFinal}" />
 
                         <Label

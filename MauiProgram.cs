@@ -43,6 +43,7 @@ public static class MauiProgram {
         builder.Services.AddSingleton<ConfigPage>();
         builder.Services.AddSingleton<OpcionesConvenioPage>();
         builder.Services.AddSingleton<OpcionesGeneralesPage>();
+        builder.Services.AddSingleton<LicenciaPage>();
 
         // Páginas detalle
         builder.Services.AddTransient<DetalleDiaPage>();
@@ -57,6 +58,7 @@ public static class MauiProgram {
         builder.Services.AddSingleton<TrabajadoresViewModel>();
         builder.Services.AddSingleton<ConfigViewModel>();
         builder.Services.AddSingleton<LineasViewModel>();
+        builder.Services.AddSingleton<LicenciaViewModel>();
 
         // ViewModels detalle
         builder.Services.AddTransient<DetalleDiaViewModel>();

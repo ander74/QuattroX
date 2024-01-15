@@ -104,6 +104,7 @@
                     Grid.ColumnSpan="2"
                     HorizontalOptions="Fill"
                     HorizontalTextAlignment="Center"
+                    Keyboard="Numeric"
                     Text="{Binding Trabajador.Matricula}" />
 
                 <Label
@@ -117,6 +118,7 @@
                     HorizontalOptions="Fill"
                     HorizontalTextAlignment="Start"
                     IsReadOnly="{Binding NotTrabajadorModificado}"
+                    Keyboard="Chat"
                     Text="{Binding Trabajador.Nombre}" />
 
                 <Label
@@ -130,6 +132,7 @@
                     HorizontalOptions="Fill"
                     HorizontalTextAlignment="Start"
                     IsReadOnly="{Binding NotTrabajadorModificado}"
+                    Keyboard="Chat"
                     Text="{Binding Trabajador.Apellidos}" />
 
             </Grid>

@@ -79,6 +79,12 @@ public partial class ConfigViewModel : BaseViewModel {
 
 
     [RelayCommand]
+    async Task BackAsync() {
+        await Shell.Current.GoToAsync("///CalendarioPage");
+    }
+
+
+    [RelayCommand]
     async Task GoToOpcionesGeneralesAsync() {
         await Shell.Current.GoToAsync("OpcionesGeneralesPage");
     }

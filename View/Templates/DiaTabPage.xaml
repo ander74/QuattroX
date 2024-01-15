@@ -150,6 +150,7 @@
                     Margin="0"
                     HorizontalOptions="FillAndExpand"
                     IsVisible="{Binding Dia.EsHuelgaParcial}"
+                    Keyboard="Numeric"
                     Text="{Binding Dia.HorasHuelga}">
                     <Entry.Behaviors>
                         <toolkit:EventToCommandBehavior
@@ -226,6 +227,7 @@
                     Text="Bus" />
                 <Entry
                     Grid.Column="0"
+                    Keyboard="Text"
                     Text="{Binding Dia.Bus}" />
 
                 <!--  Toma y deje  -->
@@ -234,6 +236,7 @@
                     Text="Toma/deje" />
                 <Entry
                     Grid.Column="1"
+                    Keyboard="Numeric"
                     Text="{Binding Dia.TomaDeje}" />
 
                 <!--  Euros  -->
@@ -242,6 +245,7 @@
                     Text="€/Serv." />
                 <Entry
                     Grid.Column="2"
+                    Keyboard="Numeric"
                     Text="{Binding Dia.Euros}" />
             </Grid>
         </Border>
@@ -382,6 +386,7 @@
             <Editor
                 Margin="5,0,5,0"
                 HorizontalOptions="Fill"
+                Keyboard="Chat"
                 Text="{Binding Dia.Notas}"
                 VerticalOptions="Fill" />
         </Border>

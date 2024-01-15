@@ -208,9 +208,11 @@ public partial class LineasViewModel : BaseViewModel {
 
 
     [RelayCommand]
-    void Back() {
+    async Task BackAsync() {
         if (IsSelectionMode) {
             LineasSeleccionadas.Clear();
+        } else {
+            await Shell.Current.GoToAsync("///CalendarioPage");
         }
     }
 
@@ -238,13 +240,15 @@ public partial class LineasViewModel : BaseViewModel {
     [RelayCommand]
     async Task CrearLineaAsync() {
         if (Lineas is null) return;
-        var resultado = await Shell.Current.DisplayPromptAsync("Nueva línea", "Introduce la línea", "Siguiente", "Cancelar");
+        var resultado = await Shell.Current.DisplayPromptAsync("Nueva línea",
+            "Introduce la línea", "Siguiente", "Cancelar", null, -1, Keyboard.Text);
         if (resultado is null) return;
         if (await dbRepository.ExisteLineaAsync(resultado)) {
             await Shell.Current.DisplayAlert("ERROR", $"La línea {resultado} ya está registrada.", "Cerrar");
             return;
         }
-        var descripcion = await Shell.Current.DisplayPromptAsync("Nueva línea", "Introduce la descripción", "Crear", "Cancelar");
+        var descripcion = await Shell.Current.DisplayPromptAsync("Nueva línea",
+            "Introduce la descripción", "Crear", "Cancelar", null, -1, Keyboard.Chat);
         if (descripcion is null) return;
         var newLinea = new LineaModel { Linea = resultado, Texto = descripcion };
         var id = await dbRepository.SaveLineaAsync(newLinea);

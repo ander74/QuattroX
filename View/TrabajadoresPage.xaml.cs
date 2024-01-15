@@ -23,11 +23,10 @@ public partial class TrabajadoresPage : ContentPage {
 
     protected override bool OnBackButtonPressed() {
         base.OnBackButtonPressed();
-        var resultado = viewModel.IsSelectionMode;
         if (viewModel.BackCommand.CanExecute(null)) {
             viewModel.BackCommand.Execute(null);
         }
-        return resultado;
+        return true;
     }
 
 }

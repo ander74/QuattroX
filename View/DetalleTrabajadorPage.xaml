@@ -58,6 +58,7 @@
         <Entry
             Grid.ColumnSpan="2"
             HorizontalTextAlignment="Start"
+            Keyboard="Chat"
             Text="{Binding Trabajador.Nombre}" />
 
         <!--  Apellidos  -->
@@ -69,6 +70,7 @@
             Grid.Row="1"
             Grid.ColumnSpan="2"
             HorizontalTextAlignment="Start"
+            Keyboard="Chat"
             Text="{Binding Trabajador.Apellidos}" />
 
         <!--  Deuda inicial  -->
@@ -78,6 +80,7 @@
         <Entry
             Grid.Row="2"
             HorizontalTextAlignment="Start"
+            Keyboard="Numeric"
             Text="{Binding Trabajador.DeudaInicial}" />
 
         <!--  Calificación  -->
@@ -101,6 +104,7 @@
             Grid.Row="3"
             Grid.ColumnSpan="2"
             HorizontalTextAlignment="Start"
+            Keyboard="Numeric"
             Text="{Binding Trabajador.Telefono}" />
 
         <!--  Email  -->
@@ -112,6 +116,7 @@
             Grid.Row="4"
             Grid.ColumnSpan="2"
             HorizontalTextAlignment="Start"
+            Keyboard="Email"
             Text="{Binding Trabajador.Email}" />
 
         <!--  Notas  -->
@@ -130,6 +135,7 @@
             <Editor
                 Margin="5,0,5,0"
                 HorizontalOptions="Fill"
+                Keyboard="Chat"
                 Text="{Binding Trabajador.Notas}"
                 VerticalOptions="Fill" />
         </Border>

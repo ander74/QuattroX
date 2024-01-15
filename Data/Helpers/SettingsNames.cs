@@ -6,11 +6,11 @@
 // ===============================================
 #endregion
 
-namespace QuattroX.ViewModel;
+namespace QuattroX.Data.Helpers;
 
 
-public partial class DiaTabViewModel : BaseViewModel {
+public static class SettingsNames {
 
-
+    public const string LICENCIA_ACEPTADA = "LicenciaAceptada";
 
 }

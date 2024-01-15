@@ -48,31 +48,6 @@
                 Detail="Opciones que afectan al cálculo de horas y dietas."
                 Text="Opciones de convenio" />
 
-            <nely:LabelSwitch
-                Detail="Si está activado, se pondrá el turno automáticamente en los días vacíos."
-                IsToggled="{Binding ConfigService.Opciones.InferirTurnos}"
-                Text="Inferencia de turnos" />
-
-            <nely:LabelDateValue
-                Detail="Fecha del primer día de un ciclo en el que tengas turno 1."
-                Text="Fecha con turno 1"
-                Value="{Binding ConfigService.Opciones.FechaReferenciaTurnos}">
-                <nely:LabelDateValue.Triggers>
-                    <DataTrigger
-                        Binding="{Binding ConfigService.Opciones.InferirTurnos}"
-                        TargetType="nely:LabelDateValue"
-                        Value="False">
-                        <Setter Property="IsEnabled" Value="False" />
-                    </DataTrigger>
-                    <DataTrigger
-                        Binding="{Binding ConfigService.Opciones.InferirTurnos}"
-                        TargetType="nely:LabelDateValue"
-                        Value="True">
-                        <Setter Property="IsEnabled" Value="True" />
-                    </DataTrigger>
-                </nely:LabelDateValue.Triggers>
-            </nely:LabelDateValue>
-
 
         </VerticalStackLayout>
 

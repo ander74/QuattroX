@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  ===========================================================================================  -->
+<!--  Copyright 2024 - Quattro X 2.0 - A. Herrero - Vea el archivo Licencia.txt para mas detalles  -->
+<!--  ===========================================================================================  -->
+<ContentPage
+    x:Class="QuattroX.View.LicenciaPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:templates="clr-namespace:QuattroX.View.Templates"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:QuattroX.ViewModel"
+    x:DataType="{x:Type vm:LicenciaViewModel}"
+    Shell.BackgroundColor="{StaticResource Primary}"
+    Shell.ForegroundColor="{StaticResource Secondary}"
+    Shell.PresentationMode="Modal">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            Command="{Binding LoadCommand}"
+            EventName="Loaded" />
+    </ContentPage.Behaviors>
+
+    <Grid
+        ColumnDefinitions="2*,3*"
+        RowDefinitions="Auto,*,Auto">
+
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Padding="5"
+            FontAttributes="Bold"
+            FontSize="Small"
+            HorizontalOptions="Center"
+            Text="Licencia GPL - Versión 3"
+            VerticalOptions="Center" />
+
+        <ScrollView
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Padding="10">
+            <Label
+                FontSize="Micro"
+                HorizontalOptions="Center"
+                Text="{Binding TextoLicencia}"
+                VerticalOptions="Center" />
+        </ScrollView>
+
+        <Button
+            Grid.Row="2"
+            Grid.Column="0"
+            Margin="10,15,5,10"
+            Padding="30,10"
+            Background="Transparent"
+            BorderColor="DarkRed"
+            BorderWidth="1"
+            Command="{Binding CancelarCommand}"
+            HorizontalOptions="Center"
+            Text="Salir"
+            TextColor="DarkRed"
+            VerticalOptions="Center" />
+
+        <Button
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="5,15,10,10"
+            Padding="30,10"
+            Background="Transparent"
+            BorderColor="DarkGreen"
+            BorderWidth="1"
+            Command="{Binding AceptarLicenciaCommand}"
+            HorizontalOptions="Center"
+            Text="Aceptar Licencia"
+            TextColor="DarkGreen"
+            VerticalOptions="Center" />
+    </Grid>
+</ContentPage>

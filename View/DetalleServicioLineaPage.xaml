@@ -136,6 +136,7 @@
                     Grid.Column="0"
                     Grid.ColumnSpan="4"
                     HorizontalTextAlignment="Start"
+                    Keyboard="Chat"
                     Text="{Binding ServicioLinea.TextoLinea}" />
 
                 <Label
@@ -157,6 +158,7 @@
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
                     HorizontalTextAlignment="Start"
+                    Keyboard="Chat"
                     Text="{Binding ServicioLinea.LugarInicio}" />
 
                 <Label
@@ -178,6 +180,7 @@
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
                     HorizontalTextAlignment="Start"
+                    Keyboard="Chat"
                     Text="{Binding ServicioLinea.LugarFinal}" />
 
             </Grid>

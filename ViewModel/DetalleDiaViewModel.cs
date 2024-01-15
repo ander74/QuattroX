@@ -35,6 +35,7 @@ public partial class DetalleDiaViewModel : BaseViewModel {
     private readonly ConfigService configService;
 
     private bool sinIncidencia;
+    private bool esTrabajadorFijo;
 
     public DetalleDiaViewModel(DbRepository dbRepository, CalculosService calculosService, IPopupService popupService, ConfigService configService) {
         this.dbRepository = dbRepository;
@@ -214,6 +215,15 @@ public partial class DetalleDiaViewModel : BaseViewModel {
                 Dia.IncidenciaId = Dia.Incidencia.Id;
                 incidenciaSeleccionada = Incidencias.Where(i => i.Codigo == 1).FirstOrDefault();
                 sinIncidencia = true;
+                if (configService.Opciones.RelevoFijo > 0 && Dia.RelevoId == 0) {
+                    TrabajadorModel relevo = Messenger.Send(new TrabajadorByMatriculaRequest(configService.Opciones.RelevoFijo));
+                    if (relevo is not null) {
+                        Dia.RelevoId = relevo.Id;
+                        Dia.Matricula = relevo.Matricula;
+                        Dia.Apellidos = relevo.Apellidos;
+                        esTrabajadorFijo = true;
+                    }
+                }
             }
             OnPropertyChanged(nameof(IncidenciaSeleccionada));
 #pragma warning restore MVVMTK0034
@@ -236,6 +246,11 @@ public partial class DetalleDiaViewModel : BaseViewModel {
         await dbRepository.SaveDiaAsync(Dia);
         if (configService.Opciones.RellenarSemanaAutomaticamente && HayServicio()) {
             Messenger.Send(new RellenarSemanaRequest(Dia.Fecha));
+        }
+        if (esTrabajadorFijo && !HayServicio()) {
+            Dia.RelevoId = 0;
+            Dia.Matricula = 0;
+            Dia.Apellidos = string.Empty;
         }
         Messenger.Send(new CalcularResumenRequest());
     }
